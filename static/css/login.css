@@ -1,0 +1,168 @@
+.login-container {
+    width: 100%;
+    min-height: 100vh;
+    background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), 
+                url('../images/others/hero-image.jpg') no-repeat;
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+.wrapper {
+    position: relative;
+    width: 400px;
+    height: 440px;
+    background: transparent;
+    border: 2px solid rgba(255, 255, 255, .5);
+    border-radius: 20px;
+    backdrop-filter: blur(20px); 
+    box-shadow: 0 0 30px rgba(0, 0, 0, .5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: height 0.2s ease;
+    overflow: hidden;
+}
+
+
+.wrapper .form-box {
+    width: 100%;
+    padding: 40px;
+    
+}
+.form-box h2 {
+    font-size: 2em;
+    color: #c7a17a;
+    text-align: center;
+}
+
+.wrapper.active{
+    height: 520px;
+}
+.wrapper .form-box.login {
+    transition: transform 0.18s ease;
+    transform: translateX(0);
+}
+
+.wrapper.active .form-box.login{
+    position: absolute;
+    transform: translateX(-400px);
+}
+.wrapper .form-box.register{
+    position: absolute;
+    transition: none;
+    transform: translateX(400px);
+}
+
+.wrapper.active .form-box.register{
+    transition: 0.18s ease;
+    transform: translateX(0);
+}
+.input-box {
+    position: relative;
+    width: 100%;
+    height: 50px;
+    border-bottom: 2px solid #c7a17a;
+    margin: 30px 0;
+}
+.input-box label {
+    position: absolute;
+    top: 50%;
+    left: 5px;
+    color: #c7a17a;
+    font-size: 1em;
+    pointer-events: none;
+    transform: translateY(-50%);
+    font-weight: 500;
+    transition: .5s;
+}
+.input-box input:focus ~ label,
+.input-box input:valid ~ label {
+    top: -5px;
+    font-size: 0.75em;
+    color: #c7a17a;
+}
+input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus, 
+input:-webkit-autofill:active {
+    /* Tạo hiệu ứng trong suốt cho nền */
+    -webkit-box-shadow: 0 0 0px 1000px transparent inset !important;
+    /* Giữ màu chữ cam theo thiết kế của bạn */
+    -webkit-text-fill-color: #c7a17a !important;
+    /* Hiệu ứng chuyển cảnh để ngăn màu trắng hiện lên đột ngột */
+    transition: background-color 5000s ease-in-out 0s;
+}
+.input-box input {
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    border: none;
+    outline: none;
+    font-size: 1em;
+    color: #c7a17a;
+    font-weight: 600;
+    padding: 0 35px 0 5px;
+    
+}
+.input-box .icon{
+    position: absolute;
+    right: 8px;
+    font-size: 1.2em;
+    color: #c7a17a;
+    line-height: 57px;
+}
+.remember-forgot {
+    font-size: .9em;
+    color: #c7a17a;
+    font-weight: 500;
+    margin: -15px 0 15px;
+    display: flex;
+    justify-content: space-between;
+}
+.remember-forgot label input {
+    margin-right: 3px;
+    color: #c7a17a;
+}
+.remember-forgot a {
+    color: #c7a17a;
+    text-decoration: none;
+}
+.remember-forgot a:hover {
+    text-decoration: underline;
+}
+
+.btn {
+    width: 100%;
+    height: 45px;
+    background: #c7a17a;
+    border: none;
+    outline: none;
+    color: #fff;
+    font-size: 1em;
+    font-weight: 600;
+    cursor: pointer;
+    border-radius: 6px;
+}
+.btn:hover {
+    background: #c7a17a;
+    opacity: 0.9;
+}
+.login-register {
+    font-size: .9em;
+    color: #c7a17a;
+    text-align: center;
+    font-weight: 500;
+    margin: 25px 0 10px;
+
+}
+.login-register p a {
+    color: #c7a17a;
+    text-decoration: none;
+    font-weight: 600;
+}
+.login-register p a:hover {
+    text-decoration: underline;
+}
