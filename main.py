@@ -30,35 +30,27 @@ def index():
 def register():
     """Xử lý đăng ký người dùng mới."""
     if request.method == 'POST':
+        # Lấy dữ liệu (JS đã check định dạng, nên ở đây ta nhận luôn)
         username = request.form.get('username', '').strip()
         email = request.form.get('email', '').strip()
         password = request.form.get('password', '').strip()
 
-        if not username or not email or not password:
-            flash("Vui lòng điền đầy đủ tất cả các trường!", "error")
-            return render_template('login.html', registration_status='error')
-
         try:
             conn = get_db_connection()
             cur = conn.cursor()
-            # Thực hiện chèn dữ liệu vào bảng 'users'
-            # ID sẽ tự động tăng nhờ thuộc tính AUTOINCREMENT trong SQL
             cur.execute("INSERT INTO users (username, email, password) VALUES (?, ?, ?)", 
                         (username, email, password))
             conn.commit()
             conn.close()
             
-            # Thành công: Gửi tín hiệu 'success' để JS chuyển sang form Đăng nhập
             flash("Đăng ký thành công! Mời bạn đăng nhập.", "success")
             return render_template('login.html', registration_status='success')
             
         except sqlite3.IntegrityError:
-            # Lỗi khi username hoặc email đã tồn tại trong hệ thống
             flash("Tên đăng nhập hoặc Email đã tồn tại!", "error")
             return render_template('login.html', registration_status='error')
-        except sqlite3.OperationalError:
-            # Lỗi khi bảng 'users' chưa được tạo trong database
-            flash("Lỗi hệ thống: Bảng dữ liệu chưa tồn tại!", "error")
+        except Exception as e:
+            flash(f"Lỗi hệ thống: {str(e)}", "error")
             return render_template('login.html', registration_status='error')
             
     return render_template('login.html')

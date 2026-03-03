@@ -133,6 +133,6 @@ function scrollToSection(event, sectionId, elementId) {
         setTimeout(function() {
           alert.remove();
         }, 600); 
-      }, 4000);
+      }, 500);
     });
   });

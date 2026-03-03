@@ -1,59 +1,108 @@
-const wrapper = document.querySelector('.wrapper');
-const loginLink = document.querySelector('.login-link');
-const registerLink = document.querySelector('.register-link');
+/**
+ * Quản lý giao diện và kiểm tra dữ liệu cho trang Login/Register
+ */
 
-// Xử lý chuyển đổi form bằng tay
-registerLink.addEventListener('click', (e) => {
-    e.preventDefault();
-    wrapper.classList.add('active');
-});
+document.addEventListener('DOMContentLoaded', () => {
+    const wrapper = document.querySelector('.wrapper');
+    const loginLink = document.querySelector('.login-link');
+    const registerLink = document.querySelector('.register-link');
+    const registerForm = document.querySelector(".form-box.register form");
+    const loginForm = document.querySelector(".form-box.login form");
 
-loginLink.addEventListener('click', (e) => {
-    e.preventDefault();
-    wrapper.classList.remove('active');
-});
+    // --- 1. XỬ LÝ CHUYỂN ĐỔI GIAO DIỆN ---
 
-// Tự động chuyển form dựa trên trạng thái từ Backend
-window.onload = () => {
-    // Lấy giá trị trạng thái từ thẻ input ẩn (được tạo ở bước 3)
+    // Chuyển sang form Đăng ký
+    registerLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        wrapper.classList.add('active');
+    });
+
+    // Chuyển sang form Đăng nhập
+    loginLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        wrapper.classList.remove('active');
+    });
+
+    // Tự động chuyển form dựa trên trạng thái từ Backend (Flash messages)
     const status = document.getElementById('reg_status')?.value;
-    
     if (status === 'success') {
-        // Đăng ký xong -> Hiện form Đăng nhập (Xóa class active)
         wrapper.classList.remove('active');
     } else if (status === 'error') {
-        // Đăng ký lỗi -> Giữ nguyên form Đăng ký (Thêm class active)
         wrapper.classList.add('active');
     }
-};
-const registerForm = document.querySelector(".form-box.register form");
-registerForm.addEventListener("submit", (e) => {
-    // Nếu bạn muốn xử lý đăng ký qua AJAX thì dùng e.preventDefault()
-    // Còn nếu gửi form truyền thống về Flask, trình duyệt sẽ tải lại trang.
-    // Đoạn code dưới đây giúp giao diện quay về Đăng nhập ngay lập tức.
-    wrapper.classList.remove("active");
-    
-    
-    console.log("Đăng ký hoàn tất, đang quay lại đăng nhập...");
-});
 
+    // --- 2. VALIDATION (KIỂM TRA DỮ LIỆU) ---
 
-// Chờ trang web tải xong hoàn toàn
-document.addEventListener('DOMContentLoaded', function() {
-    // Tìm tất cả các thông báo flash
-    const flashMessages = document.querySelectorAll('.alert, .flash-msg');
+    /**
+     * Hàm hiển thị thông báo lỗi nhanh
+     */
+    const showError = (message) => {
+        // Bạn có thể thay alert bằng một thông báo nội bộ đẹp hơn nếu muốn
+        alert(message);
+    };
 
-    flashMessages.forEach(function(message) {
-        // Sau 5000ms (5 giây) sẽ thực hiện ẩn
-        setTimeout(function() {
-            // Thêm hiệu ứng mờ dần bằng CSS
-            message.style.transition = "opacity 0.5s ease";
-            message.style.opacity = "0";
+    /**
+     * Xử lý kiểm tra form Đăng ký
+     */
+    registerForm.addEventListener('submit', (e) => {
+        const username = registerForm.querySelector('input[name="username"]').value.trim();
+        const email = registerForm.querySelector('input[name="email"]').value.trim();
+        const password = registerForm.querySelector('input[name="password"]').value.trim();
+
+        // Regex: Chỉ chấp nhận đuôi @gmail.com
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
+
+        // Regex: Ít nhất 8 ký tự, 1 chữ hoa, 1 chữ thường và 1 số
+        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+
+        // Kiểm tra Tên đăng nhập
+        if (username.length < 3) {
+            showError("Tên đăng nhập phải có ít nhất 3 ký tự!");
+            e.preventDefault();
+            return;
+        }
+
+        // Kiểm tra Email @gmail.com
+        if (!emailRegex.test(email)) {
+            showError("Vui lòng sử dụng địa chỉ Email định dạng @gmail.com!");
+            e.preventDefault();
+            return;
+        }
+
+        // Kiểm tra Mật khẩu mạnh
+        if (!passwordRegex.test(password)) {
+            showError("Mật khẩu phải có ít nhất 8 ký tự, bao gồm chữ hoa, chữ thường và chữ số!");
+            e.preventDefault();
+            return;
+        }
+
+        console.log("Dữ liệu đăng ký hợp lệ!");
+    });
+
+    /**
+     * Xử lý kiểm tra form Đăng nhập (Cơ bản)
+     */
+    loginForm.addEventListener('submit', (e) => {
+        const username = loginForm.querySelector('input[name="username"]').value.trim();
+        const password = loginForm.querySelector('input[name="password"]').value.trim();
+
+        if (!username || !password) {
+            showError("Vui lòng nhập đầy đủ tài khoản và mật khẩu!");
+            e.preventDefault();
+        }
+    });
+
+    // --- 3. HIỆU ỨNG THÔNG BÁO FLASH ---
+
+    const flashMessages = document.querySelectorAll('.flash-msg');
+    flashMessages.forEach((msg) => {
+        // Tự động ẩn sau 4 giây
+        setTimeout(() => {
+            msg.style.transition = "all 0.5s ease";
+            msg.style.opacity = "0";
+            msg.style.transform = "translateY(-10px)";
             
-            // Sau khi hiệu ứng mờ kết thúc (0.5s), xóa hẳn phần tử khỏi giao diện
-            setTimeout(function() {
-                message.remove();
-            }, 500);
-        }, 500);
+            setTimeout(() => msg.remove(), 500);
+        }, 4000);
     });
 });
