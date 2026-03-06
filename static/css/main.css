@@ -204,6 +204,36 @@ header nav a.active {
   color: var(--main-color);
 }
 
+.search-header {
+  position: relative;
+}
+
+.search-header input {
+  width: 100%;
+  padding: 0.75rem 3rem 0.75rem 1rem;
+  border: 2px solid #e0e0e0;
+  border-radius: 4px;
+  font-size: 0.95rem;
+}
+
+.search-header input:focus {
+  outline: none;
+  border-color: #c7a17a;
+}
+
+.search-btn {
+  position: absolute;
+  right: 0;
+  top: 0;
+  height: 100%;
+  padding: 0 1.25rem;
+  background: #c7a17a;
+  border: none;
+  color: white;
+  cursor: pointer;
+  border-radius: 0 4px 4px 0;
+}
+
 .shop-links li.active {
   color: var(--main-color);
 }
