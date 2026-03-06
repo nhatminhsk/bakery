@@ -24,7 +24,38 @@ def get_db_connection():
 @app.route('/')
 def index():
     """Trang chủ của hệ thống."""
-    return render_template('index.html')
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor()
+        # Lấy tất cả sản phẩm hoặc một số sản phẩm được đề xuất
+        recommended_products = cur.execute('SELECT * FROM products LIMIT 10').fetchall()
+        conn.close()
+        return render_template('index.html', recommended_products=recommended_products)
+    except sqlite3.OperationalError:
+        # Nếu bảng chưa tồn tại, truyền danh sách rỗng
+        return render_template('index.html', recommended_products=[])
+
+@app.route('/search', methods=['GET'])
+def search():
+    """Tìm kiếm sản phẩm theo từ khóa."""
+    query = request.args.get('q', '').strip()
+    results = []
+    
+    if query:
+        try:
+            conn = get_db_connection()
+            cur = conn.cursor()
+            # Tìm kiếm sản phẩm theo tên hoặc mô tả
+            results = cur.execute(
+                'SELECT * FROM products WHERE name LIKE ? OR description LIKE ? ORDER BY name',
+                (f'%{query}%', f'%{query}%')
+            ).fetchall()
+            conn.close()
+        except sqlite3.OperationalError:
+            # Nếu bảng chưa tồn tại, truyền danh sách rỗng
+            results = []
+    
+    return render_template('search.html', query=query, results=results)
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():

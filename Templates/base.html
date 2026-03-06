@@ -44,24 +44,26 @@
     />
     <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}" />
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/cart.js') }}"></script>
   </head>
   <body>
     <header>
       <div class="header-content">
         <div class="logo">
-          <h3 onclick="window.location.href=''">
+          <h3>
             <i class="fa-solid fa-burger fa-bounce" style="color: #c7a17a"></i
             >
             <a href="{{ url_for('index') }}" style="color: white; text-decoration: none;">
               &nbsp;BubbleBakery
+            </a>
           </h3>
         </div>
-        <form class="search-header" method="GET" action="{{ url_for('index') }}">
+        <form class="search-header" method="GET" action="{{ url_for('search') }}">
                 <input
                     type="text"
-                    name="search"
+                    name="q"
                     placeholder="Tìm kiếm..."
-                    value="{{ request.args.get('search', '') }}"
+                    value="{{ request.args.get('q', '') }}"
                 >
                 <button type="submit" class="search-btn">Search</button>
             </form>
@@ -98,8 +100,9 @@
             <a
               href="{{ url_for('cart') }}"
               id="order-nav"
-              ><i class="fa-solid fa-cart-shopping"></i>&ensp;Cart</a
-            >
+              ><i class="fa-solid fa-cart-shopping"></i>&ensp;Cart
+              <span class="cart-count badge bg-danger" style="display: none;">0</span>
+            </a>
           </li>
           {% if session.user_id %}
           <li>
