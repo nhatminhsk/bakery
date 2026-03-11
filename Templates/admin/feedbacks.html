@@ -1,0 +1,68 @@
+{% extends "admin/base.html" %}
+
+{% block page_title %}💬 Phản Hồi Khách Hàng{% endblock %}
+
+{% block content %}
+<h1 class="page-title">💬 Phản Hồi Khách Hàng</h1>
+
+<div style="margin-bottom: 1.5rem; display: flex; gap: 1rem;">
+    <input type="text" placeholder="🔍 Tìm kiếm phản hồi..." style="flex: 1; padding: 10px; background-color: #1f2937; border: 1px solid #374151; border-radius: 6px; color: #fff;">
+    <select style="padding: 10px; background-color: #1f2937; border: 1px solid #374151; border-radius: 6px; color: #fff;">
+        <option>Tất Cả</option>
+        <option>⭐⭐⭐⭐⭐ 5 Sao</option>
+        <option>⭐⭐⭐⭐ 4 Sao</option>
+        <option>⭐⭐⭐ 3 Sao</option>
+        <option>Chưa Trả Lời</option>
+    </select>
+</div>
+
+<div class="admin-table">
+    <table>
+        <thead>
+            <tr>
+                <th>Khách Hàng</th>
+                <th>Sản Phẩm</th>
+                <th>Đánh Giá</th>
+                <th>Nhận Xét</th>
+                <th>Ngày</th>
+                <th>Hành Động</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Nguyễn Văn A</td>
+                <td>Bánh Chocolate</td>
+                <td>⭐⭐⭐⭐⭐ (5/5)</td>
+                <td style="max-width: 200px; overflow: hidden; text-overflow: ellipsis;">Bánh rất ngon, hương vị tuyệt vời, sẽ mua lại!</td>
+                <td>03/10</td>
+                <td>
+                    <button style="padding: 6px 12px; background-color: #374151; color: #fw923c; border: none; border-radius: 4px; cursor: pointer; margin-right: 4px;">💬 Trả Lời</button>
+                    <button style="padding: 6px 12px; background-color: #dc2626; color: white; border: none; border-radius: 4px; cursor: pointer;">🗑️ Xóa</button>
+                </td>
+            </tr>
+            <tr>
+                <td>Trần Thị B</td>
+                <td>Bánh Bagel Cá Hồi</td>
+                <td>⭐⭐⭐⭐ (4/5)</td>
+                <td style="max-width: 200px; overflow: hidden; text-overflow: ellipsis;">Tốt nhưng hơi mặn một chút, nhưng vẫn ngon</td>
+                <td>02/10</td>
+                <td>
+                    <button style="padding: 6px 12px; background-color: #374151; color: #fb923c; border: none; border-radius: 4px; cursor: pointer; margin-right: 4px;">💬 Trả Lời</button>
+                    <button style="padding: 6px 12px; background-color: #dc2626; color: white; border: none; border-radius: 4px; cursor: pointer;">🗑️ Xóa</button>
+                </td>
+            </tr>
+            <tr>
+                <td>Lê Văn C</td>
+                <td>Bánh Tiramisu</td>
+                <td>⭐⭐⭐⭐⭐ (5/5)</td>
+                <td style="max-width: 200px; overflow: hidden; text-overflow: ellipsis;">Tuyệt vời! Gia đình tôi đều thích. Sẽ giới thiệu bạn bè.</td>
+                <td>01/10</td>
+                <td>
+                    <button style="padding: 6px 12px; background-color: #374151; color: #fb923c; border: none; border-radius: 4px; cursor: pointer; margin-right: 4px;">💬 Trả Lời</button>
+                    <button style="padding: 6px 12px; background-color: #dc2626; color: white; border: none; border-radius: 4px; cursor: pointer;">🗑️ Xóa</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+{% endblock %}

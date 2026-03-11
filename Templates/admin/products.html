@@ -1,0 +1,50 @@
+{% extends "admin/base.html" %}
+
+{% block page_title %}🛍️ Quản Lý Sản Phẩm{% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+    <h1 class="page-title">🛍️ Quản Lý Sản Phẩm</h1>
+    <button class="admin-btn">➕ Thêm Sản Phẩm</button>
+</div>
+
+<div style="margin-bottom: 1.5rem; display: flex; gap: 1rem;">
+    <input type="text" placeholder="🔍 Tìm kiếm sản phẩm..." style="flex: 1; padding: 10px; background-color: #1f2937; border: 1px solid #374151; border-radius: 6px; color: #fff;">
+    <select style="padding: 10px; background-color: #1f2937; border: 1px solid #374151; border-radius: 6px; color: #fff;">
+        <option>Tất Cả</option>
+        <option>Bagel</option>
+        <option>Bánh Ngọt</option>
+        <option>Bánh Khác</option>
+    </select>
+</div>
+
+<div class="admin-table">
+    <table>
+        <thead>
+            <tr>
+                <th>Tên Sản Phẩm</th>
+                <th>Danh Mục</th>
+                <th>Giá</th>
+                <th>Kho</th>
+                <th>Đánh Giá</th>
+                <th>Hành Động</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for product in products[:5] %}
+            <tr>
+                <td>{{ product.name }}</td>
+                <td>{{ product.category }}</td>
+                <td>₫{{ "{:,}".format(product.price) }}</td>
+                <td><span style="color: #22c55e;">{{ 50 + product.id }}</span></td>
+                <td>⭐ {{ product.rating }}</td>
+                <td>
+                    <button style="padding: 6px 12px; background-color: #374151; color: #fb923c; border: none; border-radius: 4px; cursor: pointer; margin-right: 4px;">✏️ Sửa</button>
+                    <button style="padding: 6px 12px; background-color: #dc2626; color: white; border: none; border-radius: 4px; cursor: pointer;">🗑️ Xóa</button>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

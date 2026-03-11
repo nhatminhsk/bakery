@@ -1,0 +1,43 @@
+{% extends "admin/base.html" %}
+
+{% block page_title %}✓ Danh Sách Công Việc{% endblock %}
+
+{% block content %}
+<h1 class="page-title">✓ Danh Sách Công Việc</h1>
+
+<div style="margin-bottom: 1.5rem;">
+    <div style="display: grid; grid-template-columns: 1fr auto; gap: 1rem;">
+        <input type="text" placeholder="✏️ Thêm công việc mới..." style="padding: 10px; background-color: #1f2937; border: 1px solid #374151; border-radius: 6px; color: #fff;">
+        <button class="admin-btn">Thêm</button>
+    </div>
+</div>
+
+<div style="background-color: #1f2937; border-radius: 8px; border: 1px solid #374151;">
+    <div style="padding: 1.5rem;">
+        <h3 style="color: #fb923c; margin-bottom: 1rem;">📋 Công Việc Hôm Nay</h3>
+        
+        <div style="list-style: none;">
+            <div style="display: flex; align-items: center; padding: 1rem; border-bottom: 1px solid #374151; gap: 1rem;">
+                <input type="checkbox" style="width: 20px; height: 20px; cursor: pointer;">
+                <span>Chuẩn bị bánh cho buổi sáng</span>
+                <span style="margin-left: auto; background-color: #dc2626; padding: 4px 8px; border-radius: 4px; color: white; font-size: 0.75rem;">Cao</span>
+            </div>
+            <div style="display: flex; align-items: center; padding: 1rem; border-bottom: 1px solid #374151; gap: 1rem;">
+                <input type="checkbox" style="width: 20px; height: 20px; cursor: pointer;" checked>
+                <span style="text-decoration: line-through; color: #9ca3af;">Nhập nguyên liệu mới</span>
+                <span style="margin-left: auto; background-color: #22c55e; padding: 4px 8px; border-radius: 4px; color: white; font-size: 0.75rem;">Thấp</span>
+            </div>
+            <div style="display: flex; align-items: center; padding: 1rem; border-bottom: 1px solid #374151; gap: 1rem;">
+                <input type="checkbox" style="width: 20px; height: 20px; cursor: pointer;">
+                <span>Kiểm tra chất lượng sản phẩm</span>
+                <span style="margin-left: auto; background-color: #fb923c; padding: 4px 8px; border-radius: 4px; color: white; font-size: 0.75rem;">Trung</span>
+            </div>
+            <div style="display: flex; align-items: center; padding: 1rem; gap: 1rem;">
+                <input type="checkbox" style="width: 20px; height: 20px; cursor: pointer;">
+                <span>Giao hàng cho khách hàng VIP</span>
+                <span style="margin-left: auto; background-color: #dc2626; padding: 4px 8px; border-radius: 4px; color: white; font-size: 0.75rem;">Cao</span>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

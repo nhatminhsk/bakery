@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block title %}Giỏ Hàng - BubbleBakery{% endblock %}
+
+
+
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/cart.css') }}">
+<script src="{{ url_for('static', filename='js/cart.js') }}"></script>
+<h1 style="font-size: 2.5rem; color: #fb923c; margin-bottom: 2rem;">🛒 Giỏ Hàng</h1>
+
+{% if cart_items %}
+<div class="cart-container">
+    <!-- Cart Items List -->
+    <div class="cart-items">
+        <h2 class="cart-items-title">Các sản phẩm trong giỏ hàng ({{ cart_items|length }})</h2>
+        
+        {% for item in cart_items %}
+        <div class="cart-item" id="cart-item-{{ item.id }}">
+            <img src="{{ item.image }}" alt="{{ item.name }}" class="cart-item-image">
+            <div class="cart-item-details">
+                <a href="/product/{{ item.id }}" style="text-decoration: none;">
+                    <div class="cart-item-name">{{ item.name }}</div>
+                </a>
+                <div class="cart-item-price" id="item-price-{{ item.id }}">₫{{ "{:,}".format(item.price) }} x {{ item.quantity }}</div>
+                <div class="cart-item-actions">
+                    <div class="qty-box">
+                        <button class="qty-btn" onclick="updateQuantity({{ item.id }}, -1)">−</button>
+                        <div class="qty-display" id="qty-display-{{ item.id }}">{{ item.quantity }}</div>
+                        <button class="qty-btn" onclick="updateQuantity({{ item.id }}, 1)">+</button>
+                    </div>
+                    <button class="remove-btn" onclick="removeFromCart({{ item.id }})">Xóa</button>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Cart Summary -->
+    <div class="cart-summary">
+        <h3 class="summary-title">Tóm Tắt Đơn Hàng</h3>
+        
+        <div class="summary-row">
+            <span>Tạm tính:</span>
+            <span id="cart-subtotal">₫{{ "{:,}".format(total) }}</span>
+        </div>
+        
+        <div class="summary-row">
+            <span>Phí vận chuyển:</span>
+            <span id="cart-shipping" {% if total >= 50000 %}style="color: #22c55e;"{% endif %}>
+                {% if total >= 50000 %}Miễn phí{% else %}₫20,000{% endif %}
+            </span>
+        </div>
+        
+        <div class="summary-row">
+            <span>Tổng cộng:</span>
+            <span id="cart-total">₫{{ "{:,}".format(total + (0 if total >= 50000 else 20000)) }}</span>
+        </div>
+
+        <a href="/checkout" class="checkout-btn">Tiến Hành Thanh Toán</a>
+        <a href="/index" class="continue-btn">Tiếp Tục Mua Hàng</a>
+    </div>
+</div>
+{% else %}
+<div class="cart-items">
+    <div class="empty-cart">
+        <div class="empty-cart-icon">🛒</div>
+        <h2 style="color: #fff; margin-bottom: 0.5rem;">Giỏ hàng của bạn trống</h2>
+        <p>Hãy khám phá các sản phẩm bánh ngon tuyệt vời của chúng tôi!</p>
+        <a href="/index" class="btn btn-primary">
+            Bắt Đầu Mua Sắm
+        </a>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+

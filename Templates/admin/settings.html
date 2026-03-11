@@ -1,0 +1,100 @@
+{% extends "admin/base.html" %}
+
+{% block page_title %}⚙️ Cài Đặt{% endblock %}
+
+{% block content %}
+<h1 class="page-title">⚙️ Cài Đặt</h1>
+
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+    <!-- Store Settings -->
+    <div style="background-color: #1f2937; border-radius: 8px; border: 1px solid #374151; padding: 1.5rem;">
+        <h3 style="color: #fb923c; margin-bottom: 1.5rem;">🏪 Cài Đặt Cửa Hàng</h3>
+        
+        <div style="margin-bottom: 1.5rem;">
+            <label style="display: block; color: #fb923c; margin-bottom: 0.5rem;">Tên Cửa Hàng</label>
+            <input type="text" value="BubbleBakery" style="width: 100%; padding: 10px; background-color: #111827; border: 1px solid #374151; border-radius: 6px; color: #fff;">
+        </div>
+
+        <div style="margin-bottom: 1.5rem;">
+            <label style="display: block; color: #fb923c; margin-bottom: 0.5rem;">Email Liên Hệ</label>
+            <input type="email" value="contact@bubblebakery.vn" style="width: 100%; padding: 10px; background-color: #111827; border: 1px solid #374151; border-radius: 6px; color: #fff;">
+        </div>
+
+        <div style="margin-bottom: 1.5rem;">
+            <label style="display: block; color: #fb923c; margin-bottom: 0.5rem;">Số Điện Thoại</label>
+            <input type="tel" value="+84 (0) 123 456 789" style="width: 100%; padding: 10px; background-color: #111827; border: 1px solid #374151; border-radius: 6px; color: #fff;">
+        </div>
+
+        <div style="margin-bottom: 1.5rem;">
+            <label style="display: block; color: #fb923c; margin-bottom: 0.5rem;">Địa Chỉ</label>
+            <input type="text" value="123 Đường Bánh Tươi, Quận 1, TP.HCM" style="width: 100%; padding: 10px; background-color: #111827; border: 1px solid #374151; border-radius: 6px; color: #fff;">
+        </div>
+
+        <button class="admin-btn" style="width: 100%;">💾 Lưu Thay Đổi</button>
+    </div>
+
+    <!-- Delivery Settings -->
+    <div style="background-color: #1f2937; border-radius: 8px; border: 1px solid #374151; padding: 1.5rem;">
+        <h3 style="color: #fb923c; margin-bottom: 1.5rem;">🚚 Cài Đặt Giao Hàng</h3>
+        
+        <div style="margin-bottom: 1.5rem;">
+            <label style="display: block; color: #fb923c; margin-bottom: 0.5rem;">Phí Giao Hàng Cơ Bản</label>
+            <input type="number" value="20000" style="width: 100%; padding: 10px; background-color: #111827; border: 1px solid #374151; border-radius: 6px; color: #fff;">
+            <small style="color: #9ca3af;">VND</small>
+        </div>
+
+        <div style="margin-bottom: 1.5rem;">
+            <label style="display: block; color: #fb923c; margin-bottom: 0.5rem;">Miễn Phí Giao Hàng Từ</label>
+            <input type="number" value="50000" style="width: 100%; padding: 10px; background-color: #111827; border: 1px solid #374151; border-radius: 6px; color: #fff;">
+            <small style="color: #9ca3af;">VND</small>
+        </div>
+
+        <div style="margin-bottom: 1.5rem;">
+            <label style="display: block; color: #fb923c; margin-bottom: 0.5rem;">Thời Gian Giao Hàng Dự Kiến</label>
+            <input type="text" value="24 giờ" style="width: 100%; padding: 10px; background-color: #111827; border: 1px solid #374151; border-radius: 6px; color: #fff;">
+        </div>
+
+        <div style="margin-bottom: 1.5rem;">
+            <label style="display: block; color: #fb923c; margin-bottom: 0.75rem;">
+                <input type="checkbox" checked> Cho phép giao hàng cùng ngày
+            </label>
+        </div>
+
+        <button class="admin-btn" style="width: 100%;">💾 Lưu Thay Đổi</button>
+    </div>
+</div>
+
+<!-- Payment Settings -->
+<div style="background-color: #1f2937; border-radius: 8px; border: 1px solid #374151; padding: 1.5rem; margin-top: 2rem;">
+    <h3 style="color: #fb923c; margin-bottom: 1.5rem;">💳 Cài Đặt Thanh Toán</h3>
+    
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem;">
+        <div>
+            <label style="display: flex; align-items: center; gap: 0.5rem;">
+                <input type="checkbox" checked>
+                <span style="color: #d1d5db;">💵 Thanh Toán Khi Nhận</span>
+            </label>
+        </div>
+        <div>
+            <label style="display: flex; align-items: center; gap: 0.5rem;">
+                <input type="checkbox" checked>
+                <span style="color: #d1d5db;">💳 Thẻ Tín Dụng</span>
+            </label>
+        </div>
+        <div>
+            <label style="display: flex; align-items: center; gap: 0.5rem;">
+                <input type="checkbox" checked>
+                <span style="color: #d1d5db;">🏦 Chuyển Khoản Ngân Hàng</span>
+            </label>
+        </div>
+        <div>
+            <label style="display: flex; align-items: center; gap: 0.5rem;">
+                <input type="checkbox">
+                <span style="color: #d1d5db;">💰 Ví Điện Tử</span>
+            </label>
+        </div>
+    </div>
+
+    <button class="admin-btn" style="width: 100%; margin-top: 1.5rem;">💾 Lưu Thay Đổi</button>
+</div>
+{% endblock %}

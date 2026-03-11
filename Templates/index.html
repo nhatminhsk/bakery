@@ -6,16 +6,17 @@
 <div class="home-section" id="home">
       <div class="home-content">
         <h1 style="color: #edf2f7">
-          Dibuat dengan Cinta,<br />
-          Dinikmati dengan <br />Rasa
+          Được làm bằng cả tình yêu,<br />
+          thưởng thức bằng cả
+          trái tim <br />
         </h1>
-        <p>Terbuat dari Bahan Alami & Premium, untuk Rasa yang Autentik</p>
+        <p>Được làm từ các nguyên liệu tự nhiên và cao cấp, cho hương vị đích thực</p>
         <div class="home-links">
           <div class="first">
             <a
               href="#"
               onclick="scrollToSection(event, 'products', 'product-nav')"
-              >Beli Sekarang</a
+              >Mua Ngay</a
             >
           </div>
         </div>
@@ -23,76 +24,84 @@
     </div>
     <div class="bg-shop" id="products">
       <div class="shop-links">
-        <div><h2>Daftar Produk</h2></div>
-        <div class="links">
-          <li
-            class="active link-menu"
-            onclick="setActive(this)"
-            data-filter="all"
-          >
-            Semua
-          </li>
-          <li
-            class="link-menu"
-            data-filter=".roti-bagel"
-            onclick="setActive(this)"
-          >
-            Bagel
-          </li>
-          <li
-            class="link-menu"
-            data-filter=".sandwich"
-            onclick="setActive(this)"
-          >
-            Sandwich
-          </li>
-          <li
-            class="link-menu"
-            data-filter=".focaccia"
-            onclick="setActive(this)"
-          >
-            Focaccia
-          </li>
-        </div>
+        <div><h2>Danh sách sản phẩm</h2></div>
+        <div class="categories-list">
+    <a href="/products" class="category-badge {% if not selected_category %}active{% endif %}">Tất Cả</a>
+    {% for category in categories %}
+    <a href="/products?category={{ category.name }}" 
+       class="category-badge {% if selected_category == category.name %}active{% endif %}">
+        {{ category.name }}
+    </a>
+    {% endfor %}
+</div>
       </div>
-      <div class="shop-flex consts">
-        {% for product in recommended_products %}
-        <div class="shop1 mix {{ product.category}}">
-          <div class="shop-image">
-            <img src="{{ product.image }}" alt="{{ product.name }}" />
-          </div>
-          <h2 class="product-name">{{ product.name }}</h2>
-          <div class="d-flex justify-content-between">
-            <article class="product-price">{{ "{:,.0f}".format(product.price) }}₫</article>
-            <div
-              class="d-flex mb-3 align-items-center gap-1 justify-content-center"
-            >
-              <div class="stars mb-0 d-flex align-items-center gap-1">
-                <i class="fas fa-star gold"></i>
-                <i class="fas fa-star gold"></i>
-                <i class="fas fa-star gold"></i>
-                <i class="fas fa-star gold"></i>
-                <i class="fas fa-star gold"></i>
-              </div>
-              <div class="product-rating" style="font-size: 12px">{{ product.rating }}</div>
-            </div>
-          </div>
-          <button
-            type="button"
-            class="btn btn-custom w-100"
-            
-          >
-            <i class="fa-solid fa-cart-shopping"></i>&ensp;Mua ngay
-          </button>
-          {% endfor %}
+      <form class="search-header" method="GET" action="{{ url_for('search') }}">
+                <input
+                    type="text"
+                    name="q"
+                    placeholder="Tìm kiếm..."
+                    value="{{ request.args.get('q', '') }}"
+                >
+                <button type="submit" class="search-btn">Search</button>
+    </form>
+      <div class="filters-section">
+       <div class="filter-group">
+        <label for="sort">Sắp Xếp Theo</label>
+        <select id="sort" onchange="sortProducts()">
+            <option value="newest">Mới Nhất</option>
+            <option value="price-low">Giá Thấp Xuống Cao</option>
+            <option value="price-high">Giá Cao Xuống Thấp</option>
+            <option value="rating">Xếp Hạng</option>
+        </select>
+       </div>
+      </div>
+      <div class="shop-flex consts" id="products-grid">
+    {% for product in products %}
+    <div class="shop1 product-card mix {{ product['category']| replace(' ', '-') }}" 
+     data-price="{{ product['price'] }}" 
+     data-rating="{{ product['rating'] }}"
+     data-date="{{ product['date'] }}">
+    
+    <div class="shop-image">
+        <img src="{{ url_for('static', filename=product['image'].replace('static/', '')) }}" alt="{{ product['name'] }}" />
+        
+        <div class="stock-badge {% if product['inStock'] == 0 %}out{% endif %}">
+            {% if product['inStock'] == 1 %}
+                Còn hàng
+            {% else %}
+                Hết hàng
+            {% endif %}
         </div>
+    </div>
+
+    <h2 class="product-name">{{ product['name'] }}</h2>
+
+    <div class="product-info-row d-flex justify-content-between align-items-center">
+        <div class="price-box">
+            <article class="product-price">{{ "{:,.0f}".format(product['price']) }}₫</article>
+        </div>
+        <div class="stars">
+            <i class="fas fa-star gold"></i>
+            <span style="color: #edf2f7; font-size: 12px;">{{ product['rating'] }}</span>
+        </div>
+    </div>
+
+    <button type="button" 
+        class="btn btn-custom w-100 mt-2" 
+        onclick="addToCart({{ product.id }})" 
+        {% if product.inStock == 0 %}disabled{% endif %}>
+      <i class="fa-solid fa-cart-shopping"></i>&ensp;Mua ngay
+    </button>
+    </div>
+    {% endfor %}
+</div>
        
         
     </div>
     <div class="bg-menu" id="menu">
       <div class="menu-title">
-        <section>Pricelist</section>
-        <h2>Daftar Coffee</h2>
+        <section>Bảng giá</section>
+        <h2>DANH SÁCH CÀ PHÊ</h2>
         <hr />
       </div>
       <div class="menu-flex">
@@ -102,7 +111,7 @@
           </div>
           <div><h4>Chocolate Espresso</h4></div>
           <div class="line"></div>
-          <div><h4>Rp 15.000</h4></div>
+          <div><h4>50.000</h4></div>
         </div>
         <div class="menu1">
           <div class="small-image">
@@ -110,7 +119,7 @@
           </div>
           <div><h4>Cappucino</h4></div>
           <div class="line"></div>
-          <div><h4>Rp 14.000</h4></div>
+          <div><h4>55.000</h4></div>
         </div>
         <div class="menu1">
           <div class="small-image">
@@ -118,7 +127,7 @@
           </div>
           <div><h4>Coffe Latte</h4></div>
           <div class="line"></div>
-          <div><h4>Rp 14.000</h4></div>
+          <div><h4>45.000</h4></div>
         </div>
         <div class="menu1">
           <div class="small-image">
@@ -126,7 +135,7 @@
           </div>
           <div><h4>Espresso Susu</h4></div>
           <div class="line"></div>
-          <div><h4>Rp 12.000</h4></div>
+          <div><h4>50.000</h4></div>
         </div>
         <div class="menu1">
           <div class="small-image">
@@ -134,7 +143,7 @@
           </div>
           <div><h4>Kopi Susu Vanilla</h4></div>
           <div class="line"></div>
-          <div><h4>Rp 13.000</h4></div>
+          <div><h4>55.000</h4></div>
         </div>
         <div class="menu1">
           <div class="small-image">
@@ -142,7 +151,7 @@
           </div>
           <div><h4>Kopi Susu Caramel</h4></div>
           <div class="line"></div>
-          <div><h4>Rp 13.000</h4></div>
+          <div><h4>55.000</h4></div>
         </div>
         <div class="menu1">
           <div class="small-image">
@@ -150,7 +159,7 @@
           </div>
           <div><h4>Americano</h4></div>
           <div class="line"></div>
-          <div><h4>Rp 12.000</h4></div>
+          <div><h4>50.000</h4></div>
         </div>
         <div class="menu1">
           <div class="small-image">
@@ -158,7 +167,7 @@
           </div>
           <div><h4>Vanilla Latte</h4></div>
           <div class="line"></div>
-          <div><h4>Rp 12.000</h4></div>
+          <div><h4>45.000</h4></div>
         </div>
       </div>
     </div>

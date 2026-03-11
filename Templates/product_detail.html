@@ -1,0 +1,359 @@
+{% extends "base.html" %}
+
+{% block title %}{{ product.name }} - BubbleBakery{% endblock %}
+
+{% block extra_css %}
+<style>
+    .product-detail-container {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 3rem;
+        margin-bottom: 4rem;
+    }
+
+    .product-image-large {
+        width: 100%;
+        height: 500px;
+        object-fit: cover;
+        border-radius: 12px;
+    }
+
+    .product-info {
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+    }
+
+    .product-title {
+        font-size: 2.5rem;
+        color: #fb923c;
+        margin-bottom: 1rem;
+    }
+
+    .product-rating {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .stars {
+        font-size: 1.5rem;
+    }
+
+    .product-price {
+        font-size: 2rem;
+        font-weight: bold;
+        color: #fb923c;
+        margin: 2rem 0;
+    }
+
+    .product-description {
+        color: #d1d5db;
+        margin-bottom: 2rem;
+        line-height: 1.8;
+    }
+
+    .product-specs {
+        background-color: #1f2937;
+        padding: 1.5rem;
+        border-radius: 8px;
+        margin-bottom: 2rem;
+    }
+
+    .spec-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid #374151;
+    }
+
+    .spec-item:last-child {
+        border-bottom: none;
+    }
+
+    .spec-label {
+        color: #9ca3af;
+    }
+
+    .spec-value {
+        color: #fb923c;
+        font-weight: 600;
+    }
+
+    .quantity-selector {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .quantity-btn {
+        width: 40px;
+        height: 40px;
+        border: 1px solid #374151;
+        background-color: #1f2937;
+        color: #fb923c;
+        cursor: pointer;
+        border-radius: 6px;
+        font-weight: bold;
+        transition: all 0.3s;
+    }
+
+    .quantity-btn:hover {
+        background-color: #374151;
+    }
+
+    .quantity-input {
+        width: 80px;
+        text-align: center;
+        padding: 10px;
+        background-color: #1f2937;
+        border: 1px solid #374151;
+        color: #fff;
+        border-radius: 6px;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .btn-large {
+        flex: 1;
+        padding: 15px 30px;
+        border: none;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+    .btn-buy {
+        background-color: #fb923c;
+        color: #fff;
+    }
+
+    .btn-buy:hover {
+        background-color: #ea580c;
+    }
+
+    .btn-wishlist {
+        background-color: #374151;
+        color: #fb923c;
+    }
+
+    .btn-wishlist:hover {
+        background-color: #4b5563;
+    }
+
+    .related-products {
+        margin-top: 4rem;
+        padding-top: 3rem;
+        border-top: 1px solid #374151;
+    }
+
+    .section-title {
+        font-size: 2rem;
+        color: #fb923c;
+        margin-bottom: 2rem;
+    }
+
+    .related-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 2rem;
+    }
+
+    .related-card {
+        background-color: #1f2937;
+        border-radius: 8px;
+        overflow: hidden;
+        border: 1px solid #374151;
+    }
+
+    .related-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 40px rgba(251, 146, 60, 0.15);
+    }
+
+    .related-image {
+        width: 100%;
+        height: 180px;
+        object-fit: cover;
+    }
+
+    .related-info {
+        padding: 1rem;
+    }
+
+    .related-name {
+        color: #fb923c;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+
+    .related-price {
+        color: #fb923c;
+        font-weight: bold;
+        margin-bottom: 1rem;
+    }
+
+    @media (max-width: 768px) {
+        .product-detail-container {
+            grid-template-columns: 1fr;
+        }
+
+        .product-title {
+            font-size: 1.75rem;
+        }
+
+        .action-buttons {
+            flex-direction: column;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Breadcrumb -->
+<div style="margin-bottom: 2rem; color: #9ca3af;">
+    <a href="/" style="color: #fb923c; text-decoration: none;">Trang Chủ</a>
+    <span> / </span>
+    <a href="/index" style="color: #fb923c; text-decoration: none;">Sản Phẩm</a>
+    <span> / {{ product.name }}</span>
+</div>
+
+<!-- Product Detail -->
+<div class="product-detail-container">
+    <div>
+        <img src="{{ product.image }}" alt="{{ product.name }}" class="product-image-large">
+    </div>
+    <div class="product-info">
+        <h1 class="product-title">{{ product.name }}</h1>
+        
+        <div class="product-rating">
+            <span class="stars">⭐ {{ product.rating }} / 5.0</span>
+            <span style="color: #9ca3af;">({{ product.reviewCount }} đánh giá)</span>
+        </div>
+
+        <div class="product-price">₫{{ "{:,}".format(product.price) }}</div>
+
+        <p class="product-description">
+            {{ product.description }}
+        </p>
+
+        <div class="product-specs">
+            <div class="spec-item">
+                <span class="spec-label">Danh Mục</span>
+                <span class="spec-value">{{ product.category }}</span>
+            </div>
+            <div class="spec-item">
+                <span class="spec-label">Tình Trạng</span>
+                <span class="spec-value">{% if product.inStock %}Còn Hàng{% else %}Hết Hàng{% endif %}</span>
+            </div>
+            <div class="spec-item">
+                <span class="spec-label">Giao Hàng</span>
+                <span class="spec-value">Miễn Phí (Từ 50k)</span>
+            </div>
+        </div>
+
+        <div class="quantity-selector">
+            <button class="quantity-btn" onclick="decreaseQuantity()">−</button>
+            <input type="number" id="quantity" class="quantity-input" value="1" min="1" max="10">
+            <button class="quantity-btn" onclick="increaseQuantity()">+</button>
+        </div>
+
+        <div class="action-buttons">
+            <button class="btn-large btn-buy" onclick="addToCart({{ product.id }})">
+                🛒 Thêm Vào Giỏ
+            </button>
+            <button class="btn-large btn-wishlist">
+                ❤️ Thêm Vào Yêu Thích
+            </button>
+        </div>
+
+        <div style="background-color: #1f2937; padding: 1.5rem; border-radius: 8px;">
+            <h3 style="color: #fb923c; margin-bottom: 1rem;">📦 Thông Tin Giao Hàng</h3>
+            <ul style="list-style: none; color: #d1d5db;">
+                <li style="margin-bottom: 0.5rem;">✓ Giao hàng nhanh trong vòng 24h</li>
+                <li style="margin-bottom: 0.5rem;">✓ Đóng gói an toàn, tươi mới</li>
+                <li style="margin-bottom: 0.5rem;">✓ Hỗ trợ khách hàng 24/7</li>
+                <li>✓ Chính sách hoàn tiền 100%</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<!-- Related Products -->
+{% if related_products %}
+<div class="related-products">
+    <h2 class="section-title">Sản Phẩm Liên Quan</h2>
+    <div class="related-grid">
+        {% for related in related_products %}
+        <a href="/product/{{ related.id }}" style="text-decoration: none; color: inherit;">
+            <div class="related-card">
+                <img src="{{ related.image }}" alt="{{ related.name }}" class="related-image">
+                <div class="related-info">
+                    <div class="related-name">{{ related.name }}</div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                        <span style="color: #fbbf24;">⭐ {{ related.rating }}</span>
+                        <span style="color: #9ca3af;">({{ related.reviewCount }})</span>
+                    </div>
+                    <div class="related-price">₫{{ "{:,}".format(related.price) }}</div>
+                    <button class="btn-add" onclick="event.preventDefault(); addToCart({{ related.id }});" style="width: 100%; border: none; padding: 8px; background-color: #fb923c; color: white; border-radius: 6px; cursor: pointer;">
+                        🛒 Thêm
+                    </button>
+                </div>
+            </div>
+        </a>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function increaseQuantity() {
+        const input = document.getElementById('quantity');
+        input.value = parseInt(input.value) + 1;
+    }
+
+    function decreaseQuantity() {
+        const input = document.getElementById('quantity');
+        if (parseInt(input.value) > 1) {
+            input.value = parseInt(input.value) - 1;
+        }
+    }
+
+    function addToCart(productId) {
+        const quantity = parseInt(document.getElementById('quantity').value);
+        fetch('/api/cart/add', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                product_id: productId,
+                quantity: quantity
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Đã thêm ' + quantity + ' sản phẩm vào giỏ hàng!');
+                updateCartCount();
+            }
+        });
+    }
+
+    function updateCartCount() {
+        const cartCount = document.getElementById('cart-count');
+        const current = parseInt(cartCount.textContent) || 0;
+        cartCount.textContent = current + 1;
+    }
+</script>
+{% endblock %}

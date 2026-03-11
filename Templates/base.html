@@ -57,15 +57,6 @@
               &nbsp;BubbleBakery
           </h3>
         </div>
-        <form class="search-header" method="GET" action="{{ url_for('index') }}">
-                <input
-                    type="text"
-                    name="search"
-                    placeholder="Tìm kiếm..."
-                    value="{{ request.args.get('search', '') }}"
-                >
-                <button type="submit" class="search-btn">Search</button>
-            </form>
         <nav class="navigation">
           <h3 class="pb-2 brand d-none" onclick="window.location.href=''">
             <i class="fa-solid fa-burger fa-bounce" style="color: #c7a17a"></i
@@ -101,6 +92,7 @@
               id="order-nav"
               ><i class="fa-solid fa-cart-shopping"></i>&ensp;Cart</a
             >
+             <span class="cart-count" id="cart-count">{{ cart_count | default(0) }}</span>
           </li>
           {% if session.user_id %}
           <li>
