@@ -82,3 +82,87 @@
     {% endif %}
 </div>
 {% endblock %}
+{% extends "base.html" %}
+
+{% block title %}Kết quả tìm kiếm - BubbleBakery{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/search.css') }}">
+<script src="{{ url_for('static', filename='js/search.js') }}"></script>
+
+<div class="search-section">
+    <div class="search-header-content">
+        <h2>Kết quả tìm kiếm</h2>
+        {% if query %}
+            <p class="search-query">Từ khóa: <strong>"{{ query }}"</strong></p>
+        {% endif %}
+    </div>
+
+    {% if results %}
+        <div class="search-results">
+            <p class="result-count">Tìm thấy <strong>{{ results|length }}</strong> sản phẩm</p>
+
+            <div class="products-grid">
+                {% for product in results %}
+                <div class="product-card" data-product-id="{{ product.id }}">
+                    <div class="product-image">
+                        {% if product.image %}
+                            <img src="{{ product.image }}" alt="{{ product.name }}" />
+                        {% else %}
+                            <div class="no-image">Không có hình</div>
+                        {% endif %}
+                    </div>
+                    <div class="product-info">
+                        <h3 class="product-name">{{ product.name }}</h3>
+                        {% if product.description %}
+                            <p class="product-description">{{ product.description[:100] }}...</p>
+                        {% endif %}
+                        <div class="product-details">
+                            <span class="product-price">
+                                {% if product.price %}
+                                    {{ "{:,.0f}".format(product.price) }}₫
+                                {% endif %}
+                            </span>
+                            {% if product.rating %}
+                            <div class="product-rating">
+                                <div class="stars">
+                                    {% for i in range(5) %}
+                                        {% if i < product.rating %}
+                                            <i class="fas fa-star gold"></i>
+                                        {% else %}
+                                            <i class="fas fa-star-o"></i>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                                <span class="rating-value">{{ product.rating }}/5</span>
+                            </div>
+                            {% endif %}
+                        </div>
+                        <button type="button" class="btn btn-custom w-100 mt-3" data-product-name="{{ product.name }}">
+                            <i class="fa-solid fa-cart-shopping"></i>&ensp;Mua ngay
+                        </button>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% else %}
+        <div class="no-results">
+            {% if query %}
+                <div class="empty-state">
+                    <i class="fas fa-search" style="font-size: 3rem; color: #ccc; margin-bottom: 1rem;"></i>
+                    <h3>Không tìm thấy kết quả</h3>
+                    <p>Không có sản phẩm nào khớp với "<strong>{{ query }}</strong>"</p>
+                    <p class="suggestion">Vui lòng thử tìm kiếm với từ khóa khác hoặc quay lại <a href="{{ url_for('index') }}">trang chủ</a></p>
+                </div>
+            {% else %}
+                <div class="empty-state">
+                    <i class="fas fa-search" style="font-size: 3rem; color: #ccc; margin-bottom: 1rem;"></i>
+                    <h3>Vui lòng nhập từ khóa tìm kiếm</h3>
+                    <p>Sử dụng ô tìm kiếm ở trên để tìm sản phẩm bạn muốn</p>
+                </div>
+            {% endif %}
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
