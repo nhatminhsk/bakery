@@ -1,0 +1,335 @@
+{% extends "base.html" %}
+
+{% block title %}Thanh Toán - BubbleBakery{% endblock %}
+
+{% block extra_css %}
+<style>
+    .checkout-container {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 2rem;
+        max-width: 1000px;
+        margin: 0 auto;
+    }
+
+    .checkout-form {
+        background-color: #1f2937;
+        border-radius: 8px;
+        border: 1px solid #374151;
+        padding: 2rem;
+    }
+
+    .section-title {
+        font-size: 1.5rem;
+        color: #fb923c;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid #374151;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+    }
+
+    label {
+        display: block;
+        margin-bottom: 0.5rem;
+        color: #fb923c;
+        font-weight: 500;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="tel"],
+    select,
+    textarea {
+        width: 100%;
+        padding: 12px;
+        background-color: #111827;
+        border: 1px solid #374151;
+        border-radius: 6px;
+        color: #fff;
+        font-size: 1rem;
+        transition: border-color 0.3s;
+    }
+
+    input[type="text"]:focus,
+    input[type="email"]:focus,
+    input[type="tel"]:focus,
+    select:focus,
+    textarea:focus {
+        outline: none;
+        border-color: #fb923c;
+    }
+
+    textarea {
+        resize: vertical;
+        min-height: 100px;
+    }
+
+    .payment-methods {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        margin-top: 1rem;
+    }
+
+    .payment-method {
+        padding: 1rem;
+        background-color: #111827;
+        border: 2px solid #374151;
+        border-radius: 6px;
+        cursor: pointer;
+        text-align: center;
+        transition: all 0.3s;
+    }
+
+    .payment-method:hover {
+        border-color: #fb923c;
+    }
+
+    .payment-method input[type="radio"] {
+        margin-right: 0.5rem;
+    }
+
+    .order-summary {
+        background-color: #1f2937;
+        border-radius: 8px;
+        border: 1px solid #374151;
+        padding: 2rem;
+        height: fit-content;
+        position: sticky;
+        top: 100px;
+    }
+
+    .summary-items {
+        margin-bottom: 1.5rem;
+    }
+
+    .summary-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid #374151;
+        color: #d1d5db;
+    }
+
+    .summary-item:last-child {
+        border-bottom: none;
+    }
+
+    .summary-total {
+        display: flex;
+        justify-content: space-between;
+        padding: 1rem 0;
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #fb923c;
+        padding-top: 1rem;
+        border-top: 2px solid #374151;
+        margin-top: 1rem;
+    }
+
+    .place-order-btn {
+        width: 100%;
+        padding: 15px;
+        background-color: #fb923c;
+        color: #fff;
+        border: none;
+        border-radius: 6px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        margin-top: 1.5rem;
+        transition: all 0.3s;
+    }
+
+    .place-order-btn:hover {
+        background-color: #ea580c;
+    }
+
+    @media (max-width: 768px) {
+        .checkout-container {
+            grid-template-columns: 1fr;
+        }
+
+        .order-summary {
+            position: static;
+        }
+
+        .form-row {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<h1 style="font-size: 2.5rem; color: #fb923c; margin-bottom: 2rem;">💳 Thanh Toán</h1>
+
+<div class="checkout-container">
+    <!-- Checkout Form -->
+    <form class="checkout-form" onsubmit="handleCheckout(event)">
+        <!-- Personal Info -->
+        <h2 class="section-title">Thông Tin Cá Nhân</h2>
+        <div class="form-row">
+            <div class="form-group">
+                <label for="firstName">Tên</label>
+                <input type="text" id="firstName" name="firstName" required>
+            </div>
+            <div class="form-group">
+                <label for="lastName">Họ</label>
+                <input type="text" id="lastName" name="lastName" required>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" required>
+        </div>
+
+        <div class="form-group">
+            <label for="phone">Số Điện Thoại</label>
+            <input type="tel" id="phone" name="phone" required>
+        </div>
+
+        <!-- Shipping Address -->
+        <h2 class="section-title">Địa Chỉ Giao Hàng</h2>
+        <div class="form-group">
+            <label for="address">Địa Chỉ</label>
+            <input type="text" id="address" name="address" required>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="city">Thành Phố</label>
+                <input type="text" id="city" name="city" required>
+            </div>
+            <div class="form-group">
+                <label for="district">Quận/Huyện</label>
+                <input type="text" id="district" name="district" required>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="zipcode">Mã Bưu Điện</label>
+            <input type="text" id="zipcode" name="zipcode" required>
+        </div>
+
+        <!-- Payment Method -->
+        <h2 class="section-title">Phương Thức Thanh Toán</h2>
+        <div class="payment-methods">
+            <label class="payment-method">
+                <input type="radio" name="payment" value="cod" checked>
+                <span>💵 Thanh Toán Khi Nhận</span>
+            </label>
+            <label class="payment-method">
+                <input type="radio" name="payment" value="card">
+                <span>💳 Thẻ Tín Dụng</span>
+            </label>
+            <label class="payment-method">
+                <input type="radio" name="payment" value="bank">
+                <span>🏦 Chuyển Khoản</span>
+            </label>
+            <label class="payment-method">
+                <input type="radio" name="payment" value="wallet">
+                <span>💰 Ví Điện Tử</span>
+            </label>
+        </div>
+
+        <!-- Notes -->
+        <h2 class="section-title">Ghi Chú Đơn Hàng</h2>
+        <div class="form-group">
+            <label for="notes">Ghi chú (tùy chọn)</label>
+            <textarea id="notes" name="notes" placeholder="Thêm ghi chú cho đơn hàng của bạn..."></textarea>
+        </div>
+
+        <button type="submit" class="place-order-btn">Đặt Hàng Ngay</button>
+    </form>
+
+    <!-- Order Summary -->
+    <div class="order-summary">
+        <h3 style="color: #fb923c; margin-bottom: 1rem;">📦 Tóm Tắt Đơn Hàng</h3>
+        
+        <div class="summary-items">
+            {% for item in cart_items %}
+            <div class="summary-item">
+                <span>{{ item.name }} x {{ item.quantity }}</span>
+                <span>₫{{ "{:,}".format(item.price * item.quantity) }}</span>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="summary-item" style="padding: 1rem 0; border-bottom: none;">
+            <span>Tạm tính:</span>
+            <span>₫{{ "{:,}".format(total) }}</span>
+        </div>
+        
+        <div class="summary-item" style="padding: 1rem 0; border-bottom: none;">
+            <span>Vận chuyển:</span>
+            <span {% if total >= 50000 %}style="color: #22c55e;"{% endif %}>
+                {% if total >= 50000 %}Miễn phí{% else %}₫20,000{% endif %}
+            </span>
+        </div>
+
+        <div class="summary-total">
+            <span>Tổng:</span>
+            <span>₫{{ "{:,}".format(total + (0 if total >= 50000 else 20000)) }}</span>
+        </div>
+
+        <div style="background-color: #111827; padding: 1rem; border-radius: 6px; margin-top: 1.5rem; color: #9ca3af; font-size: 0.875rem;">
+            <p>✓ Giao hàng nhanh chóng</p>
+            <p>✓ Sản phẩm tươi mới</p>
+            <p>✓ Hoàn tiền 100%</p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function handleCheckout(event) {
+        event.preventDefault();
+        
+        const formData = {
+            firstName: document.getElementById('firstName').value,
+            lastName: document.getElementById('lastName').value,
+            email: document.getElementById('email').value,
+            phone: document.getElementById('phone').value,
+            address: document.getElementById('address').value,
+            city: document.getElementById('city').value,
+            district: document.getElementById('district').value,
+            zipcode: document.getElementById('zipcode').value,
+            payment: document.querySelector('input[name="payment"]:checked').value,
+            notes: document.getElementById('notes').value
+        };
+
+        fetch('/api/checkout', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(formData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('✓ Đặt hàng thành công! Mã đơn hàng: ' + data.order_id);
+                window.location.href = '/';
+            } else {
+                alert('❌ Có lỗi xảy ra. Vui lòng thử lại!');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('❌ Có lỗi xảy ra. Vui lòng thử lại!');
+        });
+    }
+</script>
+{% endblock %}
