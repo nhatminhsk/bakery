@@ -54,7 +54,7 @@
           <h3>
             <i class="fa-solid fa-burger fa-bounce" style="color: #c7a17a"></i
             >
-            <a href="{{ url_for('index') }}" style="color: white; text-decoration: none;">
+            <a href="{{ url_for('products.index') }}" style="color: white; text-decoration: none;">
               &nbsp;BubbleBakery
             </a>
           </h3>
@@ -67,14 +67,14 @@
           <li>
             <a
               class="active"
-              href="{{ url_for('index') }}"
+              href="{{ url_for('products.index') }}"
               id="home-nav"
               ><i class="fa-solid fa-house"></i>&ensp;Home</a
             >
           </li>
           <li>
             <a
-              href="{{ url_for('index') }}#products"
+              href="{{ url_for('products.index') }}#products"
               id="product-nav"
               onclick="handleNavClick(event, 'products', 'product-nav')"
               ><i class="fa-solid fa-bread-slice"></i>&ensp;Products</a
@@ -82,7 +82,7 @@
           </li>
           <li>
             <a
-              href="{{ url_for('index') }}#about"
+              href="{{ url_for('products.index') }}#about"
               id="about-us"
               onclick="handleNavClick(event, 'about', 'about-us')"
               ><i class="fa-solid fa-users"></i>&ensp;About Us</a
@@ -90,7 +90,7 @@
           </li>
           <li>
             <a
-              href="{{ url_for('cart') }}"
+              href="{{ url_for('cart.cart') }}"
               id="order-nav"
               ><i class="fa-solid fa-cart-shopping"></i>&ensp;Cart</a
             >
@@ -99,7 +99,7 @@
           {% if session.user_id %}
           <li>
             <a
-              href="{{ url_for('logout') }}"
+              href="{{ url_for('auth.logout') }}"
               id="user-nav"
               ><i class="fa-solid fa-user-gear"></i>&ensp;User</a
             >
@@ -107,7 +107,7 @@
           {% else %}
           <li>
             <a
-              href="{{ url_for('login') }}"
+              href="{{ url_for('auth.login') }}"
               id="login-nav"
               ><i class="fa-solid fa-user-gear"></i>&ensp;Login</a
             >
