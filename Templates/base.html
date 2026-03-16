@@ -96,14 +96,19 @@
             >
              <span class="cart-count" id="cart-count">{{ cart_count | default(0) }}</span>
           </li>
-          {% if session.user_id %}
-          <li>
-            <a
-              href="{{ url_for('auth.logout') }}"
-              id="user-nav"
-              ><i class="fa-solid fa-user-gear"></i>&ensp;User</a
-            >
-          </li>
+          {% if current_user.is_authenticated %}
+            <li>
+              <div class="user-dropdown-container">
+                <div class="user-trigger">
+                   <span class="username">👤 {{ current_user.username }}</span>
+                </div>
+
+                <div class="dropdown-menu">
+                   <a href="{{ url_for('auth.account') }}">Tài Khoản Của Tôi</a>
+                   <a href="{{ url_for('auth.logout') }}">Đăng Xuất</a>
+                </div>
+              </div>
+            </li>
           {% else %}
           <li>
             <a

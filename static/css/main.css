@@ -300,3 +300,55 @@ header nav a.active {
             font-size: 10px;
             font-weight: bold;
         }
+/* Container chứa cả tên và menu */
+.user-dropdown-container {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+    padding-bottom: 10px;
+}
+
+/* Kiểu dáng cho menu thả xuống */
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background-color: white;
+    min-width: 180px;
+    box-shadow: 0px 4px 12px rgba(0,0,0,0.15);
+    border-radius: 2px;
+    z-index: 100;
+}
+
+/* HIỂN THỊ MENU KHI DI CHUỘT VÀO CONTAINER */
+.user-dropdown-container:hover .dropdown-menu {
+    display: block;
+}
+
+/* CSS cho các đường link bên trong menu */
+.dropdown-menu a {
+    color: #333;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    font-family: sans-serif;
+    font-size: 14px;
+}
+
+/* Đổi màu nền và chữ khi hover vào từng link */
+.dropdown-menu a:hover {
+    background-color: #fafafa;
+    color: #ee4d2d;
+}
+
+/* TẠO HÌNH TAM GIÁC (MŨI TÊN) CHỈ LÊN TRÊN MENU */
+.dropdown-menu::before {
+    content: "";
+    position: absolute;
+    top: -16px;
+    right: 20px;
+    border-width: 8px;
+    border-style: solid;
+    border-color: transparent transparent white transparent;
+}
