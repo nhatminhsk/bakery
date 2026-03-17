@@ -285,22 +285,29 @@ header nav a.active {
   }
 }
 /* ---cart--- */
+/* Tạo mốc định vị ôm sát khít chiếc xe đẩy */
+.cart-wrapper {
+    position: relative;
+    display: inline-block; 
+}
+
+/* Căn chỉnh số đếm bám vào góc phải của xe đẩy */
 .cart-count {
-            position: absolute;
-            top: -8px;
-            right: 28px;
-            background-color: #dc2626;
-            color: #fff;
-            width: 11px;
-            height: 12px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 10px;
-            font-weight: bold;
-            z-index: 10;
-        }
+    position: absolute;
+    top: -8px;       
+    right: -10px;     
+    background-color: #dc2626;
+    color: #fff;
+    width: 15px;      
+    height: 15px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: bold;
+    z-index: 10;
+}
 /* Container chứa cả tên và menu */
 .user-dropdown-container {
     position: relative;

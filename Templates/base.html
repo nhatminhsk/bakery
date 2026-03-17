@@ -69,7 +69,7 @@
               class="active"
               href="{{ url_for('products.index') }}"
               id="home-nav"
-              ><i class="fa-solid fa-house"></i>&ensp;Home</a
+              ><i class="fa-solid fa-house"></i>&ensp;Trang chủ</a
             >
           </li>
           <li>
@@ -77,7 +77,7 @@
               href="{{ url_for('products.index') }}#products"
               id="product-nav"
               onclick="handleNavClick(event, 'products', 'product-nav')"
-              ><i class="fa-solid fa-bread-slice"></i>&ensp;Products</a
+              ><i class="fa-solid fa-bread-slice"></i>&ensp;Sản phẩm</a
             >
           </li>
           <li>
@@ -85,17 +85,17 @@
               href="{{ url_for('products.index') }}#about"
               id="about-us"
               onclick="handleNavClick(event, 'about', 'about-us')"
-              ><i class="fa-solid fa-users"></i>&ensp;About Us</a
+              ><i class="fa-solid fa-users"></i>&ensp;Giới thiệu</a
             >
           </li>
           <li>
-            <a
-              href="{{ url_for('cart.cart') }}"
-              id="order-nav"
-              ><i class="fa-solid fa-cart-shopping"></i>&ensp;Cart
-              <span class="cart-count" id="cart-count">{{ cart_count | default(0) }}</span>
-              </a
-            >
+            <a href="{{ url_for('cart.cart') }}" id="order-nav">
+              <span class="cart-wrapper">
+                <i class="fa-solid fa-cart-shopping"></i>
+                <span class="cart-count" id="cart-count">{{ cart_count | default(0) }}</span>
+              </span>
+                    &nbsp;Giỏ Hàng
+            </a>
           </li>
           {% if current_user.is_authenticated %}
             <li>
@@ -115,7 +115,7 @@
             <a
               href="{{ url_for('auth.login') }}"
               id="login-nav"
-              ><i class="fa-solid fa-user-gear"></i>&ensp;Login</a
+              ><i class="fa-solid fa-user-gear"></i>&ensp;Đăng nhập</a
             >
           </li>
           {% endif %}
