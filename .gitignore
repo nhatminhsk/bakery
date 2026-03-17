@@ -1,0 +1,12 @@
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Local databases
+instance/*.db
+instance/*.db-shm
+instance/*.db-wal
+
+# Editor settings
+.vscode/
+.idea/
