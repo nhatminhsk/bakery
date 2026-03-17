@@ -1,11 +1,12 @@
 from flask import Blueprint, render_template, request, session
+from flask_login import login_required
+
 from app.cart.services import (
     get_cart, add_to_cart, update_cart, remove_from_cart, get_cart_totals
 )
 
 cart_bp = Blueprint('cart', __name__)
-
-
+@login_required
 @cart_bp.route('/cart')
 def cart():
     cart_items = get_cart()
@@ -16,7 +17,7 @@ def cart():
                            shipping_fee=shipping_fee,
                            total=total)
 
-
+@login_required
 @cart_bp.route('/api/cart/add', methods=['POST'])
 def add_to_cart_api():
     data       = request.get_json()
@@ -29,7 +30,7 @@ def add_to_cart_api():
         return {'success': True, 'cart_count': cart_count}
     return {'success': False}, 400
 
-
+@login_required
 @cart_bp.route('/api/cart/update', methods=['POST'])
 def update_cart_api():
     data       = request.get_json()
@@ -50,7 +51,7 @@ def update_cart_api():
         'cart_count': cart_count,
     }
 
-
+@login_required
 @cart_bp.route('/api/cart/remove/<int:product_id>', methods=['POST'])
 def remove_from_cart_api(product_id):
     cart = remove_from_cart(product_id)
