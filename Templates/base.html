@@ -92,15 +92,16 @@
             <a
               href="{{ url_for('cart.cart') }}"
               id="order-nav"
-              ><i class="fa-solid fa-cart-shopping"></i>&ensp;Cart</a
+              ><i class="fa-solid fa-cart-shopping"></i>&ensp;Cart
+              <span class="cart-count" id="cart-count">{{ cart_count | default(0) }}</span>
+              </a
             >
-             <span class="cart-count" id="cart-count">{{ cart_count | default(0) }}</span>
           </li>
           {% if current_user.is_authenticated %}
             <li>
               <div class="user-dropdown-container">
                 <div class="user-trigger">
-                   <span class="username">👤 {{ current_user.username }}</span>
+                   <span class="username"><i class="fa-solid fa-user-gear"></i> {{ current_user.username }}</span>
                 </div>
 
                 <div class="dropdown-menu">
