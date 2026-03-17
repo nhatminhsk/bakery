@@ -1,0 +1,238 @@
+{% extends "base.html" %}
+
+{% block title %}Tài khoản của tôi | BubbleBakery{% endblock %}
+
+{% block styles %}
+<style>
+    /* Scope CSS riêng cho trang account */
+    .account-wrapper {
+        max-width: 1200px;
+        margin: 20px auto;
+        display: flex;
+        gap: 20px;
+        font-family: Arial, sans-serif;
+    }
+    
+    /* Sidebar Styles */
+    .account-sidebar {
+        width: 250px;
+        background: transparent;
+    }
+    .user-brief {
+        display: flex;
+        align-items: center;
+        padding-bottom: 20px;
+        border-bottom: 1px solid #efefef;
+        margin-bottom: 20px;
+    }
+    
+    /* Container cho Avatar có overlay */
+    .avatar-container {
+        position: relative;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        margin-right: 15px;
+        overflow: hidden; /* Để overlay không bị tràn */
+        cursor: pointer; 
+    }
+    .avatar-container img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    .avatar-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5); 
+        color: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 0.8em;
+        opacity: 0; /* Mặc định ẩn */
+        transition: opacity 0.3s;
+    }
+    .avatar-container:hover .avatar-overlay {
+        opacity: 1; /* Hiện overlay khi hover */
+    }
+
+    .user-brief .info strong {
+        display: block;
+        color: #333;
+    }
+    .user-brief .info span {
+        color: #888;
+        font-size: 0.9em;
+    }
+    .nav-links {
+        padding: 0;
+        list-style-type: none;
+    }
+    .nav-links li {
+        margin-bottom: 15px;
+    }
+    .nav-links a {
+        text-decoration: none;
+        color: #333;
+        font-weight: 500;
+        transition: color 0.2s;
+    }
+    .nav-links a:hover, .nav-links a.active {
+        color: #ee4d2d;
+    }
+
+    /* Main Content Styles */
+    .account-main {
+        flex: 1;
+        background: #fff;
+        padding: 30px;
+        border-radius: 2px;
+        box-shadow: 0 1px 2px 0 rgba(0,0,0,.05);
+    }
+    .account-main h2 {
+        margin-top: 0;
+        font-size: 1.2em;
+        color: #333;
+        border-bottom: 1px solid #efefef;
+        padding-bottom: 15px;
+    }
+    .form-group {
+        display: flex;
+        margin-bottom: 20px;
+        align-items: center;
+    }
+    .form-group label {
+        width: 20%;
+        text-align: right;
+        margin-right: 20px;
+        color: #555;
+    }
+    .form-group .input-wrapper {
+        width: 60%;
+        display: flex;
+        align-items: center;
+    }
+    .form-group input[type="text"] {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 2px;
+        box-sizing: border-box;
+    }
+    .btn-save {
+        background-color: #ee4d2d;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        cursor: pointer;
+        border-radius: 2px;
+        margin-left: calc(20% + 20px);
+    }
+    .btn-save:hover {
+        background-color: #d73d22;
+    }
+    .change-link {
+        color: #05a; 
+        font-size: 0.9em; 
+        margin-left: 10px;
+        text-decoration: none;
+    }
+    .change-link:hover {
+        text-decoration: underline;
+    }
+
+    /* CSS cho form ẩn chọn file */
+    #avatarForm {
+        display: none;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="account-wrapper">
+    <div class="account-sidebar">
+        <div class="user-brief">
+            <div class="avatar-container" onclick="triggerFileInput()">
+                <img src="{{ user.avatar }}" alt="Avatar" id="currentAvatar">
+                <div class="avatar-overlay">Thay đổi</div>
+            </div>
+            
+            <form id="avatarForm" action="{{ url_for('update_avatar') }}" method="POST" enctype="multipart/form-data">
+                <input type="file" name="avatar" id="avatarInput" accept="image/jpeg, image/png" onchange="submitAvatarForm()">
+            </form>
+
+            <div class="info">
+                <strong>{{ user.username }}</strong>
+                <span><a href="#" style="color: #888; text-decoration: none;" onclick="triggerFileInput()">Sửa hồ sơ</a></span>
+            </div>
+        </div>
+        <ul class="nav-links">
+            <li><a href="#" class="active">Tài khoản của tôi</a></li>
+            <li><a href="#">Hồ sơ</a></li>
+            <li><a href="#">Ngân hàng</a></li>
+            <li><a href="#">Đổi mật khẩu</a></li>
+            <li><a href="#">Đơn mua</a></li>
+            <li><a href="#">Thông báo</a></li>
+        </ul>
+    </div>
+
+    <div class="account-main">
+        <h2>Hồ sơ của tôi</h2>
+        <p style="color: #666; font-size: 0.9em; margin-bottom: 30px;">Quản lý thông tin hồ sơ để bảo mật tài khoản</p>
+        
+        <form action="{{ url_for('update_profile') }}" method="POST">
+            <div class="form-group">
+                <label>Tên đăng nhập</label>
+                <div class="input-wrapper">
+                    <strong>{{ user.username }}</strong>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label>Tên</label>
+                <div class="input-wrapper">
+                    <input type="text" name="full_name" value="{{ user.full_name }}" required>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label>Email</label>
+                <div class="input-wrapper">
+                    <span>{{ user.email }}</span> 
+                    <a href="#" class="change-link">Thay đổi</a>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label>Số điện thoại</label>
+                <div class="input-wrapper">
+                    <span>{{ user.phone }}</span> 
+                    <a href="#" class="change-link">Thay đổi</a>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-save">Lưu</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Hàm kích hoạt nút chọn file của form ẩn
+    function triggerFileInput() {
+        document.getElementById('avatarInput').click();
+    }
+
+    // Hàm tự động submit form khi người dùng đã chọn file
+    function submitAvatarForm() {
+        var form = document.getElementById('avatarForm');
+        // Kiểm tra xem đã chọn file chưa trước khi submit
+        if (document.getElementById('avatarInput').files.length > 0) {
+            form.submit();
+        }
+    }
+</script>
+{% endblock %}
