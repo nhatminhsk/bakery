@@ -295,12 +295,11 @@
         {% for related in related_products %}
         <a href="/product/{{ related.id }}" style="text-decoration: none; color: inherit;">
             <div class="related-card">
-                <img src="{{ related.image }}" alt="{{ related.name }}" class="related-image">
+                <img src="{{ related.image_url }}" alt="{{ related.name }}" class="related-image">
                 <div class="related-info">
                     <div class="related-name">{{ related.name }}</div>
                     <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
                         <span style="color: #fbbf24;">⭐ {{ related.rating }}</span>
-                        <span style="color: #9ca3af;">({{ related.reviewCount }})</span>
                     </div>
                     <div class="related-price">₫{{ "{:,}".format(related.price) }}</div>
                     <button class="btn-add" onclick="event.preventDefault(); addToCart({{ related.id }});" style="width: 100%; border: none; padding: 8px; background-color: #fb923c; color: white; border-radius: 6px; cursor: pointer;">
