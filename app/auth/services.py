@@ -17,8 +17,8 @@ def register_user(username, email, password):
 
 
 def authenticate_user(username, password):
-    """Xác thực đăng nhập. Trả về user nếu hợp lệ, None nếu sai."""
+    """Xác thực đăng nhập. Trả về (user, role) nếu hợp lệ, (None, None) nếu sai."""
     user = User.query.filter_by(username=username).first()
     if user and user.check_password(password):
-        return user
-    return None
+        return user, user.role
+    return None, None

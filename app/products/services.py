@@ -17,10 +17,21 @@ def get_product_by_id(product_id):
 
 
 def search_products(keyword):
+    all_products = Product.query.order_by(Product.name).all()
+
+    keyword = (keyword or '').strip()
+    if not keyword:
+        return all_products
+
     pattern = f'%{keyword}%'
-    return Product.query.filter(
+    matched_products = Product.query.filter(
         Product.name.ilike(pattern) | Product.description.ilike(pattern)
     ).order_by(Product.name).all()
+
+    matched_ids = {product.id for product in matched_products}
+    other_products = [product for product in all_products if product.id not in matched_ids]
+
+    return matched_products + other_products
 
 
 def get_categories():
