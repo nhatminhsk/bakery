@@ -56,8 +56,49 @@ function addToCart(productId) {
     .catch(err => console.error('Lỗi:', err));
 }
 document.addEventListener('DOMContentLoaded', function () {
+    const searchInput = document.querySelector('.search-header input[name="q"]');
     const categoryLinks = document.querySelectorAll('.category-badge');
     const products = document.querySelectorAll('.product-card');
+
+    function normalizeText(value) {
+        if (!value) {
+            return '';
+        }
+        return value
+            .toLowerCase()
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '');
+    }
+
+    function getSelectedCategoryClass() {
+        const activeLink = document.querySelector('.category-badge.active');
+        if (!activeLink) {
+            return '';
+        }
+
+        const url = new URL(activeLink.href, window.location.origin);
+        const selectedCategory = url.searchParams.get('category');
+        return selectedCategory ? selectedCategory.replace(/\s+/g, '-') : '';
+    }
+
+    function applyProductFilters() {
+        const selectedCategoryClass = getSelectedCategoryClass();
+        const keyword = normalizeText(searchInput ? searchInput.value.trim() : '');
+
+        products.forEach(product => {
+            const nameElement = product.querySelector('.product-name');
+            const productName = normalizeText(nameElement ? nameElement.textContent : '');
+
+            const matchesCategory = !selectedCategoryClass || product.classList.contains(selectedCategoryClass);
+            const matchesKeyword = !keyword || productName.includes(keyword);
+
+            product.style.display = (matchesCategory && matchesKeyword) ? 'flex' : 'none';
+        });
+    }
+
+    if (searchInput) {
+        searchInput.addEventListener('input', applyProductFilters);
+    }
 
     categoryLinks.forEach(link => {
         link.addEventListener('click', function (e) {
@@ -67,21 +108,10 @@ document.addEventListener('DOMContentLoaded', function () {
             categoryLinks.forEach(l => l.classList.remove('active'));
             this.classList.add('active');
 
-            // 2. Lấy danh mục cần lọc từ URL (Bánh Mì, Bánh Kem...)
-            const url = new URL(this.href, window.location.origin);
-            let selectedCategory = url.searchParams.get('category');
-            if (selectedCategory) {
-              selectedCategory = selectedCategory.replace(/\s+/g, '-');
-            }
-            // 3. Ẩn/Hiện sản phẩm dựa trên class
-            products.forEach(product => {
-                // Kiểm tra xem classList của thẻ có chứa tên danh mục không
-                if (!selectedCategory || product.classList.contains(selectedCategory)) {
-                    product.style.display = 'flex'; // Hiện
-                } else {
-                    product.style.display = 'none'; // Ẩn
-                }
-            });
+            // 2. Lọc lại theo cả danh mục và từ khóa hiện tại
+            applyProductFilters();
         });
     });
+
+    applyProductFilters();
 });

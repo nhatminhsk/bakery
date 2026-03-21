@@ -70,8 +70,11 @@ def product_update(product_id):
 @admin_bp.route('/products/<int:product_id>/delete', methods=['POST'])
 @admin_required
 def product_delete(product_id):
-    delete_product(product_id)
-    flash('Đã xóa sản phẩm.', 'success')
+    success, error = delete_product(product_id)
+    if success:
+        flash('Đã xóa sản phẩm.', 'success')
+    else:
+        flash(error or 'Không thể xóa sản phẩm.', 'error')
     return redirect(url_for('admin.products'))
 
 

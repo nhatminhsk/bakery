@@ -3,18 +3,96 @@
 {% block page_title %}🛍️ Quản Lý Sản Phẩm{% endblock %}
 
 {% block content %}
+<style>
+    .action-btn {
+        padding: 6px 12px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    .edit-btn {
+        background-color: #374151;
+        color: #fb923c;
+        margin-right: 4px;
+    }
+
+    .delete-btn {
+        background-color: #dc2626;
+        color: #fff;
+    }
+
+    .action-group {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .modal-backdrop {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.6);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 999;
+    }
+
+    .modal-backdrop.show {
+        display: flex;
+    }
+
+    .modal-card {
+        width: min(520px, 92vw);
+        background: #111827;
+        border: 1px solid #374151;
+        border-radius: 10px;
+        padding: 1rem;
+    }
+
+    .modal-title {
+        color: #fb923c;
+        margin-bottom: 1rem;
+    }
+
+    .modal-field {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        margin-bottom: 12px;
+    }
+
+    .modal-field label {
+        color: #d1d5db;
+        font-size: 0.9rem;
+    }
+
+    .modal-field input,
+    .modal-field select {
+        padding: 10px;
+        background-color: #1f2937;
+        border: 1px solid #374151;
+        border-radius: 6px;
+        color: #fff;
+    }
+
+    .modal-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 8px;
+        margin-top: 8px;
+    }
+</style>
+
 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
     <h1 class="page-title">🛍️ Quản Lý Sản Phẩm</h1>
-    <button class="admin-btn">➕ Thêm Sản Phẩm</button>
+    <button id="open-add-product-modal" type="button" class="admin-btn">➕ Thêm Sản Phẩm</button>
 </div>
 
 <div style="margin-bottom: 1.5rem; display: flex; gap: 1rem;">
-    <input type="text" placeholder="🔍 Tìm kiếm sản phẩm..." style="flex: 1; padding: 10px; background-color: #1f2937; border: 1px solid #374151; border-radius: 6px; color: #fff;">
-    <select style="padding: 10px; background-color: #1f2937; border: 1px solid #374151; border-radius: 6px; color: #fff;">
-        <option>Tất Cả</option>
-        <option>Bagel</option>
-        <option>Bánh Ngọt</option>
-        <option>Bánh Khác</option>
+    <input id="admin-product-search" type="text" placeholder="🔍 Tìm kiếm sản phẩm..." style="flex: 1; padding: 10px; background-color: #1f2937; border: 1px solid #374151; border-radius: 6px; color: #fff;">
+    <select id="admin-product-category" style="padding: 10px; background-color: #1f2937; border: 1px solid #374151; border-radius: 6px; color: #fff;">
+        <option value="all">Tất Cả</option>
     </select>
 </div>
 
@@ -30,8 +108,8 @@
                 <th>Hành Động</th>
             </tr>
         </thead>
-        <tbody>
-            {% for product in products[:5] %}
+        <tbody id="admin-products-tbody">
+            {% for product in products %}
             <tr>
                 <td>{{ product.name }}</td>
                 <td>{{ product.category }}</td>
@@ -39,12 +117,261 @@
                 <td><span style="color: #22c55e;">{{ 50 + product.id }}</span></td>
                 <td>⭐ {{ product.rating }}</td>
                 <td>
-                    <button style="padding: 6px 12px; background-color: #374151; color: #fb923c; border: none; border-radius: 4px; cursor: pointer; margin-right: 4px;">✏️ Sửa</button>
-                    <button style="padding: 6px 12px; background-color: #dc2626; color: white; border: none; border-radius: 4px; cursor: pointer;">🗑️ Xóa</button>
+                    <div class="action-group">
+                        <button
+                            type="button"
+                            class="action-btn edit-btn edit-product-btn"
+                            data-id="{{ product.id }}"
+                            data-name="{{ product.name }}"
+                            data-category="{{ product.category }}"
+                            data-price="{{ product.price }}"
+                        >✏️ Sửa</button>
+
+                        <form method="POST" action="{{ url_for('admin.product_delete', product_id=product.id) }}" class="delete-product-form" style="display: inline;">
+                            <button type="submit" class="action-btn delete-btn">🗑️ Xóa</button>
+                        </form>
+                    </div>
                 </td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
 </div>
+
+<div id="edit-product-modal" class="modal-backdrop" aria-hidden="true">
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="edit-product-title">
+        <h3 id="edit-product-title" class="modal-title">Cập nhật sản phẩm</h3>
+
+        <form id="edit-product-form" method="POST" action="">
+            <div class="modal-field">
+                <label for="edit-product-name">Tên sản phẩm</label>
+                <input id="edit-product-name" name="name" type="text" required>
+            </div>
+
+            <div class="modal-field">
+                <label for="edit-product-price">Giá</label>
+                <input id="edit-product-price" name="price" type="number" min="0" step="1000" required>
+            </div>
+
+            <div class="modal-field">
+                <label for="edit-product-category">Danh mục</label>
+                <select id="edit-product-category" name="category" required>
+                    <option value="">Chọn danh mục</option>
+                </select>
+            </div>
+
+            <div class="modal-actions">
+                <button type="button" id="close-edit-modal" class="action-btn" style="background: #374151; color: #fff;">Hủy</button>
+                <button type="submit" class="action-btn" style="background: #fb923c; color: #fff;">Lưu thay đổi</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div id="add-product-modal" class="modal-backdrop" aria-hidden="true">
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="add-product-title">
+        <h3 id="add-product-title" class="modal-title">Thêm sản phẩm mới</h3>
+
+        <form id="add-product-form" method="POST" action="{{ url_for('admin.product_create') }}" enctype="multipart/form-data">
+            <div class="modal-field">
+                <label for="add-product-name">Tên sản phẩm</label>
+                <input id="add-product-name" name="name" type="text" required>
+            </div>
+
+            <div class="modal-field">
+                <label for="add-product-price">Giá</label>
+                <input id="add-product-price" name="price" type="number" min="0" step="1000" required>
+            </div>
+
+            <div class="modal-field">
+                <label for="add-product-category">Danh mục</label>
+                <select id="add-product-category" name="category" required>
+                    <option value="">Chọn danh mục</option>
+                </select>
+            </div>
+
+            <div class="modal-field">
+                <label for="add-product-stock">Tồn kho</label>
+                <input id="add-product-stock" name="in_stock" type="number" min="0" step="1" value="0" required>
+            </div>
+
+            <div class="modal-field">
+                <label for="add-product-description">Mô tả</label>
+                <input id="add-product-description" name="description" type="text" placeholder="Mô tả ngắn (tùy chọn)">
+            </div>
+
+            <div class="modal-field">
+                <label for="add-product-image">Ảnh sản phẩm</label>
+                <input id="add-product-image" name="image" type="file" accept="image/*" required>
+            </div>
+
+            <div class="modal-actions">
+                <button type="button" id="close-add-modal" class="action-btn" style="background: #374151; color: #fff;">Hủy</button>
+                <button type="submit" class="action-btn" style="background: #fb923c; color: #fff;">Thêm sản phẩm</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const searchInput = document.getElementById('admin-product-search');
+    const categorySelect = document.getElementById('admin-product-category');
+    const tableBody = document.getElementById('admin-products-tbody');
+    const openAddModalBtn = document.getElementById('open-add-product-modal');
+    const editButtons = document.querySelectorAll('.edit-product-btn');
+    const deleteForms = document.querySelectorAll('.delete-product-form');
+    const addModal = document.getElementById('add-product-modal');
+    const addForm = document.getElementById('add-product-form');
+    const closeAddModalBtn = document.getElementById('close-add-modal');
+    const addNameInput = document.getElementById('add-product-name');
+    const addCategorySelect = document.getElementById('add-product-category');
+    const editModal = document.getElementById('edit-product-modal');
+    const editForm = document.getElementById('edit-product-form');
+    const closeEditModalBtn = document.getElementById('close-edit-modal');
+    const editNameInput = document.getElementById('edit-product-name');
+    const editPriceInput = document.getElementById('edit-product-price');
+    const editCategorySelect = document.getElementById('edit-product-category');
+
+    if (!searchInput || !categorySelect || !tableBody || !openAddModalBtn || !addModal || !addForm || !closeAddModalBtn || !addNameInput || !addCategorySelect || !editModal || !editForm || !closeEditModalBtn || !editNameInput || !editPriceInput || !editCategorySelect) {
+        return;
+    }
+
+    const rows = Array.from(tableBody.querySelectorAll('tr'));
+
+    function normalizeText(value) {
+        return (value || '')
+            .toLowerCase()
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .trim();
+    }
+
+    const categories = new Set();
+    rows.forEach(function (row) {
+        const categoryText = row.children[1] ? row.children[1].textContent : '';
+        const normalizedCategory = normalizeText(categoryText);
+        if (normalizedCategory) {
+            categories.add(categoryText.trim());
+        }
+    });
+
+    Array.from(categories).sort().forEach(function (category) {
+        const option = document.createElement('option');
+        option.value = normalizeText(category);
+        option.textContent = category;
+        categorySelect.appendChild(option);
+
+        const editOption = document.createElement('option');
+        editOption.value = category;
+        editOption.textContent = category;
+        editCategorySelect.appendChild(editOption);
+
+        const addOption = document.createElement('option');
+        addOption.value = category;
+        addOption.textContent = category;
+        addCategorySelect.appendChild(addOption);
+    });
+
+    function openAddModal() {
+        addModal.classList.add('show');
+        addModal.setAttribute('aria-hidden', 'false');
+        addNameInput.focus();
+    }
+
+    function closeAddModal() {
+        addModal.classList.remove('show');
+        addModal.setAttribute('aria-hidden', 'true');
+    }
+
+    function openEditModal(product) {
+        editForm.action = '/admin/products/' + product.id + '/update';
+        editNameInput.value = product.name;
+        editPriceInput.value = product.price;
+
+        const categoryExists = Array.from(editCategorySelect.options).some(function (option) {
+            return option.value === product.category;
+        });
+        if (!categoryExists && product.category) {
+            const dynamicOption = document.createElement('option');
+            dynamicOption.value = product.category;
+            dynamicOption.textContent = product.category;
+            editCategorySelect.appendChild(dynamicOption);
+        }
+        editCategorySelect.value = product.category || '';
+
+        editModal.classList.add('show');
+        editModal.setAttribute('aria-hidden', 'false');
+        editNameInput.focus();
+    }
+
+    function closeEditModal() {
+        editModal.classList.remove('show');
+        editModal.setAttribute('aria-hidden', 'true');
+    }
+
+    openAddModalBtn.addEventListener('click', openAddModal);
+
+    closeAddModalBtn.addEventListener('click', closeAddModal);
+
+    addModal.addEventListener('click', function (event) {
+        if (event.target === addModal) {
+            closeAddModal();
+        }
+    });
+
+    editButtons.forEach(function (button) {
+        button.addEventListener('click', function () {
+            openEditModal({
+                id: button.dataset.id,
+                name: button.dataset.name || '',
+                category: button.dataset.category || '',
+                price: button.dataset.price || '0',
+            });
+        });
+    });
+
+    closeEditModalBtn.addEventListener('click', closeEditModal);
+
+    editModal.addEventListener('click', function (event) {
+        if (event.target === editModal) {
+            closeEditModal();
+        }
+    });
+
+    deleteForms.forEach(function (form) {
+        form.addEventListener('submit', function (event) {
+            const row = form.closest('tr');
+            const productName = row && row.children[0] ? row.children[0].textContent.trim() : 'sản phẩm này';
+            const confirmed = window.confirm('Bạn có chắc muốn xóa "' + productName + '"? Hành động này không thể hoàn tác.');
+            if (!confirmed) {
+                event.preventDefault();
+            }
+        });
+    });
+
+    function applyFilters() {
+        const keyword = normalizeText(searchInput.value);
+        const selectedCategory = categorySelect.value;
+
+        rows.forEach(function (row) {
+            const nameText = row.children[0] ? row.children[0].textContent : '';
+            const categoryText = row.children[1] ? row.children[1].textContent : '';
+            const haystack = normalizeText(nameText + ' ' + categoryText);
+            const rowCategory = normalizeText(categoryText);
+
+            const matchesCategory = selectedCategory === 'all' || rowCategory === selectedCategory;
+            const matchesKeyword = !keyword || haystack.includes(keyword);
+
+            row.style.display = (matchesCategory && matchesKeyword) ? '' : 'none';
+        });
+    }
+
+    searchInput.addEventListener('input', applyFilters);
+    categorySelect.addEventListener('change', applyFilters);
+    applyFilters();
+});
+</script>
 {% endblock %}

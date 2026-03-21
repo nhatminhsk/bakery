@@ -5,10 +5,15 @@ from app.auth.services import register_user, authenticate_user
 auth_bp = Blueprint('auth', __name__)
 
 
+def _get_home_route_by_role(role):
+    """Xác định route giao diện mặc định theo quyền người dùng."""
+    return 'admin.dashboard' if role == 'admin' else 'products.index'
+
+
 @auth_bp.route('/register', methods=['GET', 'POST'])
 def register():
     if current_user.is_authenticated:
-        return redirect(url_for('products.index'))
+        return redirect(url_for(_get_home_route_by_role(current_user.role)))
 
     if request.method == 'POST':
         username = request.form.get('username', '').strip()
@@ -28,18 +33,18 @@ def register():
 @auth_bp.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
-        return redirect(url_for('products.index'))
+        return redirect(url_for(_get_home_route_by_role(current_user.role)))
 
     if request.method == 'POST':
         username = request.form.get('username', '').strip()
         password = request.form.get('password', '').strip()
 
-        user = authenticate_user(username, password)
+        user, role = authenticate_user(username, password)
         if user:
             login_user(user)
             flash('Đăng nhập thành công!', 'success')
             next_page = request.args.get('next')
-            return redirect(next_page or url_for('products.index'))
+            return redirect(next_page or url_for(_get_home_route_by_role(role)))
         else:
             flash('Sai tài khoản hoặc mật khẩu!', 'error')
 
