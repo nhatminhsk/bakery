@@ -7,10 +7,14 @@ class Order(db.Model):
 
     id          = db.Column(db.Integer, primary_key=True)
     user_id     = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    customer_id = db.Column(db.Integer, db.ForeignKey('customers.id'))
+    shift_id    = db.Column(db.Integer, db.ForeignKey('shifts.id'))
     status      = db.Column(db.String(30), default='pending')
     # pending | confirmed | processing | delivered | cancelled
     total       = db.Column(db.Integer, default=0)
     shipping_fee= db.Column(db.Integer, default=0)
+    payment_method = db.Column(db.String(30))
+    paid_at     = db.Column(db.DateTime)
     note        = db.Column(db.Text)
     created_at  = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at  = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)

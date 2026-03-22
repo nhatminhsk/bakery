@@ -1,6 +1,6 @@
 import os
 from flask import Flask
-from app.extensions import db, login_manager, bcrypt
+from app.extensions import db, login_manager, bcrypt, migrate
 from config import config_map
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -16,6 +16,10 @@ def create_app(config_name='development'):
     db.init_app(app)
     login_manager.init_app(app)
     bcrypt.init_app(app)
+    migrate.init_app(app, db)
+
+    # Nạp toàn bộ model để SQLAlchemy metadata có đủ bảng cho migrate/create_all.
+    from app import models as _models  # noqa: F401
 
     # Cloudinary
     from app.utils.cloudinary_helper import init_cloudinary

@@ -16,6 +16,9 @@ class User(db.Model, UserMixin):
     email      = db.Column(db.String(120), unique=True, nullable=False)
     password   = db.Column(db.String(255), nullable=False)
     role       = db.Column(db.String(20), default='customer')  # customer | admin
+    is_active  = db.Column(db.Boolean, default=True)
+    last_login = db.Column(db.DateTime)
+    phone      = db.Column(db.String(30))
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     orders = db.relationship('Order', backref='customer', lazy=True)

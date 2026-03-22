@@ -25,6 +25,9 @@ class Product(db.Model):
     category_id = db.Column(db.Integer, db.ForeignKey('categories.id'))
     rating      = db.Column(db.Float, default=0.0)
     in_stock    = db.Column(db.Integer, default=0)
+    cost_price  = db.Column(db.Integer, default=0)
+    is_active   = db.Column(db.Boolean, default=True)
+    unit        = db.Column(db.String(30), default='cai')
     image_url   = db.Column(db.String(500))                    # Cloudinary URL
     image_id    = db.Column(db.String(200))                    # Cloudinary public_id
     created_at  = db.Column(db.DateTime, default=datetime.utcnow)

@@ -9,7 +9,11 @@ def register_user(username, email, password):
     if User.query.filter_by(email=email).first():
         return None, 'Email đã được sử dụng!'
 
-    user = User(username=username, email=email)
+    # Tài khoản đầu tiên trong hệ thống được cấp quyền admin.
+    is_first_account = User.query.first() is None
+    role = 'admin' if is_first_account else 'customer'
+
+    user = User(username=username, email=email, role=role)
     user.set_password(password)
     db.session.add(user)
     db.session.commit()

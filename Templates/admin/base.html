@@ -354,7 +354,7 @@
                 <h1 class="admin-header-title">{% block page_title %}Admin Panel{% endblock %}</h1>
                 <div class="admin-header-actions">
                     <button class="admin-btn">👤 Admin</button>
-                    <button class="admin-btn" onclick="logout()">🚪 Đăng Xuất</button>
+                    <a class="admin-btn" href="{{ url_for('auth.logout') }}" style="text-decoration: none;">🚪 Đăng Xuất</a>
                 </div>
             </header>
 
@@ -376,12 +376,6 @@
         </div>
     </div>
 
-    <script>
-        function logout() {
-            alert('Bạn đã đăng xuất!');
-            window.location.href = '/login';
-        }
-    </script>
     {% block extra_js %}{% endblock %}
 </body>
 </html>
