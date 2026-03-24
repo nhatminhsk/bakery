@@ -6,11 +6,11 @@
 <h1 class="page-title">📦 Đơn Hàng Mới</h1>
 
 <div style="margin-bottom: 1.5rem;">
-    <input type="text" placeholder="🔍 Tìm kiếm đơn hàng..." style="width: 100%; max-width: 400px; padding: 10px; background-color: #1f2937; border: 1px solid #374151; border-radius: 6px; color: #fff;">
+    <input type="text" id="search-order" placeholder="🔍 Tìm kiếm đơn hàng..." style="width: 100%; max-width: 400px; padding: 10px; background-color: #1f2937; border: 1px solid #374151; border-radius: 6px; color: #fff;">
 </div>
 
 <div class="admin-table">
-    <table>
+    <table id="orders-table">
         <thead>
             <tr>
                 <th>Mã Đơn</th>
@@ -23,40 +23,107 @@
             </tr>
         </thead>
         <tbody>
+            {% if orders %}
+                {% for order in orders %}
+                <tr data-order-id="{{ order.id }}">
+                    <td>#{{ order.id }}</td>
+                    <td>{{ order.customer.username if order.customer else 'N/A' }}</td>
+                    <td>
+                        {% if order.items %}
+                            {% for item in order.items[:2] %}
+                                {{ item.name }} {% if not loop.last %}|{% endif %}
+                            {% endfor %}
+                            {% if order.items|length > 2 %}...{% endif %}
+                        {% endif %}
+                    </td>
+                    <td>₫{{ '{:,}'.format((order.total or 0) + (order.shipping_fee or 0)) }}</td>
+                    <td>{{ order.created_at.strftime('%H:%M') if order.created_at else '-' }}</td>
+                    <td>
+                        {% if order.status == 'pending' %}
+                            <span class="status-badge status-pending">⏱ Chờ</span>
+                        {% elif order.status == 'confirmed' %}
+                            <span class="status-badge status-confirmed">✓ Đã duyệt</span>
+                        {% elif order.status == 'processing' %}
+                            <span class="status-badge status-processing">⚙ Đang xử lý</span>
+                        {% elif order.status == 'delivered' %}
+                            <span class="status-badge status-delivered">🎉 Đã giao</span>
+                        {% elif order.status == 'cancelled' %}
+                            <span class="status-badge status-cancelled">❌ Hủy</span>
+                        {% else %}
+                            <span class="status-badge">{{ order.status }}</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <form method="POST" action="{{ url_for('admin.order_status', order_id=order.id) }}" style="display: inline;">
+                            {% if order.status == 'pending' %}
+                                <button type="submit" name="status" value="confirmed" style="padding: 6px 12px; background-color: #fb923c; color: white; border: none; border-radius: 4px; cursor: pointer;">✓ Duyệt</button>
+                            {% elif order.status == 'confirmed' %}
+                                <button type="submit" name="status" value="processing" style="padding: 6px 12px; background-color: #3b82f6; color: white; border: none; border-radius: 4px; cursor: pointer;">⚙ Xử lý</button>
+                            {% elif order.status == 'processing' %}
+                                <button type="submit" name="status" value="delivered" style="padding: 6px 12px; background-color: #10b981; color: white; border: none; border-radius: 4px; cursor: pointer;">📤 Giao</button>
+                            {% else %}
+                                <button type="submit" name="status" value="{{ order.status }}" style="padding: 6px 12px; background-color: #374151; color: #9ca3af; border: none; border-radius: 4px; cursor: pointer;" disabled>Hoàn tất</button>
+                            {% endif %}
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            {% else %}
             <tr>
-                <td>#ORD-001</td>
-                <td>Nguyễn Văn A</td>
-                <td>Bánh Chocolate</td>
-                <td>₫45,000</td>
-                <td>12:30</td>
-                <td><span class="status-badge status-pending">⏱ Chờ</span></td>
-                <td>
-                    <button style="padding: 6px 12px; background-color: #fb923c; color: white; border: none; border-radius: 4px; cursor: pointer;">✓ Duyệt</button>
-                </td>
+                <td colspan="7" style="text-align: center; color: #9ca3af; padding: 2rem;">Không có đơn hàng nào.</td>
             </tr>
-            <tr>
-                <td>#ORD-002</td>
-                <td>Trần Thị B</td>
-                <td>Bánh Bagel Cá Hồi x2</td>
-                <td>₫44,000</td>
-                <td>11:15</td>
-                <td><span class="status-badge status-pending">⏱ Chờ</span></td>
-                <td>
-                    <button style="padding: 6px 12px; background-color: #fb923c; color: white; border: none; border-radius: 4px; cursor: pointer;">✓ Duyệt</button>
-                </td>
-            </tr>
-            <tr>
-                <td>#ORD-003</td>
-                <td>Lê Văn C</td>
-                <td>Bánh Tiramisu x3</td>
-                <td>₫114,000</td>
-                <td>10:45</td>
-                <td><span class="status-badge status-success">✓ Đã duyệt</span></td>
-                <td>
-                    <button style="padding: 6px 12px; background-color: #374151; color: #9ca3af; border: none; border-radius: 4px; cursor: pointer;">📤 Giao</button>
-                </td>
-            </tr>
+            {% endif %}
         </tbody>
     </table>
 </div>
+
+<style>
+    .status-badge {
+        display: inline-block;
+        padding: 4px 8px;
+        border-radius: 999px;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+
+    .status-pending {
+        background-color: #f59e0b;
+        color: #fff;
+    }
+
+    .status-confirmed {
+        background-color: #10b981;
+        color: #fff;
+    }
+
+    .status-processing {
+        background-color: #3b82f6;
+        color: #fff;
+    }
+
+    .status-delivered {
+        background-color: #8b5cf6;
+        color: #fff;
+    }
+
+    .status-cancelled {
+        background-color: #ef4444;
+        color: #fff;
+    }
+</style>
+
+<script>
+    document.getElementById('search-order').addEventListener('input', function(e) {
+        const searchValue = e.target.value.toLowerCase();
+        const rows = document.querySelectorAll('#orders-table tbody tr');
+        
+        rows.forEach(row => {
+            if (row.textContent.toLowerCase().includes(searchValue)) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    });
+</script>
 {% endblock %}

@@ -1,9 +1,8 @@
 {
   "meta": {
-    "generated_at": "2026-03-22T14:26:48.176936",
+    "generated_at": "2026-03-24T15:36:59.935212",
     "table_names": [
       "categories",
-      "customers",
       "promotions",
       "users",
       "warehouses",
@@ -15,7 +14,6 @@
       "recipes",
       "inventory_transactions",
       "order_items",
-      "order_promotions",
       "payments",
       "point_history",
       "production_plans",
@@ -33,30 +31,33 @@
         "name": "Banh ngot"
       }
     ],
-    "customers": [],
     "promotions": [],
     "users": [
       {
         "id": 1,
         "username": "admin",
-        "email": "admin@bakery.com",
-        "password": "$2b$12$nimmOq3eq202esrR6LsGTOBsVd.GVtvRTO1CHgCWmnprbyGhAapta",
+        "email": "admin@gmail.com",
+        "password": "$2b$12$YyMnPAif1E85WQ0mmb8xWu9rxkjt8doib1nvxVLaGZUPCdEPQrYRi",
         "role": "admin",
         "is_active": true,
         "last_login": null,
         "phone": null,
-        "created_at": "2026-03-22T11:58:37.920707"
+        "points": 0,
+        "rank": "bronze",
+        "created_at": "2026-03-24T14:37:36.360571"
       },
       {
         "id": 2,
         "username": "user1",
-        "email": "user1@gmail.com",
-        "password": "$2b$12$GG/9dsxrsNAz5CKePsJYR.OdXQOLZLSuHBryCQx9DI.P2AoGUYjfi",
+        "email": "user1@gmail,com",
+        "password": "$2b$12$sZGJeiKugtvXK11PqbnGdeNHTbm2wBrmafhVFIFlGkrNmREeh9WZ.",
         "role": "customer",
         "is_active": true,
         "last_login": null,
         "phone": null,
-        "created_at": "2026-03-22T14:00:34.201227"
+        "points": 0,
+        "rank": "bronze",
+        "created_at": "2026-03-24T14:37:36.624995"
       }
     ],
     "warehouses": [],
@@ -753,12 +754,54 @@
     "shifts": [],
     "system_logs": [],
     "inventory_batches": [],
-    "orders": [],
+    "orders": [
+      {
+        "id": 1,
+        "user_id": 2,
+        "promotion_id": null,
+        "shift_id": null,
+        "status": "pending",
+        "total": 1178000,
+        "shipping_fee": 0,
+        "payment_method": "cash",
+        "paid_at": null,
+        "note": "Recipient: D D\u0169ng | 0999999999 | buivandung11052005@gmail.com\nAddress: AD, AC, AB, ABC\nCustomer note: note",
+        "created_at": "2026-03-24T15:13:03.226584",
+        "updated_at": "2026-03-24T15:13:03.226590"
+      }
+    ],
     "recipes": [],
     "inventory_transactions": [],
-    "order_items": [],
-    "order_promotions": [],
-    "payments": [],
+    "order_items": [
+      {
+        "id": 1,
+        "order_id": 1,
+        "product_id": 1035837470,
+        "name": "B\u00e1nh kem M\u1eadt ng\u1ecdt",
+        "price": 380000,
+        "quantity": 3,
+        "image_url": "https://product.hstatic.net/200000411281/product/kiss_of_lady_8_247c2cf000bc4a53a4fc2fb3ba61b636.png"
+      },
+      {
+        "id": 2,
+        "order_id": 1,
+        "product_id": 1035917261,
+        "name": "Ba\u0301nh su kem s\u00f4 c\u00f4 la",
+        "price": 38000,
+        "quantity": 1,
+        "image_url": "https://product.hstatic.net/200000411281/product/banh_su_kem_so_co_la_2_1d97c5b14b4342e88cd5695a5fc9e797.png"
+      }
+    ],
+    "payments": [
+      {
+        "id": 1,
+        "order_id": 1,
+        "method": "cash",
+        "amount": 1178000,
+        "status": "pending",
+        "created_at": "2026-03-24T15:13:03.231830"
+      }
+    ],
     "point_history": [],
     "production_plans": [],
     "recipe_ingredients": []

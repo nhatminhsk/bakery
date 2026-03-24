@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+
+{% block title %}Đơn Hàng Của Tôi{% endblock %}
+
+{% block styles %}
+<style>
+    .orders-wrapper {
+        max-width: 960px;
+        margin: 0 auto;
+    }
+
+    .orders-title {
+        color: #fb923c;
+        font-size: 2rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .orders-table {
+        width: 100%;
+        border-collapse: collapse;
+        background-color: #1f2937;
+        border: 1px solid #374151;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    .orders-table th,
+    .orders-table td {
+        padding: 0.85rem 1rem;
+        border-bottom: 1px solid #374151;
+        color: #e5e7eb;
+        text-align: left;
+    }
+
+    .orders-table th {
+        background-color: #111827;
+        color: #fb923c;
+        font-weight: 600;
+    }
+
+    .orders-table tr:last-child td {
+        border-bottom: none;
+    }
+
+    .badge-status {
+        display: inline-block;
+        padding: 0.25rem 0.6rem;
+        border-radius: 999px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        background-color: #374151;
+        color: #f9fafb;
+    }
+
+    .action-btn {
+        display: inline-block;
+        padding: 0.35rem 0.75rem;
+        border-radius: 6px;
+        text-decoration: none;
+        background-color: #fb923c;
+        color: #fff;
+        font-weight: 600;
+    }
+
+    .empty-state {
+        background-color: #1f2937;
+        border: 1px solid #374151;
+        border-radius: 10px;
+        padding: 2rem;
+        text-align: center;
+        color: #d1d5db;
+    }
+
+    @media (max-width: 768px) {
+        .orders-table {
+            font-size: 0.9rem;
+        }
+
+        .orders-table th,
+        .orders-table td {
+            padding: 0.65rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="orders-wrapper">
+    <h1 class="orders-title">Đơn Hàng Của Tôi</h1>
+
+    {% if orders %}
+    <table class="orders-table">
+        <thead>
+            <tr>
+                <th>Mã Đơn</th>
+                <th>Ngày Tạo</th>
+                <th>Trạng Thái</th>
+                <th>Tổng Thanh Toán</th>
+                <th>Chi Tiết</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for order in orders %}
+            <tr>
+                <td>#{{ order.id }}</td>
+                <td>{{ order.created_at.strftime('%d/%m/%Y %H:%M') if order.created_at else '-' }}</td>
+                <td><span class="badge-status">{{ order.status }}</span></td>
+                <td>₫{{ '{:,}'.format((order.total or 0) + (order.shipping_fee or 0)) }}</td>
+                <td>
+                    <a class="action-btn" href="{{ url_for('orders.order_detail', order_id=order.id) }}">
+                        Xem
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="empty-state">
+        <p>Bạn chưa có đơn hàng nào.</p>
+        <a class="action-btn" href="{{ url_for('products.index') }}">Mua sắm ngay</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

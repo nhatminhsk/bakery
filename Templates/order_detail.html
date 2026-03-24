@@ -1,0 +1,170 @@
+{% extends "base.html" %}
+
+{% block title %}Chi Tiết Đơn Hàng{% endblock %}
+
+{% block styles %}
+<style>
+    .detail-wrapper {
+        max-width: 1000px;
+        margin: 0 auto;
+        display: grid;
+        gap: 1.2rem;
+    }
+
+    .panel {
+        background-color: #1f2937;
+        border: 1px solid #374151;
+        border-radius: 10px;
+        padding: 1.25rem;
+        color: #e5e7eb;
+    }
+
+    .panel h2,
+    .panel h3 {
+        color: #fb923c;
+        margin-bottom: 0.75rem;
+    }
+
+    .meta-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.75rem;
+    }
+
+    .meta-item {
+        background-color: #111827;
+        border: 1px solid #374151;
+        border-radius: 8px;
+        padding: 0.65rem 0.75rem;
+    }
+
+    .meta-item strong {
+        color: #fb923c;
+    }
+
+    .items-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .items-table th,
+    .items-table td {
+        border-bottom: 1px solid #374151;
+        padding: 0.7rem;
+        text-align: left;
+    }
+
+    .items-table th {
+        color: #fb923c;
+    }
+
+    .items-table tr:last-child td {
+        border-bottom: none;
+    }
+
+    .summary {
+        display: grid;
+        gap: 0.45rem;
+        justify-content: end;
+        text-align: right;
+    }
+
+    .summary .total {
+        color: #fb923c;
+        font-size: 1.1rem;
+        font-weight: 700;
+    }
+
+    .actions {
+        display: flex;
+        gap: 0.75rem;
+    }
+
+    .btn {
+        padding: 0.45rem 0.8rem;
+        border-radius: 6px;
+        text-decoration: none;
+        color: #fff;
+        font-weight: 600;
+    }
+
+    .btn-primary {
+        background-color: #fb923c;
+    }
+
+    .btn-secondary {
+        background-color: #4b5563;
+    }
+
+    pre.note {
+        margin: 0;
+        white-space: pre-wrap;
+        word-break: break-word;
+        background-color: #111827;
+        border: 1px solid #374151;
+        border-radius: 8px;
+        padding: 0.75rem;
+        color: #d1d5db;
+    }
+
+    @media (max-width: 768px) {
+        .meta-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="detail-wrapper">
+    <div class="panel">
+        <h2>Đơn Hàng #{{ order.id }}</h2>
+        <div class="meta-grid">
+            <div class="meta-item"><strong>Trạng thái:</strong> {{ order.status }}</div>
+            <div class="meta-item"><strong>Ngày tạo:</strong> {{ order.created_at.strftime('%d/%m/%Y %H:%M') if order.created_at else '-' }}</div>
+            <div class="meta-item"><strong>Thanh toán:</strong> {{ order.payment_method or '-' }}</div>
+            <div class="meta-item"><strong>Phí vận chuyển:</strong> ₫{{ '{:,}'.format(order.shipping_fee or 0) }}</div>
+        </div>
+    </div>
+
+    <div class="panel">
+        <h3>Sản Phẩm</h3>
+        <table class="items-table">
+            <thead>
+                <tr>
+                    <th>Tên</th>
+                    <th>Đơn giá</th>
+                    <th>SL</th>
+                    <th>Thành tiền</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in order.items %}
+                <tr>
+                    <td>{{ item.name }}</td>
+                    <td>₫{{ '{:,}'.format(item.price or 0) }}</td>
+                    <td>{{ item.quantity or 0 }}</td>
+                    <td>₫{{ '{:,}'.format((item.price or 0) * (item.quantity or 0)) }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="summary">
+            <div>Tạm tính: ₫{{ '{:,}'.format(order.total or 0) }}</div>
+            <div>Phí vận chuyển: ₫{{ '{:,}'.format(order.shipping_fee or 0) }}</div>
+            <div class="total">Tổng: ₫{{ '{:,}'.format((order.total or 0) + (order.shipping_fee or 0)) }}</div>
+        </div>
+    </div>
+
+    <div class="panel">
+        <h3>Ghi Chú</h3>
+        <pre class="note">{{ order.note or 'Không có ghi chú' }}</pre>
+    </div>
+
+    <div class="actions">
+        <a class="btn btn-secondary" href="{{ url_for('orders.order_list') }}">Quay lại đơn hàng</a>
+        <a class="btn btn-primary" href="{{ url_for('products.index') }}">Tiếp tục mua sắm</a>
+    </div>
+</div>
+{% endblock %}

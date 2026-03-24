@@ -88,7 +88,8 @@
 
     <button type="button"
         class="btn btn-custom w-100 mt-2"
-        onclick="addToCart({{ product.id }})"
+        data-product-id="{{ product.id }}"
+        onclick="addToCart(this.dataset.productId)"
         {% if product.in_stock == 0 %}disabled{% endif %}>
       <i class="fa-solid fa-cart-shopping"></i>&ensp;Mua ngay
     </button>

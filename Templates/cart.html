@@ -57,8 +57,8 @@
             <span id="cart-total">₫{{ "{:,}".format(total + (0 if total >= 50000 else 20000)) }}</span>
         </div>
 
-        <a href="/checkout" class="checkout-btn">Tiến Hành Thanh Toán</a>
-        <a href="/index" class="continue-btn">Tiếp Tục Mua Hàng</a>
+        <a href="{{ url_for('orders.checkout') }}" class="checkout-btn">Tiến Hành Thanh Toán</a>
+        <a href="{{ url_for('products.index') }}" class="continue-btn">Tiếp Tục Mua Hàng</a>
     </div>
 </div>
 {% else %}
@@ -67,7 +67,7 @@
         <div class="empty-cart-icon">🛒</div>
         <h2 style="color: #fff; margin-bottom: 0.5rem;">Giỏ hàng của bạn trống</h2>
         <p>Hãy khám phá các sản phẩm bánh ngon tuyệt vời của chúng tôi!</p>
-        <a href="/index" class="btn btn-primary">
+        <a href="{{ url_for('products.index') }}" class="btn btn-primary">
             Bắt Đầu Mua Sắm
         </a>
     </div>

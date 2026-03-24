@@ -2,7 +2,7 @@
 
 {% block title %}Thanh Toán - BubbleBakery{% endblock %}
 
-{% block extra_css %}
+{% block styles %}
 <style>
     .checkout-container {
         display: grid;
@@ -175,7 +175,7 @@
 
 <div class="checkout-container">
     <!-- Checkout Form -->
-    <form class="checkout-form" onsubmit="handleCheckout(event)">
+    <form class="checkout-form" method="POST" action="{{ url_for('orders.checkout') }}">
         <!-- Personal Info -->
         <h2 class="section-title">Thông Tin Cá Nhân</h2>
         <div class="form-row">
@@ -247,7 +247,7 @@
         <h2 class="section-title">Ghi Chú Đơn Hàng</h2>
         <div class="form-group">
             <label for="notes">Ghi chú (tùy chọn)</label>
-            <textarea id="notes" name="notes" placeholder="Thêm ghi chú cho đơn hàng của bạn..."></textarea>
+            <textarea id="notes" name="note" placeholder="Thêm ghi chú cho đơn hàng của bạn..."></textarea>
         </div>
 
         <button type="submit" class="place-order-btn">Đặt Hàng Ngay</button>
@@ -292,44 +292,3 @@
 </div>
 {% endblock %}
 
-{% block extra_js %}
-<script>
-    function handleCheckout(event) {
-        event.preventDefault();
-        
-        const formData = {
-            firstName: document.getElementById('firstName').value,
-            lastName: document.getElementById('lastName').value,
-            email: document.getElementById('email').value,
-            phone: document.getElementById('phone').value,
-            address: document.getElementById('address').value,
-            city: document.getElementById('city').value,
-            district: document.getElementById('district').value,
-            zipcode: document.getElementById('zipcode').value,
-            payment: document.querySelector('input[name="payment"]:checked').value,
-            notes: document.getElementById('notes').value
-        };
-
-        fetch('/api/checkout', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(formData)
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                alert('✓ Đặt hàng thành công! Mã đơn hàng: ' + data.order_id);
-                window.location.href = '/';
-            } else {
-                alert('❌ Có lỗi xảy ra. Vui lòng thử lại!');
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('❌ Có lỗi xảy ra. Vui lòng thử lại!');
-        });
-    }
-</script>
-{% endblock %}
