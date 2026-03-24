@@ -314,29 +314,29 @@
 
             <div class="sidebar-section-title">MENU</div>
             <nav class="sidebar-nav">
-                <a href="/admin/overview" {% if request.path =='/admin/overview' %}class="active"{% endif %}>
+                <a href="{{ url_for('admin.overview') }}" {% if request.endpoint == 'admin.overview' %}class="active"{% endif %}>
                     📊 Tổng Quan
                 </a>
-                <a href="/admin/dashboard" {% if request.path =='/admin/dashboard' %}class="active"{% endif %}>
+                <a href="{{ url_for('admin.dashboard') }}" {% if request.endpoint in ['admin.dashboard', 'admin.dashboard_alias'] %}class="active"{% endif %}>
                     📈 Dashboard
                 </a>
-                <a href="/admin/new-orders" {% if request.path =='/admin/new-orders' %}class="active"{% endif %}>
+                <a href="{{ url_for('admin.orders') }}" {% if request.endpoint in ['admin.orders', 'admin.orders_alias', 'admin.order_status'] %}class="active"{% endif %}>
                     📦 Đơn Hàng Mới
                 </a>
-                <a href="/admin/products" {% if request.path =='/admin/products' %}class="active"{% endif %}>
+                <a href="{{ url_for('admin.products') }}" {% if request.endpoint in ['admin.products', 'admin.product_create', 'admin.product_update', 'admin.product_delete'] %}class="active"{% endif %}>
                     🛍️ Sản Phẩm
                 </a>
             </nav>
 
             <div class="sidebar-section-title">QUẢN LÝ</div>
             <nav class="sidebar-nav">
-                <a href="/admin/todo-lists" {% if request.path =='/admin/todo-lists' %}class="active"{% endif %}>
+                <a href="{{ url_for('admin.todo_lists') }}" {% if request.endpoint == 'admin.todo_lists' %}class="active"{% endif %}>
                     ✓ Công Việc
                 </a>
-                <a href="/admin/feedbacks" {% if request.path =='/admin/feedbacks' %}class="active"{% endif %}>
+                <a href="{{ url_for('admin.feedbacks') }}" {% if request.endpoint == 'admin.feedbacks' %}class="active"{% endif %}>
                     💬 Phản Hồi
                 </a>
-                <a href="/admin/settings" {% if request.path =='/admin/settings' %}class="active"{% endif %}>
+                <a href="{{ url_for('admin.settings') }}" {% if request.endpoint == 'admin.settings' %}class="active"{% endif %}>
                     ⚙️ Cài Đặt
                 </a>
             </nav>
@@ -353,7 +353,7 @@
             <header class="admin-header">
                 <h1 class="admin-header-title">{% block page_title %}Admin Panel{% endblock %}</h1>
                 <div class="admin-header-actions">
-                    <button class="admin-btn">👤 Admin</button>
+                    <a class="admin-btn" href="{{ url_for('auth.account') }}" style="text-decoration: none;">👤 Tài Khoản Của Tôi</a>
                     <a class="admin-btn" href="{{ url_for('auth.logout') }}" style="text-decoration: none;">🚪 Đăng Xuất</a>
                 </div>
             </header>

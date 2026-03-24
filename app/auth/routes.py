@@ -1,5 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_user, logout_user, login_required, current_user
+from app.extensions import db
 from app.auth.services import register_user, authenticate_user
 
 auth_bp = Blueprint('auth', __name__)
@@ -63,3 +64,17 @@ def logout():
 @login_required
 def account():
     return render_template('account.html', user=current_user)
+
+
+@auth_bp.route('/account/update-profile', methods=['POST'])
+@login_required
+def update_profile():
+    phone = request.form.get('phone', '').strip()
+    if len(phone) > 30:
+        flash('Số điện thoại không hợp lệ.', 'error')
+        return redirect(url_for('auth.account'))
+
+    current_user.phone = phone or None
+    db.session.commit()
+    flash('Đã cập nhật thông tin tài khoản.', 'success')
+    return redirect(url_for('auth.account'))

@@ -4,95 +4,85 @@
 
 {% block styles %}
 <style>
-    /* Scope CSS riêng cho trang account */
     .account-wrapper {
-        max-width: 1200px;
-        margin: 20px auto;
-        display: flex;
+        max-width: 1000px;
+        margin: 24px auto;
+        display: grid;
+        grid-template-columns: 280px 1fr;
         gap: 20px;
-        font-family: Arial, sans-serif;
+        font-family: 'Lora', serif;
     }
-    
-    /* Sidebar Styles */
+
     .account-sidebar {
-        width: 250px;
-        background: transparent;
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+        padding: 20px;
     }
+
     .user-brief {
         display: flex;
         align-items: center;
-        padding-bottom: 20px;
+        gap: 12px;
+        padding-bottom: 16px;
         border-bottom: 1px solid #efefef;
-        margin-bottom: 20px;
+        margin-bottom: 16px;
     }
-    
-    /* Container cho Avatar có overlay */
-    .avatar-container {
-        position: relative;
-        width: 50px;
-        height: 50px;
+
+    .avatar-circle {
+        width: 54px;
+        height: 54px;
         border-radius: 50%;
-        margin-right: 15px;
-        overflow: hidden; /* Để overlay không bị tràn */
-        cursor: pointer; 
-    }
-    .avatar-container img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-    }
-    .avatar-overlay {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.5); 
-        color: white;
+        background: linear-gradient(135deg, #ee4d2d, #f5a267);
         display: flex;
-        justify-content: center;
         align-items: center;
-        font-size: 0.8em;
-        opacity: 0; /* Mặc định ẩn */
-        transition: opacity 0.3s;
-    }
-    .avatar-container:hover .avatar-overlay {
-        opacity: 1; /* Hiện overlay khi hover */
+        justify-content: center;
+        color: #fff;
+        font-weight: 700;
+        font-size: 1.1rem;
     }
 
     .user-brief .info strong {
         display: block;
         color: #333;
     }
+
     .user-brief .info span {
         color: #888;
         font-size: 0.9em;
     }
+
     .nav-links {
         padding: 0;
         list-style-type: none;
     }
+
     .nav-links li {
-        margin-bottom: 15px;
+        margin-bottom: 10px;
     }
+
     .nav-links a {
+        display: block;
+        padding: 8px 10px;
+        border-radius: 6px;
         text-decoration: none;
         color: #333;
         font-weight: 500;
-        transition: color 0.2s;
+        transition: all 0.2s;
     }
+
     .nav-links a:hover, .nav-links a.active {
+        background: #fff1ed;
         color: #ee4d2d;
     }
 
-    /* Main Content Styles */
     .account-main {
-        flex: 1;
         background: #fff;
         padding: 30px;
-        border-radius: 2px;
+        border-radius: 8px;
         box-shadow: 0 1px 2px 0 rgba(0,0,0,.05);
     }
+
     .account-main h2 {
         margin-top: 0;
         font-size: 1.2em;
@@ -105,17 +95,20 @@
         margin-bottom: 20px;
         align-items: center;
     }
+
     .form-group label {
-        width: 20%;
+        width: 24%;
         text-align: right;
         margin-right: 20px;
         color: #555;
     }
+
     .form-group .input-wrapper {
         width: 60%;
         display: flex;
         align-items: center;
     }
+
     .form-group input[type="text"] {
         width: 100%;
         padding: 10px;
@@ -123,6 +116,7 @@
         border-radius: 2px;
         box-sizing: border-box;
     }
+
     .btn-save {
         background-color: #ee4d2d;
         color: white;
@@ -130,24 +124,64 @@
         padding: 10px 20px;
         cursor: pointer;
         border-radius: 2px;
-        margin-left: calc(20% + 20px);
+        margin-left: calc(24% + 20px);
     }
+
     .btn-save:hover {
         background-color: #d73d22;
     }
-    .change-link {
-        color: #05a; 
-        font-size: 0.9em; 
-        margin-left: 10px;
-        text-decoration: none;
-    }
-    .change-link:hover {
-        text-decoration: underline;
+
+    .role-chip {
+        display: inline-flex;
+        align-items: center;
+        padding: 3px 10px;
+        border-radius: 999px;
+        font-size: 0.8rem;
+        background: #fff1ed;
+        color: #ee4d2d;
+        margin-left: 8px;
     }
 
-    /* CSS cho form ẩn chọn file */
-    #avatarForm {
-        display: none;
+    .readonly-value {
+        color: #111;
+    }
+
+    .quick-links {
+        margin-top: 16px;
+        padding-top: 16px;
+        border-top: 1px solid #efefef;
+        display: grid;
+        gap: 10px;
+    }
+
+    .quick-links a {
+        color: #ee4d2d;
+        text-decoration: none;
+        font-weight: 600;
+    }
+
+    @media (max-width: 900px) {
+        .account-wrapper {
+            grid-template-columns: 1fr;
+        }
+
+        .form-group {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 8px;
+        }
+
+        .form-group label,
+        .form-group .input-wrapper {
+            width: 100%;
+            text-align: left;
+            margin-right: 0;
+        }
+
+        .btn-save {
+            margin-left: 0;
+            width: 100%;
+        }
     }
 </style>
 {% endblock %}
@@ -156,62 +190,52 @@
 <div class="account-wrapper">
     <div class="account-sidebar">
         <div class="user-brief">
-            <div class="avatar-container" onclick="triggerFileInput()">
-                <img src="{{ user.avatar }}" alt="Avatar" id="currentAvatar">
-                <div class="avatar-overlay">Thay đổi</div>
-            </div>
-            
-            <form id="avatarForm" action="{{ url_for('update_avatar') }}" method="POST" enctype="multipart/form-data">
-                <input type="file" name="avatar" id="avatarInput" accept="image/jpeg, image/png" onchange="submitAvatarForm()">
-            </form>
+            <div class="avatar-circle">{{ (user.username[:1] if user.username else 'U') | upper }}</div>
 
             <div class="info">
                 <strong>{{ user.username }}</strong>
-                <span><a href="#" style="color: #888; text-decoration: none;" onclick="triggerFileInput()">Sửa hồ sơ</a></span>
+                <span>{{ user.email }}</span>
             </div>
         </div>
         <ul class="nav-links">
             <li><a href="#" class="active">Tài khoản của tôi</a></li>
             <li><a href="#">Hồ sơ</a></li>
-            <li><a href="#">Ngân hàng</a></li>
-            <li><a href="#">Đổi mật khẩu</a></li>
-            <li><a href="#">Đơn mua</a></li>
-            <li><a href="#">Thông báo</a></li>
+            <li><a href="{{ url_for('orders.order_list') }}">Đơn mua</a></li>
+            <li><a href="{{ url_for('cart.cart') }}">Giỏ hàng</a></li>
         </ul>
+
+        <div class="quick-links">
+            {% if user.is_admin() %}
+            <a href="{{ url_for('admin.dashboard') }}">Đi tới trang quản trị</a>
+            {% endif %}
+            <a href="{{ url_for('auth.logout') }}">Đăng xuất</a>
+        </div>
     </div>
 
     <div class="account-main">
         <h2>Hồ sơ của tôi</h2>
         <p style="color: #666; font-size: 0.9em; margin-bottom: 30px;">Quản lý thông tin hồ sơ để bảo mật tài khoản</p>
         
-        <form action="{{ url_for('update_profile') }}" method="POST">
+        <form action="{{ url_for('auth.update_profile') }}" method="POST">
             <div class="form-group">
                 <label>Tên đăng nhập</label>
                 <div class="input-wrapper">
-                    <strong>{{ user.username }}</strong>
-                </div>
-            </div>
-            
-            <div class="form-group">
-                <label>Tên</label>
-                <div class="input-wrapper">
-                    <input type="text" name="full_name" value="{{ user.full_name }}" required>
+                    <strong class="readonly-value">{{ user.username }}</strong>
+                    <span class="role-chip">{{ user.role }}</span>
                 </div>
             </div>
             
             <div class="form-group">
                 <label>Email</label>
                 <div class="input-wrapper">
-                    <span>{{ user.email }}</span> 
-                    <a href="#" class="change-link">Thay đổi</a>
+                    <span class="readonly-value">{{ user.email }}</span>
                 </div>
             </div>
             
             <div class="form-group">
                 <label>Số điện thoại</label>
                 <div class="input-wrapper">
-                    <span>{{ user.phone }}</span> 
-                    <a href="#" class="change-link">Thay đổi</a>
+                    <input type="text" name="phone" value="{{ user.phone or '' }}" maxlength="30" placeholder="Nhập số điện thoại">
                 </div>
             </div>
 
@@ -219,20 +243,4 @@
         </form>
     </div>
 </div>
-
-<script>
-    // Hàm kích hoạt nút chọn file của form ẩn
-    function triggerFileInput() {
-        document.getElementById('avatarInput').click();
-    }
-
-    // Hàm tự động submit form khi người dùng đã chọn file
-    function submitAvatarForm() {
-        var form = document.getElementById('avatarForm');
-        // Kiểm tra xem đã chọn file chưa trước khi submit
-        if (document.getElementById('avatarInput').files.length > 0) {
-            form.submit();
-        }
-    }
-</script>
 {% endblock %}

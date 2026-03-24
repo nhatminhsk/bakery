@@ -27,6 +27,12 @@ def dashboard():
     return render_template('admin/dashboard.html', stats=stats)
 
 
+@admin_bp.route('/dashboard')
+@admin_required
+def dashboard_alias():
+    return redirect(url_for('admin.dashboard'))
+
+
 @admin_bp.route('/overview')
 @admin_required
 def overview():
@@ -83,6 +89,30 @@ def product_delete(product_id):
 def orders():
     all_orders = get_all_orders()
     return render_template('admin/new_orders.html', orders=all_orders)
+
+
+@admin_bp.route('/new-orders')
+@admin_required
+def orders_alias():
+    return redirect(url_for('admin.orders'))
+
+
+@admin_bp.route('/todo-lists')
+@admin_required
+def todo_lists():
+    return render_template('admin/todo_lists.html')
+
+
+@admin_bp.route('/feedbacks')
+@admin_required
+def feedbacks():
+    return render_template('admin/feedbacks.html')
+
+
+@admin_bp.route('/settings')
+@admin_required
+def settings():
+    return render_template('admin/settings.html')
 
 
 @admin_bp.route('/orders/<int:order_id>/status', methods=['POST'])

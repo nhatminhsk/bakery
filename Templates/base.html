@@ -44,6 +44,7 @@
     />
     <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}" />
     <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}" />
+    {% block styles %}{% endblock %}
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
     <script src="{{ url_for('static', filename='js/cart.js') }}"></script>
   </head>
@@ -151,5 +152,6 @@
             <p style="margin-top: 1rem; opacity: 0.8;">2025 Bakery Store</p>
         </div>
     </footer>
+    {% block scripts %}{% endblock %}
   </body>
 </html>

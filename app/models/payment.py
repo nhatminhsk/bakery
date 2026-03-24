@@ -26,12 +26,3 @@ class Promotion(db.Model):
     end_date = db.Column(db.DateTime)
     is_active = db.Column(db.Boolean, default=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
-
-
-class OrderPromotion(db.Model):
-    __tablename__ = 'order_promotions'
-
-    id = db.Column(db.Integer, primary_key=True)
-    order_id = db.Column(db.Integer, db.ForeignKey('orders.id'), nullable=False)
-    promotion_id = db.Column(db.Integer, db.ForeignKey('promotions.id'), nullable=False)
-    discount = db.Column(db.Integer, nullable=False)

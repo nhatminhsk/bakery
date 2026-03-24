@@ -7,7 +7,7 @@ class Order(db.Model):
 
     id          = db.Column(db.Integer, primary_key=True)
     user_id     = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    customer_id = db.Column(db.Integer, db.ForeignKey('customers.id'))
+    promotion_id = db.Column(db.Integer, db.ForeignKey('promotions.id'))
     shift_id    = db.Column(db.Integer, db.ForeignKey('shifts.id'))
     status      = db.Column(db.String(30), default='pending')
     # pending | confirmed | processing | delivered | cancelled
