@@ -1,5 +1,10 @@
 from flask import Blueprint, render_template, request
-from app.products.services import get_all_products, get_product_by_id, search_products, get_categories
+from app.products.services import (
+    get_all_products,
+    get_categories,
+    get_product_by_id,
+    search_products,
+)
 
 products_bp = Blueprint('products', __name__)
 
@@ -7,8 +12,9 @@ products_bp = Blueprint('products', __name__)
 @products_bp.route('/')
 def index():
     selected_category = request.args.get('category', '').strip()
-    products   = get_all_products(category=selected_category)
+    products = get_all_products(category=selected_category)
     categories = get_categories()
+
     return render_template('index.html',
                            products=products,
                            categories=categories,

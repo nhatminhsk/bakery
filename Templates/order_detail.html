@@ -164,6 +164,13 @@
 
     <div class="actions">
         <a class="btn btn-secondary" href="{{ url_for('orders.order_list') }}">Quay lại đơn hàng</a>
+        {% if order.status|lower == 'delivered' and not has_review %}
+        <a class="btn btn-primary" href="{{ url_for('orders.review_order', order_id=order.id) }}">Đánh giá đơn hàng</a>
+        {% elif order.status|lower == 'delivered' and has_review %}
+        <span class="btn btn-secondary" style="opacity: 0.75; cursor: not-allowed;">Đã đánh giá</span>
+        {% else %}
+        <span class="btn btn-secondary" style="opacity: 0.75; cursor: not-allowed;">Chưa thể đánh giá (đơn chưa giao)</span>
+        {% endif %}
         <a class="btn btn-primary" href="{{ url_for('products.index') }}">Tiếp tục mua sắm</a>
     </div>
 </div>

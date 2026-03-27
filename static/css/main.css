@@ -313,10 +313,9 @@ header nav a.active {
     position: relative;
     display: inline-block;
     cursor: pointer;
-    padding-top: 8px;
-    padding-bottom: 6px;
-    padding: 15px;
-    
+  padding-top: 8px;
+  padding-bottom: 6px;
+  padding: 15px;
 }
 
 .user-dropdown-container .username{
@@ -325,26 +324,26 @@ header nav a.active {
 
 /* Kiểu dáng cho menu thả xuống */
 .dropdown-menu {
-    display: none;
+  display: none;
     position: absolute;
-    top: 100%;
+  top: 100%;
     right: 0;
     background-color: white;
     min-width: 180px;
-    box-shadow: 0px 4px 12px rgba(0,0,0,0.15);
-    border-radius: 2px;
+  box-shadow: 0px 4px 12px rgba(0,0,0,0.15);
+  border-radius: 2px;
     z-index: 100;
 }
 
 /* HIỂN THỊ MENU KHI DI CHUỘT VÀO CONTAINER */
 .user-dropdown-container:hover .dropdown-menu {
-    display: block;
+  display: block;
 }
 
 /* CSS cho các đường link bên trong menu */
 .dropdown-menu a {
     color: #333;
-    padding: 12px 16px;
+  padding: 12px 16px;
     text-decoration: none;
     display: block;
     font-family: sans-serif;
@@ -361,7 +360,7 @@ header nav a.active {
 .dropdown-menu::before {
     content: "";
     position: absolute;
-    top: -16px;
+  top: -16px;
     right: 20px;
     border-width: 8px;
     border-style: solid;

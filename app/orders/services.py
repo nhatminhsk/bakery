@@ -1,6 +1,30 @@
 from app.extensions import db
 from app.models.order import Order, OrderItem
 from app.models.payment import Payment
+from app.models.payment import Promotion
+from datetime import datetime
+
+
+DEFAULT_VOUCHERS = [
+    {
+        'code': 'WELCOME10',
+        'type': 'percent',
+        'value': 10,
+        'min_order': 100000,
+    },
+    {
+        'code': 'SAVE30K',
+        'type': 'fixed',
+        'value': 30000,
+        'min_order': 150000,
+    },
+    {
+        'code': 'FREEDAY15',
+        'type': 'percent',
+        'value': 15,
+        'min_order': 200000,
+    },
+]
 
 
 def _normalize_payment_method(raw_method):
@@ -43,21 +67,116 @@ def _build_order_note(checkout_data):
     return '\n'.join(lines)
 
 
-def create_order(user_id, cart_items, checkout_data=None):
+def ensure_default_promotions():
+    existing = {p.code for p in Promotion.query.with_entities(Promotion.code).all()}
+    to_create = []
+
+    for item in DEFAULT_VOUCHERS:
+        if item['code'] in existing:
+            continue
+        to_create.append(
+            Promotion(
+                code=item['code'],
+                type=item['type'],
+                value=item['value'],
+                min_order=item['min_order'],
+                is_active=True,
+            )
+        )
+
+    if to_create:
+        db.session.add_all(to_create)
+        db.session.commit()
+
+
+def _promotion_discount(subtotal, promotion):
+    if not promotion:
+        return 0
+
+    if promotion.type == 'percent':
+        discount = int(subtotal * (promotion.value / 100))
+    else:
+        discount = int(promotion.value)
+
+    return max(0, min(discount, subtotal))
+
+
+def get_available_promotions(user_id):
+    ensure_default_promotions()
+    now = datetime.utcnow()
+
+    used_promotion_ids = {
+        row[0]
+        for row in db.session.query(Order.promotion_id)
+        .filter(
+            Order.user_id == user_id,
+            Order.promotion_id.isnot(None),
+            Order.status != 'cancelled',
+        )
+        .all()
+    }
+
+    promotions = (
+        Promotion.query
+        .filter(Promotion.is_active.is_(True))
+        .order_by(Promotion.created_at.desc())
+        .all()
+    )
+
+    available = []
+    for promotion in promotions:
+        if promotion.id in used_promotion_ids:
+            continue
+        if promotion.start_date and promotion.start_date > now:
+            continue
+        if promotion.end_date and promotion.end_date < now:
+            continue
+        available.append(promotion)
+
+    return available
+
+
+def validate_promotion_for_user(user_id, voucher_code, subtotal):
+    code = (voucher_code or '').strip().upper()
+    if not code:
+        return None, 0, None
+
+    promotion = Promotion.query.filter(
+        db.func.upper(Promotion.code) == code,
+        Promotion.is_active.is_(True),
+    ).first()
+    if not promotion:
+        return None, 0, 'Mã giảm giá không hợp lệ hoặc đã hết hạn.'
+
+    available_ids = {p.id for p in get_available_promotions(user_id)}
+    if promotion.id not in available_ids:
+        return None, 0, 'Mã giảm giá này đã được sử dụng hoặc không khả dụng.'
+
+    if subtotal < (promotion.min_order or 0):
+        return None, 0, f'Đơn hàng cần tối thiểu {promotion.min_order:,}đ để dùng mã này.'.replace(',', '.')
+
+    discount = _promotion_discount(subtotal, promotion)
+    return promotion, discount, None
+
+
+def create_order(user_id, cart_items, checkout_data=None, promotion=None, discount_amount=0):
     if checkout_data is None:
         checkout_data = {}
     elif isinstance(checkout_data, str):
         checkout_data = {'note': checkout_data}
 
-    subtotal     = sum(i['price'] * i['quantity'] for i in cart_items)
-    shipping_fee = 0 if subtotal >= 50000 else 20000
-    grand_total  = subtotal + shipping_fee
+    subtotal = sum(i['price'] * i['quantity'] for i in cart_items)
+    discount_amount = max(0, min(int(discount_amount or 0), subtotal))
+    discounted_subtotal = subtotal - discount_amount
+    shipping_fee = 0 if discounted_subtotal >= 50000 else 20000
+    grand_total = discounted_subtotal + shipping_fee
     payment_method = _normalize_payment_method(checkout_data.get('payment'))
     order_note = _build_order_note(checkout_data)
 
     order = Order(
         user_id      = user_id,
-        total        = subtotal,
+        promotion_id = promotion.id if promotion else None,
+        total        = discounted_subtotal,
         shipping_fee = shipping_fee,
         payment_method = payment_method,
         note         = order_note,

@@ -6,3 +6,4 @@ from app.models.customer import PointHistory
 from app.models.inventory import Warehouse, InventoryBatch, InventoryTransaction
 from app.models.production import Recipe, RecipeIngredient, ProductionPlan
 from app.models.ops import Shift, SystemLog
+from app.models.admin import AdminTodo

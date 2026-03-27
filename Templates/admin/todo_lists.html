@@ -5,39 +5,177 @@
 {% block content %}
 <h1 class="page-title">✓ Danh Sách Công Việc</h1>
 
-<div style="margin-bottom: 1.5rem;">
-    <div style="display: grid; grid-template-columns: 1fr auto; gap: 1rem;">
-        <input type="text" placeholder="✏️ Thêm công việc mới..." style="padding: 10px; background-color: #1f2937; border: 1px solid #374151; border-radius: 6px; color: #fff;">
-        <button class="admin-btn">Thêm</button>
+<style>
+    .todo-toolbar {
+        display: grid;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .todo-create-form {
+        display: grid;
+        grid-template-columns: 1fr 160px auto;
+        gap: 0.75rem;
+    }
+
+    .todo-input,
+    .todo-select {
+        padding: 10px;
+        background-color: #1f2937;
+        border: 1px solid #374151;
+        border-radius: 6px;
+        color: #fff;
+    }
+
+    .todo-filters {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+    }
+
+    .todo-filter-btn {
+        text-decoration: none;
+        color: #d1d5db;
+        border: 1px solid #374151;
+        border-radius: 999px;
+        padding: 0.35rem 0.75rem;
+        background-color: #111827;
+        font-size: 0.9rem;
+    }
+
+    .todo-filter-btn.active {
+        color: #fff;
+        background-color: #fb923c;
+        border-color: #fb923c;
+    }
+
+    .todo-stats {
+        display: flex;
+        gap: 1rem;
+        color: #9ca3af;
+        font-size: 0.9rem;
+    }
+
+    .todo-list {
+        background-color: #1f2937;
+        border-radius: 8px;
+        border: 1px solid #374151;
+        overflow: hidden;
+    }
+
+    .todo-item {
+        display: grid;
+        grid-template-columns: auto 1fr auto auto;
+        gap: 0.75rem;
+        align-items: center;
+        padding: 0.9rem 1rem;
+        border-bottom: 1px solid #374151;
+    }
+
+    .todo-item:last-child {
+        border-bottom: none;
+    }
+
+    .todo-title.done {
+        text-decoration: line-through;
+        color: #9ca3af;
+    }
+
+    .priority {
+        border-radius: 999px;
+        padding: 0.25rem 0.55rem;
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: #fff;
+        text-transform: uppercase;
+    }
+
+    .priority.high { background-color: #dc2626; }
+    .priority.medium { background-color: #f59e0b; }
+    .priority.low { background-color: #22c55e; }
+
+    .icon-btn {
+        border: 1px solid #374151;
+        background: #111827;
+        color: #d1d5db;
+        border-radius: 6px;
+        padding: 0.35rem 0.6rem;
+        cursor: pointer;
+    }
+
+    .icon-btn:hover {
+        border-color: #fb923c;
+        color: #fb923c;
+    }
+
+    .todo-empty {
+        text-align: center;
+        color: #9ca3af;
+        padding: 2rem;
+    }
+
+    @media (max-width: 768px) {
+        .todo-create-form {
+            grid-template-columns: 1fr;
+        }
+
+        .todo-item {
+            grid-template-columns: auto 1fr;
+        }
+    }
+</style>
+
+<div class="todo-toolbar">
+    <form class="todo-create-form" method="POST" action="{{ url_for('admin.todo_create') }}">
+        <input class="todo-input" type="text" name="title" placeholder="Thêm công việc mới..." required>
+        <select class="todo-select" name="priority">
+            <option value="high">Ưu tiên cao</option>
+            <option value="medium" selected>Ưu tiên trung bình</option>
+            <option value="low">Ưu tiên thấp</option>
+        </select>
+        <button class="admin-btn" type="submit">Thêm</button>
+    </form>
+
+    <div class="todo-filters">
+        <a class="todo-filter-btn {% if todo.status_filter == 'all' %}active{% endif %}" href="{{ url_for('admin.todo_lists', status='all', priority=todo.priority_filter) }}">Tất cả</a>
+        <a class="todo-filter-btn {% if todo.status_filter == 'open' %}active{% endif %}" href="{{ url_for('admin.todo_lists', status='open', priority=todo.priority_filter) }}">Đang mở</a>
+        <a class="todo-filter-btn {% if todo.status_filter == 'done' %}active{% endif %}" href="{{ url_for('admin.todo_lists', status='done', priority=todo.priority_filter) }}">Đã xong</a>
+        <a class="todo-filter-btn {% if todo.priority_filter == 'high' %}active{% endif %}" href="{{ url_for('admin.todo_lists', status=todo.status_filter, priority='high') }}">Ưu tiên cao</a>
+        <a class="todo-filter-btn {% if todo.priority_filter == 'medium' %}active{% endif %}" href="{{ url_for('admin.todo_lists', status=todo.status_filter, priority='medium') }}">Ưu tiên trung bình</a>
+        <a class="todo-filter-btn {% if todo.priority_filter == 'low' %}active{% endif %}" href="{{ url_for('admin.todo_lists', status=todo.status_filter, priority='low') }}">Ưu tiên thấp</a>
+        <a class="todo-filter-btn {% if todo.priority_filter == 'all' %}active{% endif %}" href="{{ url_for('admin.todo_lists', status=todo.status_filter, priority='all') }}">Reset ưu tiên</a>
+    </div>
+
+    <div class="todo-stats">
+        <span>Tổng: {{ todo.total }}</span>
+        <span>Đang mở: {{ todo.open }}</span>
+        <span>Đã xong: {{ todo.done }}</span>
     </div>
 </div>
 
-<div style="background-color: #1f2937; border-radius: 8px; border: 1px solid #374151;">
-    <div style="padding: 1.5rem;">
-        <h3 style="color: #fb923c; margin-bottom: 1rem;">📋 Công Việc Hôm Nay</h3>
-        
-        <div style="list-style: none;">
-            <div style="display: flex; align-items: center; padding: 1rem; border-bottom: 1px solid #374151; gap: 1rem;">
-                <input type="checkbox" style="width: 20px; height: 20px; cursor: pointer;">
-                <span>Chuẩn bị bánh cho buổi sáng</span>
-                <span style="margin-left: auto; background-color: #dc2626; padding: 4px 8px; border-radius: 4px; color: white; font-size: 0.75rem;">Cao</span>
+<div class="todo-list">
+    {% if todo['items'] %}
+        {% for item in todo['items'] %}
+        <div class="todo-item">
+            <form method="POST" action="{{ url_for('admin.todo_toggle', todo_id=item.id) }}">
+                <button class="icon-btn" type="submit" title="Chuyển trạng thái">
+                    {% if item.is_done %}✓{% else %}○{% endif %}
+                </button>
+            </form>
+
+            <div class="todo-title {% if item.is_done %}done{% endif %}">
+                {{ item.title }}
             </div>
-            <div style="display: flex; align-items: center; padding: 1rem; border-bottom: 1px solid #374151; gap: 1rem;">
-                <input type="checkbox" style="width: 20px; height: 20px; cursor: pointer;" checked>
-                <span style="text-decoration: line-through; color: #9ca3af;">Nhập nguyên liệu mới</span>
-                <span style="margin-left: auto; background-color: #22c55e; padding: 4px 8px; border-radius: 4px; color: white; font-size: 0.75rem;">Thấp</span>
-            </div>
-            <div style="display: flex; align-items: center; padding: 1rem; border-bottom: 1px solid #374151; gap: 1rem;">
-                <input type="checkbox" style="width: 20px; height: 20px; cursor: pointer;">
-                <span>Kiểm tra chất lượng sản phẩm</span>
-                <span style="margin-left: auto; background-color: #fb923c; padding: 4px 8px; border-radius: 4px; color: white; font-size: 0.75rem;">Trung</span>
-            </div>
-            <div style="display: flex; align-items: center; padding: 1rem; gap: 1rem;">
-                <input type="checkbox" style="width: 20px; height: 20px; cursor: pointer;">
-                <span>Giao hàng cho khách hàng VIP</span>
-                <span style="margin-left: auto; background-color: #dc2626; padding: 4px 8px; border-radius: 4px; color: white; font-size: 0.75rem;">Cao</span>
-            </div>
+
+            <span class="priority {{ item.priority }}">{{ item.priority }}</span>
+
+            <form method="POST" action="{{ url_for('admin.todo_delete', todo_id=item.id) }}" onsubmit="return confirm('Xóa công việc này?');">
+                <button class="icon-btn" type="submit" title="Xóa">🗑</button>
+            </form>
         </div>
-    </div>
+        {% endfor %}
+    {% else %}
+        <div class="todo-empty">Không có công việc phù hợp bộ lọc.</div>
+    {% endif %}
 </div>
 {% endblock %}

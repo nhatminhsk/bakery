@@ -5,6 +5,7 @@
 {% block content %}
 <h1 class="page-title">⚙️ Cài Đặt</h1>
 
+<form method="POST" action="{{ url_for('admin.settings') }}">
 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
     <!-- Store Settings -->
     <div style="background-color: #1f2937; border-radius: 8px; border: 1px solid #374151; padding: 1.5rem;">
@@ -12,25 +13,25 @@
         
         <div style="margin-bottom: 1.5rem;">
             <label style="display: block; color: #fb923c; margin-bottom: 0.5rem;">Tên Cửa Hàng</label>
-            <input type="text" value="BubbleBakery" style="width: 100%; padding: 10px; background-color: #111827; border: 1px solid #374151; border-radius: 6px; color: #fff;">
+            <input type="text" name="store_name" value="{{ settings.store_name }}" required style="width: 100%; padding: 10px; background-color: #111827; border: 1px solid #374151; border-radius: 6px; color: #fff;">
         </div>
 
         <div style="margin-bottom: 1.5rem;">
             <label style="display: block; color: #fb923c; margin-bottom: 0.5rem;">Email Liên Hệ</label>
-            <input type="email" value="contact@bubblebakery.vn" style="width: 100%; padding: 10px; background-color: #111827; border: 1px solid #374151; border-radius: 6px; color: #fff;">
+            <input type="email" name="contact_email" value="{{ settings.contact_email }}" required style="width: 100%; padding: 10px; background-color: #111827; border: 1px solid #374151; border-radius: 6px; color: #fff;">
         </div>
 
         <div style="margin-bottom: 1.5rem;">
             <label style="display: block; color: #fb923c; margin-bottom: 0.5rem;">Số Điện Thoại</label>
-            <input type="tel" value="+84 (0) 123 456 789" style="width: 100%; padding: 10px; background-color: #111827; border: 1px solid #374151; border-radius: 6px; color: #fff;">
+            <input type="tel" name="phone" value="{{ settings.phone }}" style="width: 100%; padding: 10px; background-color: #111827; border: 1px solid #374151; border-radius: 6px; color: #fff;">
         </div>
 
         <div style="margin-bottom: 1.5rem;">
             <label style="display: block; color: #fb923c; margin-bottom: 0.5rem;">Địa Chỉ</label>
-            <input type="text" value="123 Đường Bánh Tươi, Quận 1, TP.HCM" style="width: 100%; padding: 10px; background-color: #111827; border: 1px solid #374151; border-radius: 6px; color: #fff;">
+            <input type="text" name="address" value="{{ settings.address }}" style="width: 100%; padding: 10px; background-color: #111827; border: 1px solid #374151; border-radius: 6px; color: #fff;">
         </div>
 
-        <button class="admin-btn" style="width: 100%;">💾 Lưu Thay Đổi</button>
+        <button type="submit" class="admin-btn" style="width: 100%;">💾 Lưu Thay Đổi</button>
     </div>
 
     <!-- Delivery Settings -->
@@ -39,28 +40,28 @@
         
         <div style="margin-bottom: 1.5rem;">
             <label style="display: block; color: #fb923c; margin-bottom: 0.5rem;">Phí Giao Hàng Cơ Bản</label>
-            <input type="number" value="20000" style="width: 100%; padding: 10px; background-color: #111827; border: 1px solid #374151; border-radius: 6px; color: #fff;">
+            <input type="number" name="delivery_base_fee" value="{{ settings.delivery_base_fee }}" min="0" style="width: 100%; padding: 10px; background-color: #111827; border: 1px solid #374151; border-radius: 6px; color: #fff;">
             <small style="color: #9ca3af;">VND</small>
         </div>
 
         <div style="margin-bottom: 1.5rem;">
             <label style="display: block; color: #fb923c; margin-bottom: 0.5rem;">Miễn Phí Giao Hàng Từ</label>
-            <input type="number" value="50000" style="width: 100%; padding: 10px; background-color: #111827; border: 1px solid #374151; border-radius: 6px; color: #fff;">
+            <input type="number" name="free_shipping_min" value="{{ settings.free_shipping_min }}" min="0" style="width: 100%; padding: 10px; background-color: #111827; border: 1px solid #374151; border-radius: 6px; color: #fff;">
             <small style="color: #9ca3af;">VND</small>
         </div>
 
         <div style="margin-bottom: 1.5rem;">
             <label style="display: block; color: #fb923c; margin-bottom: 0.5rem;">Thời Gian Giao Hàng Dự Kiến</label>
-            <input type="text" value="24 giờ" style="width: 100%; padding: 10px; background-color: #111827; border: 1px solid #374151; border-radius: 6px; color: #fff;">
+            <input type="text" name="delivery_eta" value="{{ settings.delivery_eta }}" style="width: 100%; padding: 10px; background-color: #111827; border: 1px solid #374151; border-radius: 6px; color: #fff;">
         </div>
 
         <div style="margin-bottom: 1.5rem;">
             <label style="display: block; color: #fb923c; margin-bottom: 0.75rem;">
-                <input type="checkbox" checked> Cho phép giao hàng cùng ngày
+                <input type="checkbox" name="same_day_delivery" {% if settings.same_day_delivery %}checked{% endif %}> Cho phép giao hàng cùng ngày
             </label>
         </div>
 
-        <button class="admin-btn" style="width: 100%;">💾 Lưu Thay Đổi</button>
+        <button type="submit" class="admin-btn" style="width: 100%;">💾 Lưu Thay Đổi</button>
     </div>
 </div>
 
@@ -71,30 +72,31 @@
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem;">
         <div>
             <label style="display: flex; align-items: center; gap: 0.5rem;">
-                <input type="checkbox" checked>
+                <input type="checkbox" name="payment_cod" {% if settings.payment_cod %}checked{% endif %}>
                 <span style="color: #d1d5db;">💵 Thanh Toán Khi Nhận</span>
             </label>
         </div>
         <div>
             <label style="display: flex; align-items: center; gap: 0.5rem;">
-                <input type="checkbox" checked>
+                <input type="checkbox" name="payment_credit_card" {% if settings.payment_credit_card %}checked{% endif %}>
                 <span style="color: #d1d5db;">💳 Thẻ Tín Dụng</span>
             </label>
         </div>
         <div>
             <label style="display: flex; align-items: center; gap: 0.5rem;">
-                <input type="checkbox" checked>
+                <input type="checkbox" name="payment_bank_transfer" {% if settings.payment_bank_transfer %}checked{% endif %}>
                 <span style="color: #d1d5db;">🏦 Chuyển Khoản Ngân Hàng</span>
             </label>
         </div>
         <div>
             <label style="display: flex; align-items: center; gap: 0.5rem;">
-                <input type="checkbox">
+                <input type="checkbox" name="payment_ewallet" {% if settings.payment_ewallet %}checked{% endif %}>
                 <span style="color: #d1d5db;">💰 Ví Điện Tử</span>
             </label>
         </div>
     </div>
 
-    <button class="admin-btn" style="width: 100%; margin-top: 1.5rem;">💾 Lưu Thay Đổi</button>
+    <button type="submit" class="admin-btn" style="width: 100%; margin-top: 1.5rem;">💾 Lưu Thay Đổi</button>
 </div>
+</form>
 {% endblock %}

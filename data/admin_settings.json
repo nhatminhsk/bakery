@@ -1,0 +1,14 @@
+{
+  "store_name": "BubbleBakery",
+  "contact_email": "contact@bubblebakery.vn",
+  "phone": "+84 (0) 123 456 789",
+  "address": "123 Đường Bánh Tươi, Quận 1, TP.HCM",
+  "delivery_base_fee": 20000,
+  "free_shipping_min": 50000,
+  "delivery_eta": "24 giờ",
+  "same_day_delivery": true,
+  "payment_cod": true,
+  "payment_credit_card": true,
+  "payment_bank_transfer": true,
+  "payment_ewallet": false
+}

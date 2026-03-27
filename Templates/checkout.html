@@ -181,64 +181,89 @@
         <div class="form-row">
             <div class="form-group">
                 <label for="firstName">Tên</label>
-                <input type="text" id="firstName" name="firstName" required>
+                <input type="text" id="firstName" name="firstName" value="{{ checkout_data.first_name or '' }}" required>
             </div>
             <div class="form-group">
                 <label for="lastName">Họ</label>
-                <input type="text" id="lastName" name="lastName" required>
+                <input type="text" id="lastName" name="lastName" value="{{ checkout_data.last_name or '' }}" required>
             </div>
         </div>
 
         <div class="form-group">
             <label for="email">Email</label>
-            <input type="email" id="email" name="email" required>
+            <input type="email" id="email" name="email" value="{{ checkout_data.email or current_user.email or '' }}" required>
         </div>
 
         <div class="form-group">
             <label for="phone">Số Điện Thoại</label>
-            <input type="tel" id="phone" name="phone" required>
+            <input type="tel" id="phone" name="phone" value="{{ checkout_data.phone or '' }}" required>
         </div>
 
         <!-- Shipping Address -->
         <h2 class="section-title">Địa Chỉ Giao Hàng</h2>
         <div class="form-group">
             <label for="address">Địa Chỉ</label>
-            <input type="text" id="address" name="address" required>
+            <input type="text" id="address" name="address" value="{{ checkout_data.address or '' }}" required>
         </div>
 
         <div class="form-row">
             <div class="form-group">
                 <label for="city">Thành Phố</label>
-                <input type="text" id="city" name="city" required>
+                <input type="text" id="city" name="city" value="{{ checkout_data.city or '' }}" required>
             </div>
             <div class="form-group">
                 <label for="district">Quận/Huyện</label>
-                <input type="text" id="district" name="district" required>
+                <input type="text" id="district" name="district" value="{{ checkout_data.district or '' }}" required>
             </div>
         </div>
 
         <div class="form-group">
             <label for="zipcode">Mã Bưu Điện</label>
-            <input type="text" id="zipcode" name="zipcode" required>
+            <input type="text" id="zipcode" name="zipcode" value="{{ checkout_data.zipcode or '' }}" required>
+        </div>
+
+        <!-- Voucher -->
+        <h2 class="section-title">🎟️ Voucher Giảm Giá</h2>
+        <div class="form-group">
+            <label for="voucher_code">Chọn mã giảm giá</label>
+            <select id="voucher_code" name="voucher_code" data-subtotal="{{ subtotal }}">
+                <option value="">-- Không áp dụng --</option>
+                {% for promo in promotions %}
+                <option
+                    value="{{ promo.code }}"
+                    data-type="{{ promo.type }}"
+                    data-value="{{ promo.value }}"
+                    data-min-order="{{ promo.min_order or 0 }}"
+                    {% if selected_voucher_code == promo.code %}selected{% endif %}
+                >
+                    {{ promo.code }} -
+                    {% if promo.type == 'percent' %}Giảm {{ promo.value }}%{% else %}Giảm ₫{{ "{:,}".format(promo.value) }}{% endif %}
+                    (Đơn từ ₫{{ "{:,}".format(promo.min_order or 0) }})
+                </option>
+                {% endfor %}
+            </select>
+            {% if not promotions %}
+            <small style="color: #9ca3af;">Bạn đã dùng hết voucher khả dụng.</small>
+            {% endif %}
         </div>
 
         <!-- Payment Method -->
         <h2 class="section-title">Phương Thức Thanh Toán</h2>
         <div class="payment-methods">
             <label class="payment-method">
-                <input type="radio" name="payment" value="cod" checked>
+                <input type="radio" name="payment" value="cod" {% if (checkout_data.payment or 'cod') == 'cod' %}checked{% endif %}>
                 <span>💵 Thanh Toán Khi Nhận</span>
             </label>
             <label class="payment-method">
-                <input type="radio" name="payment" value="card">
+                <input type="radio" name="payment" value="card" {% if checkout_data.payment == 'card' %}checked{% endif %}>
                 <span>💳 Thẻ Tín Dụng</span>
             </label>
             <label class="payment-method">
-                <input type="radio" name="payment" value="bank">
+                <input type="radio" name="payment" value="bank" {% if checkout_data.payment == 'bank' %}checked{% endif %}>
                 <span>🏦 Chuyển Khoản</span>
             </label>
             <label class="payment-method">
-                <input type="radio" name="payment" value="wallet">
+                <input type="radio" name="payment" value="wallet" {% if checkout_data.payment == 'wallet' %}checked{% endif %}>
                 <span>💰 Ví Điện Tử</span>
             </label>
         </div>
@@ -247,7 +272,7 @@
         <h2 class="section-title">Ghi Chú Đơn Hàng</h2>
         <div class="form-group">
             <label for="notes">Ghi chú (tùy chọn)</label>
-            <textarea id="notes" name="note" placeholder="Thêm ghi chú cho đơn hàng của bạn..."></textarea>
+            <textarea id="notes" name="note" placeholder="Thêm ghi chú cho đơn hàng của bạn...">{{ checkout_data.note or '' }}</textarea>
         </div>
 
         <button type="submit" class="place-order-btn">Đặt Hàng Ngay</button>
@@ -268,19 +293,29 @@
 
         <div class="summary-item" style="padding: 1rem 0; border-bottom: none;">
             <span>Tạm tính:</span>
-            <span>₫{{ "{:,}".format(total) }}</span>
+            <span id="checkout-subtotal">₫{{ "{:,}".format(subtotal) }}</span>
+        </div>
+
+        <div class="summary-item" style="padding: 1rem 0; border-bottom: none; color: #22c55e;">
+            <span>Giảm giá:</span>
+            <span id="checkout-discount">-₫{{ "{:,}".format(discount_amount) }}</span>
+        </div>
+
+        <div class="summary-item" style="padding: 1rem 0; border-bottom: none;">
+            <span>Sau giảm:</span>
+            <span id="checkout-after-discount">₫{{ "{:,}".format(discounted_subtotal) }}</span>
         </div>
         
         <div class="summary-item" style="padding: 1rem 0; border-bottom: none;">
             <span>Vận chuyển:</span>
-            <span {% if total >= 50000 %}style="color: #22c55e;"{% endif %}>
-                {% if total >= 50000 %}Miễn phí{% else %}₫20,000{% endif %}
+            <span id="checkout-shipping" {% if shipping_fee == 0 %}style="color: #22c55e;"{% endif %}>
+                {% if shipping_fee == 0 %}Miễn phí{% else %}₫{{ "{:,}".format(shipping_fee) }}{% endif %}
             </span>
         </div>
 
         <div class="summary-total">
             <span>Tổng:</span>
-            <span>₫{{ "{:,}".format(total + (0 if total >= 50000 else 20000)) }}</span>
+            <span id="checkout-grand-total">₫{{ "{:,}".format(grand_total) }}</span>
         </div>
 
         <div style="background-color: #111827; padding: 1rem; border-radius: 6px; margin-top: 1.5rem; color: #9ca3af; font-size: 0.875rem;">
@@ -290,5 +325,59 @@
         </div>
     </div>
 </div>
+
+<script>
+    (function () {
+        const voucherSelect = document.getElementById('voucher_code');
+        if (!voucherSelect) return;
+
+        const subtotal = Number(voucherSelect.dataset.subtotal || 0);
+        const discountEl = document.getElementById('checkout-discount');
+        const afterDiscountEl = document.getElementById('checkout-after-discount');
+        const shippingEl = document.getElementById('checkout-shipping');
+        const grandTotalEl = document.getElementById('checkout-grand-total');
+
+        function formatMoney(amount) {
+            return '₫' + Number(amount).toLocaleString('en-US');
+        }
+
+        function updateSummary() {
+            const option = voucherSelect.options[voucherSelect.selectedIndex];
+            const type = option?.dataset.type || '';
+            const value = Number(option?.dataset.value || 0);
+            const minOrder = Number(option?.dataset.minOrder || 0);
+
+            let discount = 0;
+            if (type && subtotal >= minOrder) {
+                if (type === 'percent') {
+                    discount = Math.floor(subtotal * value / 100);
+                } else {
+                    discount = value;
+                }
+            }
+
+            if (discount > subtotal) discount = subtotal;
+
+            const afterDiscount = subtotal - discount;
+            const shipping = afterDiscount >= 50000 || afterDiscount === 0 ? 0 : 20000;
+            const grandTotal = afterDiscount + shipping;
+
+            discountEl.textContent = '-'+formatMoney(discount);
+            afterDiscountEl.textContent = formatMoney(afterDiscount);
+            grandTotalEl.textContent = formatMoney(grandTotal);
+
+            if (shipping === 0) {
+                shippingEl.textContent = 'Miễn phí';
+                shippingEl.style.color = '#22c55e';
+            } else {
+                shippingEl.textContent = formatMoney(shipping);
+                shippingEl.style.color = '';
+            }
+        }
+
+        voucherSelect.addEventListener('change', updateSummary);
+        updateSummary();
+    })();
+</script>
 {% endblock %}
 

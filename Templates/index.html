@@ -26,9 +26,9 @@
       <div class="shop-links">
         <div><h2>Danh sách sản phẩm</h2></div>
         <div class="categories-list">
-    <a href="/products" class="category-badge {% if not selected_category %}active{% endif %}">Tất Cả</a>
+    <a href="{{ url_for('products.index') }}" class="category-badge {% if not selected_category %}active{% endif %}">Tất Cả</a>
     {% for category in categories %}
-    <a href="/products?category={{ category.name }}" 
+    <a href="{{ url_for('products.index', category=category.name) }}" 
        class="category-badge {% if selected_category == category.name %}active{% endif %}">
         {{ category.name }}
     </a>
@@ -55,12 +55,13 @@
         </select>
        </div>
       </div>
-      <div class="shop-flex consts" id="products-grid">
+      <div class="products-slider-viewport">
+      <div class="products-slider-track" id="products-grid">
     {% for product in products %}
     <div class="shop1 product-card mix {{ product.category | replace(' ', '-') }}"
      data-price="{{ product.price }}"
      data-rating="{{ product.rating }}"
-     data-date="">
+     data-date="{{ product.created_at.isoformat() if product.created_at else '' }}">
 
     <div class="shop-image">
         <img src="{{ product.image_url }}" alt="{{ product.name }}" />
@@ -96,82 +97,17 @@
     </div>
     {% endfor %}
 </div>
+      </div>
+      <div class="products-pagination" id="products-pagination">
+        <button type="button" class="category-badge" id="products-prev">Trang trước</button>
+        <div class="products-page-buttons" id="products-page-buttons"></div>
+        <button type="button" class="category-badge" id="products-next">Trang sau</button>
+      </div>
+      <div class="products-page-indicator" id="products-page-indicator"></div>
        
         
     </div>
-    <div class="bg-menu" id="menu">
-      <div class="menu-title">
-        <section>Bảng giá</section>
-        <h2>DANH SÁCH CÀ PHÊ</h2>
-        <hr />
-      </div>
-      <div class="menu-flex">
-        <div class="menu1">
-          <div class="small-image">
-            <img src="static/images/products/americano.png" alt="" />
-          </div>
-          <div><h4>Chocolate Espresso</h4></div>
-          <div class="line"></div>
-          <div><h4>50.000</h4></div>
-        </div>
-        <div class="menu1">
-          <div class="small-image">
-            <img src="static/images/products/cappucino.png" alt="" />
-          </div>
-          <div><h4>Cappucino</h4></div>
-          <div class="line"></div>
-          <div><h4>55.000</h4></div>
-        </div>
-        <div class="menu1">
-          <div class="small-image">
-            <img src="static/images/products/coffelatte.png" alt="" />
-          </div>
-          <div><h4>Coffe Latte</h4></div>
-          <div class="line"></div>
-          <div><h4>45.000</h4></div>
-        </div>
-        <div class="menu1">
-          <div class="small-image">
-            <img src="static/images/products/espresso.png" alt="" />
-          </div>
-          <div><h4>Espresso Susu</h4></div>
-          <div class="line"></div>
-          <div><h4>50.000</h4></div>
-        </div>
-        <div class="menu1">
-          <div class="small-image">
-            <img src="static/images/products/kopisusuvanilla.png" alt="" />
-          </div>
-          <div><h4>Kopi Susu Vanilla</h4></div>
-          <div class="line"></div>
-          <div><h4>55.000</h4></div>
-        </div>
-        <div class="menu1">
-          <div class="small-image">
-            <img src="static/images/products/espresso.png" alt="" />
-          </div>
-          <div><h4>Kopi Susu Caramel</h4></div>
-          <div class="line"></div>
-          <div><h4>55.000</h4></div>
-        </div>
-        <div class="menu1">
-          <div class="small-image">
-            <img src="static/images/products/americano.png" alt="" />
-          </div>
-          <div><h4>Americano</h4></div>
-          <div class="line"></div>
-          <div><h4>50.000</h4></div>
-        </div>
-        <div class="menu1">
-          <div class="small-image">
-            <img src="static/images/products/vanillalatte.png" alt="" />
-          </div>
-          <div><h4>Vanilla Latte</h4></div>
-          <div class="line"></div>
-          <div><h4>45.000</h4></div>
-        </div>
-      </div>
-    </div>
+
     <div class="bg-gallery" id="galery">
       <div class="gallery-flex">
         <div class="image-one event">

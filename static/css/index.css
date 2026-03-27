@@ -170,6 +170,64 @@
   gap: 30px; 
   align-items: stretch;
 }
+
+.products-slider-viewport {
+  overflow: hidden;
+}
+
+.products-slider-track {
+  display: flex;
+  transition: transform 0.45s ease;
+  will-change: transform;
+}
+
+.products-page {
+  min-width: 100%;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 30px;
+  align-items: stretch;
+}
+
+.products-page .shop1 {
+  width: 100% !important;
+  color: #edf2f7;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.products-pagination {
+  margin-top: 2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+
+.products-page-buttons {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.products-page-btn {
+  min-width: 40px;
+  text-align: center;
+}
+
+.products-page-indicator {
+  margin-top: 8px;
+  text-align: center;
+  color: #edf2f7;
+  font-size: 13px;
+}
+
+.products-empty {
+  color: #9ca3af;
+  text-align: center;
+  padding: 2rem 0;
+}
 .shop-flex .shop1 {
   width: 100% !important; /* Để grid tự quản lý chiều rộng */
   color: #edf2f7;
@@ -308,10 +366,18 @@
   .shop-flex .shop1 {
     width: 49%;
   }
+
+  .products-page {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 @media (max-width: 576px) {
   .shop-flex .shop1 {
     width: 100%;
+  }
+
+  .products-page {
+    grid-template-columns: 1fr;
   }
   .bg-shop .shop-links {
     flex-direction: column;

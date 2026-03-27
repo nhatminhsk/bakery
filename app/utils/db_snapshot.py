@@ -7,6 +7,12 @@ from sqlalchemy import Date, DateTime
 from app.extensions import db
 
 
+# NOTE: admin_todos are now stored in the database (admin_todos table),
+# so we no longer export/import them from JSON files.
+PRODUCT_REVIEWS_PATH = Path('data/product_reviews.json')
+ADMIN_SETTINGS_PATH = Path('data/admin_settings.json')
+
+
 def _serialize_value(value):
     if isinstance(value, (datetime, date)):
         return value.isoformat()
@@ -61,9 +67,25 @@ def export_database_snapshot(snapshot_path):
             'table_names': table_names,
         },
         'tables': tables_payload,
+        'local_files': {},
     }
 
-    target.write_text(json.dumps(payload, indent=2), encoding='utf-8')
+    # Keep product_reviews local storage in sync with DB snapshot lifecycle.
+    if PRODUCT_REVIEWS_PATH.exists():
+        try:
+            reviews_payload = json.loads(PRODUCT_REVIEWS_PATH.read_text(encoding='utf-8'))
+            payload['local_files']['product_reviews'] = reviews_payload
+        except Exception:
+            payload['local_files']['product_reviews'] = []
+
+    if ADMIN_SETTINGS_PATH.exists():
+        try:
+            settings_payload = json.loads(ADMIN_SETTINGS_PATH.read_text(encoding='utf-8'))
+            payload['local_files']['admin_settings'] = settings_payload
+        except Exception:
+            payload['local_files']['admin_settings'] = {}
+
+    target.write_text(json.dumps(payload, indent=2, ensure_ascii=False), encoding='utf-8')
 
 
 def import_database_snapshot(snapshot_path):
@@ -74,6 +96,7 @@ def import_database_snapshot(snapshot_path):
 
     payload = json.loads(source.read_text(encoding='utf-8'))
     tables_payload = payload.get('tables', {})
+    local_files_payload = payload.get('local_files', {})
 
     with db.engine.begin() as conn:
         is_sqlite = db.engine.dialect.name == 'sqlite'
@@ -102,5 +125,21 @@ def import_database_snapshot(snapshot_path):
 
         if is_sqlite:
             conn.exec_driver_sql('PRAGMA foreign_keys = ON')
+
+    # Restore product_reviews from local files only
+    # (admin_todos are now part of the database tables)
+    if 'product_reviews' in local_files_payload:
+        PRODUCT_REVIEWS_PATH.parent.mkdir(parents=True, exist_ok=True)
+        PRODUCT_REVIEWS_PATH.write_text(
+            json.dumps(local_files_payload.get('product_reviews') or [], ensure_ascii=False, indent=2),
+            encoding='utf-8',
+        )
+
+    if 'admin_settings' in local_files_payload:
+        ADMIN_SETTINGS_PATH.parent.mkdir(parents=True, exist_ok=True)
+        ADMIN_SETTINGS_PATH.write_text(
+            json.dumps(local_files_payload.get('admin_settings') or {}, ensure_ascii=False, indent=2),
+            encoding='utf-8',
+        )
 
     return True

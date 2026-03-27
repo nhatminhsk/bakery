@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+
+{% block title %}Đánh Giá Đơn Hàng{% endblock %}
+
+{% block styles %}
+<style>
+    .review-wrapper {
+        max-width: 760px;
+        margin: 0 auto;
+        display: grid;
+        gap: 1rem;
+    }
+
+    .review-panel {
+        background-color: #1f2937;
+        border: 1px solid #374151;
+        border-radius: 10px;
+        padding: 1.25rem;
+        color: #e5e7eb;
+    }
+
+    .review-title {
+        color: #fb923c;
+        margin-bottom: 0.75rem;
+    }
+
+    .review-products {
+        margin: 0;
+        padding-left: 1rem;
+        color: #d1d5db;
+    }
+
+    .review-field {
+        margin-bottom: 1rem;
+    }
+
+    .review-field label {
+        display: block;
+        margin-bottom: 0.35rem;
+        color: #fb923c;
+        font-weight: 600;
+    }
+
+    .review-field select,
+    .review-field textarea {
+        width: 100%;
+        background-color: #111827;
+        border: 1px solid #374151;
+        border-radius: 6px;
+        color: #fff;
+        padding: 10px;
+    }
+
+    .review-field textarea {
+        min-height: 130px;
+        resize: vertical;
+    }
+
+    .actions {
+        display: flex;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+    }
+
+    .btn {
+        border: none;
+        border-radius: 6px;
+        text-decoration: none;
+        padding: 0.55rem 0.9rem;
+        color: #fff;
+        font-weight: 600;
+        cursor: pointer;
+    }
+
+    .btn-primary { background-color: #fb923c; }
+    .btn-secondary { background-color: #4b5563; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="review-wrapper">
+    <div class="review-panel">
+        <h2 class="review-title">Đánh giá đơn hàng #{{ order.id }}</h2>
+        <p>Đánh giá này sẽ áp dụng cho các sản phẩm trong đơn và được hiển thị ở trang phản hồi admin.</p>
+        <ul class="review-products">
+            {% for item in order.items %}
+            <li>{{ item.name }} x {{ item.quantity }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <form class="review-panel" method="POST" action="{{ url_for('orders.review_order', order_id=order.id) }}">
+        <div class="review-field">
+            <label for="rating">Số sao</label>
+            <select id="rating" name="rating" required>
+                {% set selected_rating = rating if rating is defined else '5' %}
+                <option value="5" {% if selected_rating|string == '5' %}selected{% endif %}>5 sao - Tuyệt vời</option>
+                <option value="4" {% if selected_rating|string == '4' %}selected{% endif %}>4 sao - Hài lòng</option>
+                <option value="3" {% if selected_rating|string == '3' %}selected{% endif %}>3 sao - Bình thường</option>
+                <option value="2" {% if selected_rating|string == '2' %}selected{% endif %}>2 sao - Chưa tốt</option>
+                <option value="1" {% if selected_rating|string == '1' %}selected{% endif %}>1 sao - Cần cải thiện</option>
+            </select>
+        </div>
+
+        <div class="review-field">
+            <label for="comment">Nhận xét</label>
+            <textarea id="comment" name="comment" placeholder="Chia sẻ cảm nhận của bạn...">{{ comment if comment is defined else '' }}</textarea>
+        </div>
+
+        <div class="actions">
+            <button type="submit" class="btn btn-primary">Gửi đánh giá</button>
+            <a class="btn btn-secondary" href="{{ url_for('orders.order_detail', order_id=order.id) }}">Quay lại đơn hàng</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

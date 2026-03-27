@@ -12,6 +12,15 @@ def get_all_products(category=None, exclude_id=None, limit=None):
     return query.all()
 
 
+def get_products_paginated(category=None, page=1, per_page=16):
+    query = Product.query
+    if category:
+        query = query.filter_by(category=category)
+
+    query = query.order_by(Product.created_at.desc(), Product.id.desc())
+    return query.paginate(page=page, per_page=per_page, error_out=False)
+
+
 def get_product_by_id(product_id):
     return Product.query.get(product_id)
 

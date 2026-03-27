@@ -2,6 +2,29 @@
 
 {% block page_title %}📈 Dashboard{% endblock %}
 
+{% block extra_css %}
+<style>
+    .chart-wrap {
+        background-color: #111827;
+        border: 1px solid #374151;
+        border-radius: 8px;
+        padding: 1rem;
+        min-height: 340px;
+    }
+
+    .chart-empty {
+        color: #9ca3af;
+        text-align: center;
+        padding: 2rem 1rem;
+    }
+
+    .chart-title {
+        color: #fb923c;
+        margin-bottom: 1rem;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 <h1 class="page-title">📈 Dashboard</h1>
 
@@ -10,66 +33,108 @@
     <div class="stat-card">
         <div class="stat-icon">📊</div>
         <div class="stat-label">Doanh Thu Tuần Này</div>
-        <div class="stat-value">₫8.2M</div>
+        <div class="stat-value">₫{{ '{:,}'.format(stats.weekly_revenue or 0) }}</div>
     </div>
     <div class="stat-card">
         <div class="stat-icon">📈</div>
-        <div class="stat-label">Tăng Trưởng</div>
-        <div class="stat-value" style="color: #22c55e;">+23.5%</div>
+        <div class="stat-label">Doanh Thu Tháng Này</div>
+        <div class="stat-value" style="color: #22c55e;">₫{{ '{:,}'.format(stats.monthly_revenue or 0) }}</div>
     </div>
     <div class="stat-card">
         <div class="stat-icon">🏆</div>
-        <div class="stat-label">Top Sản Phẩm</div>
-        <div class="stat-value">Bánh Chocolate</div>
+        <div class="stat-label">Đơn Chờ Xử Lý</div>
+        <div class="stat-value">{{ stats.pending_orders or 0 }}</div>
     </div>
 </div>
 
 <!-- Analytics -->
 <div style="background-color: #1f2937; border-radius: 8px; border: 1px solid #374151; padding: 2rem; margin-top: 2rem;">
-    <h2 style="color: #fb923c; margin-bottom: 1.5rem;">📉 Thống Kê Doanh Số</h2>
-    <div style="height: 300px; background: linear-gradient(135deg, #374151 0%, #1f2937 100%); border-radius: 6px; display: flex; align-items: center; justify-content: center; color: #9ca3af;">
-        <p>📊 Biểu đồ thống kê (Cần JavaScript chart library)</p>
+    <h2 class="chart-title">📉 Doanh Số Theo Tuần (paid_at)</h2>
+    <div class="chart-wrap">
+        <canvas id="weeklyRevenueChart"></canvas>
+        <div id="weekly-empty" class="chart-empty" style="display:none;">Chưa có dữ liệu doanh số theo tuần.</div>
     </div>
 </div>
 
 <!-- Monthly Breakdown -->
 <div style="background-color: #1f2937; border-radius: 8px; border: 1px solid #374151; padding: 1.5rem; margin-top: 2rem;">
-    <h2 style="color: #fb923c; margin-bottom: 1.5rem;">📅 Phân Tích Theo Tháng</h2>
-    <div class="admin-table">
-        <table>
-            <thead>
-                <tr>
-                    <th>Tháng</th>
-                    <th>Đơn Hàng</th>
-                    <th>Doanh Thu</th>
-                    <th>Lợi Nhuận</th>
-                    <th>Tăng Trưởng</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>Tháng 1</td>
-                    <td>156</td>
-                    <td>₫4.8M</td>
-                    <td>₫1.2M</td>
-                    <td><span style="color: #22c55e;">+15%</span></td>
-                </tr>
-                <tr>
-                    <td>Tháng 2</td>
-                    <td>189</td>
-                    <td>₫5.6M</td>
-                    <td>₫1.5M</td>
-                    <td><span style="color: #22c55e;">+18%</span></td>
-                </tr>
-                <tr>
-                    <td>Tháng 3</td>
-                    <td>212</td>
-                    <td>₫6.4M</td>
-                    <td>₫1.8M</td>
-                    <td><span style="color: #22c55e;">+12%</span></td>
-                </tr>
-            </tbody>
-        </table>
+    <h2 class="chart-title">📅 Doanh Số Theo Tháng (paid_at)</h2>
+    <div class="chart-wrap">
+        <canvas id="monthlyRevenueChart"></canvas>
+        <div id="monthly-empty" class="chart-empty" style="display:none;">Chưa có dữ liệu doanh số theo tháng.</div>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const weeklySeries = {{ stats.weekly_revenue_series | tojson }};
+    const monthlySeries = {{ stats.monthly_revenue_series | tojson }};
+
+    function formatVnd(value) {
+        return new Intl.NumberFormat('vi-VN').format(value || 0) + ' đ';
+    }
+
+    function renderRevenueLineChart(canvasId, emptyId, series, lineColor) {
+        const canvas = document.getElementById(canvasId);
+        const empty = document.getElementById(emptyId);
+
+        if (!series || series.length === 0) {
+            canvas.style.display = 'none';
+            empty.style.display = 'block';
+            return;
+        }
+
+        const labels = series.map(item => item.period);
+        const revenues = series.map(item => item.revenue || 0);
+
+        new Chart(canvas, {
+            type: 'line',
+            data: {
+                labels,
+                datasets: [{
+                    label: 'Doanh thu',
+                    data: revenues,
+                    borderColor: lineColor,
+                    backgroundColor: lineColor + '33',
+                    fill: true,
+                    tension: 0.35,
+                    pointRadius: 4,
+                    pointHoverRadius: 6,
+                }],
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: {
+                        ticks: { color: '#d1d5db' },
+                        grid: { color: '#374151' },
+                    },
+                    y: {
+                        ticks: {
+                            color: '#d1d5db',
+                            callback: value => formatVnd(value),
+                        },
+                        grid: { color: '#374151' },
+                    },
+                },
+                plugins: {
+                    legend: {
+                        labels: { color: '#f3f4f6' },
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: context => ' ' + formatVnd(context.parsed.y),
+                        },
+                    },
+                },
+            },
+        });
+    }
+
+    renderRevenueLineChart('weeklyRevenueChart', 'weekly-empty', weeklySeries, '#fb923c');
+    renderRevenueLineChart('monthlyRevenueChart', 'monthly-empty', monthlySeries, '#22c55e');
+</script>
 {% endblock %}

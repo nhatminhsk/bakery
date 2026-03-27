@@ -5,16 +5,26 @@
 {% block content %}
 <h1 class="page-title">💬 Phản Hồi Khách Hàng</h1>
 
-<div style="margin-bottom: 1.5rem; display: flex; gap: 1rem;">
-    <input type="text" placeholder="🔍 Tìm kiếm phản hồi..." style="flex: 1; padding: 10px; background-color: #1f2937; border: 1px solid #374151; border-radius: 6px; color: #fff;">
-    <select style="padding: 10px; background-color: #1f2937; border: 1px solid #374151; border-radius: 6px; color: #fff;">
-        <option>Tất Cả</option>
-        <option>⭐⭐⭐⭐⭐ 5 Sao</option>
-        <option>⭐⭐⭐⭐ 4 Sao</option>
-        <option>⭐⭐⭐ 3 Sao</option>
-        <option>Chưa Trả Lời</option>
+<form method="GET" action="{{ url_for('admin.feedbacks') }}" style="margin-bottom: 1.5rem; display: flex; gap: 1rem;">
+    <input
+        type="text"
+        name="q"
+        value="{{ feedback.search }}"
+        placeholder="🔍 Tìm kiếm phản hồi..."
+        style="flex: 1; padding: 10px; background-color: #1f2937; border: 1px solid #374151; border-radius: 6px; color: #fff;"
+    >
+    <select name="rating" style="padding: 10px; background-color: #1f2937; border: 1px solid #374151; border-radius: 6px; color: #fff;">
+        <option value="all" {% if feedback.rating_filter == 'all' %}selected{% endif %}>Tất cả</option>
+        <option value="5" {% if feedback.rating_filter == '5' %}selected{% endif %}>⭐⭐⭐⭐⭐ 5 sao</option>
+        <option value="4" {% if feedback.rating_filter == '4' %}selected{% endif %}>⭐⭐⭐⭐ 4 sao</option>
+        <option value="3" {% if feedback.rating_filter == '3' %}selected{% endif %}>⭐⭐⭐ 3 sao</option>
+        <option value="2" {% if feedback.rating_filter == '2' %}selected{% endif %}>⭐⭐ 2 sao</option>
+        <option value="1" {% if feedback.rating_filter == '1' %}selected{% endif %}>⭐ 1 sao</option>
     </select>
-</div>
+    <button type="submit" class="admin-btn">Lọc</button>
+</form>
+
+<div style="margin-bottom: 1rem; color: #9ca3af;">Tổng phản hồi: {{ feedback.total }}</div>
 
 <div class="admin-table">
     <table>
@@ -24,45 +34,167 @@
                 <th>Sản Phẩm</th>
                 <th>Đánh Giá</th>
                 <th>Nhận Xét</th>
+                <th>Phản Hồi</th>
                 <th>Ngày</th>
                 <th>Hành Động</th>
             </tr>
         </thead>
         <tbody>
-            <tr>
-                <td>Nguyễn Văn A</td>
-                <td>Bánh Chocolate</td>
-                <td>⭐⭐⭐⭐⭐ (5/5)</td>
-                <td style="max-width: 200px; overflow: hidden; text-overflow: ellipsis;">Bánh rất ngon, hương vị tuyệt vời, sẽ mua lại!</td>
-                <td>03/10</td>
-                <td>
-                    <button style="padding: 6px 12px; background-color: #374151; color: #fw923c; border: none; border-radius: 4px; cursor: pointer; margin-right: 4px;">💬 Trả Lời</button>
-                    <button style="padding: 6px 12px; background-color: #dc2626; color: white; border: none; border-radius: 4px; cursor: pointer;">🗑️ Xóa</button>
-                </td>
-            </tr>
-            <tr>
-                <td>Trần Thị B</td>
-                <td>Bánh Bagel Cá Hồi</td>
-                <td>⭐⭐⭐⭐ (4/5)</td>
-                <td style="max-width: 200px; overflow: hidden; text-overflow: ellipsis;">Tốt nhưng hơi mặn một chút, nhưng vẫn ngon</td>
-                <td>02/10</td>
-                <td>
-                    <button style="padding: 6px 12px; background-color: #374151; color: #fb923c; border: none; border-radius: 4px; cursor: pointer; margin-right: 4px;">💬 Trả Lời</button>
-                    <button style="padding: 6px 12px; background-color: #dc2626; color: white; border: none; border-radius: 4px; cursor: pointer;">🗑️ Xóa</button>
-                </td>
-            </tr>
-            <tr>
-                <td>Lê Văn C</td>
-                <td>Bánh Tiramisu</td>
-                <td>⭐⭐⭐⭐⭐ (5/5)</td>
-                <td style="max-width: 200px; overflow: hidden; text-overflow: ellipsis;">Tuyệt vời! Gia đình tôi đều thích. Sẽ giới thiệu bạn bè.</td>
-                <td>01/10</td>
-                <td>
-                    <button style="padding: 6px 12px; background-color: #374151; color: #fb923c; border: none; border-radius: 4px; cursor: pointer; margin-right: 4px;">💬 Trả Lời</button>
-                    <button style="padding: 6px 12px; background-color: #dc2626; color: white; border: none; border-radius: 4px; cursor: pointer;">🗑️ Xóa</button>
-                </td>
-            </tr>
+            {% if feedback['items'] %}
+                {% for item in feedback['items'] %}
+                <tr>
+                    <td>{{ item.username }}</td>
+                    <td>{{ item.product_name }}</td>
+                    <td>{{ '⭐' * (item.rating or 0) }} ({{ item.rating }}/5)</td>
+                    <td style="max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 0.9rem;">{{ item.comment or '-' }}</td>
+                    <td style="max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 0.9rem; color: #9ca3af;">
+                        {% if item.admin_reply %}
+                            <span style="color: #10b981;">✓ Đã phản hồi</span>
+                        {% else %}
+                            <span style="color: #ef4444;">-</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ item.created_at[:10] if item.created_at else '-' }}</td>
+                    <td>
+                        <button 
+                            class="admin-btn" 
+                            style="padding: 6px 12px; font-size: 0.9rem;"
+                            onclick="openReplyModal({{ item.id }}, '{{ item.username }}', '{{ item.product_name }}')"
+                        >
+                            💬 Phản Hồi
+                        </button>
+                    </td>
+                </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td colspan="7" style="text-align:center; color:#9ca3af;">Chưa có phản hồi nào.</td>
+                </tr>
+            {% endif %}
         </tbody>
     </table>
 </div>
+
+<!-- Modal for Reply -->
+<div id="replyModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1000; padding-top: 2rem;">
+    <div style="background: #111827; border: 1px solid #374151; border-radius: 8px; max-width: 600px; margin: 0 auto; padding: 2rem; max-height: 80vh; overflow-y: auto;">
+        <h2 style="margin-top: 0; color: #fff;">Phản Hồi Đánh Giá</h2>
+        
+        <div style="margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid #374151;">
+            <p style="margin: 0.5rem 0; color: #9ca3af;"><strong>Khách hàng:</strong> <span id="modalUsername"></span></p>
+            <p style="margin: 0.5rem 0; color: #9ca3af;"><strong>Sản phẩm:</strong> <span id="modalProductName"></span></p>
+            <p style="margin: 0.5rem 0; color: #9ca3af;"><strong>Nhận xét:</strong> <span id="modalComment" style="display: block; margin-top: 0.5rem; font-style: italic;"></span></p>
+        </div>
+        
+        <form id="replyForm" onsubmit="submitReply(event)">
+            <div style="margin-bottom: 1rem;">
+                <label for="replyText" style="display: block; margin-bottom: 0.5rem; color: #fff;">Nội dung phản hồi:<span style="color: #ef4444;">*</span></label>
+                <textarea 
+                    id="replyText"
+                    name="reply"
+                    rows="5"
+                    placeholder="Nhập nội dung phản hồi..."
+                    style="width: 100%; padding: 10px; background-color: #1f2937; border: 1px solid #374151; border-radius: 6px; color: #fff; box-sizing: border-box; font-family: inherit;"
+                    required
+                ></textarea>
+            </div>
+            
+            <div style="margin-bottom: 1rem; padding: 1rem; background: #1f2937; border-radius: 6px; display: none;" id="existingReplyBox">
+                <p style="margin: 0 0 0.5rem 0; color: #9ca3af;"><strong>Phản hồi hiện tại:</strong></p>
+                <p id="existingReplyText" style="margin: 0; color: #fff; font-style: italic;"></p>
+                <p id="existingReplyTime" style="margin: 0.5rem 0 0 0; font-size: 0.85rem; color: #6b7280;"></p>
+            </div>
+            
+            <div style="display: flex; gap: 1rem;">
+                <button type="submit" class="admin-btn" style="flex: 1;">Gửi Phản Hồi</button>
+                <button type="button" class="admin-btn" style="flex: 1; background: #6b7280;" onclick="closeReplyModal()">Đóng</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    .admin-table table th, .admin-table table td {
+        padding: 12px 8px;
+    }
+</style>
+
+<script>
+let currentReviewId = null;
+
+function openReplyModal(reviewId, username, productName) {
+    currentReviewId = reviewId;
+    
+    // Fetch review details
+    fetch(`{{ url_for('admin.review_reply_form', review_id=0) }}`.replace('0', reviewId))
+        .then(res => res.json())
+        .then(data => {
+            document.getElementById('modalUsername').textContent = data.username;
+            document.getElementById('modalProductName').textContent = data.product_name;
+            document.getElementById('modalComment').textContent = data.comment || '(Không có bình luận)';
+            
+            const replyText = document.getElementById('replyText');
+            replyText.value = '';
+            
+            if (data.admin_reply) {
+                document.getElementById('replyText').value = data.admin_reply;
+                const existingBox = document.getElementById('existingReplyBox');
+                existingBox.style.display = 'block';
+                document.getElementById('existingReplyText').textContent = data.admin_reply;
+                document.getElementById('existingReplyTime').textContent = 'Cập nhật lần cuối: ' + (data.admin_reply_at ? data.admin_reply_at.slice(0, 10) : '');
+            } else {
+                document.getElementById('existingReplyBox').style.display = 'none';
+            }
+            
+            document.getElementById('replyModal').style.display = 'block';
+        })
+        .catch(err => {
+            alert('Lỗi khi tải thông tin: ' + err);
+        });
+}
+
+function closeReplyModal() {
+    document.getElementById('replyModal').style.display = 'none';
+    currentReviewId = null;
+}
+
+function submitReply(event) {
+    event.preventDefault();
+    
+    const replyText = document.getElementById('replyText').value.trim();
+    if (!replyText) {
+        alert('Vui lòng nhập nội dung phản hồi');
+        return;
+    }
+    
+    const formData = new FormData();
+    formData.append('reply', replyText);
+    
+    fetch(`{{ url_for('admin.review_reply_submit', review_id=0) }}`.replace('0', currentReviewId), {
+        method: 'POST',
+        body: formData
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            alert('Phản hồi đã được gửi thành công');
+            closeReplyModal();
+            location.reload();
+        } else {
+            alert('Lỗi: ' + (data.error || 'Không thể gửi phản hồi'));
+        }
+    })
+    .catch(err => {
+        alert('Lỗi hệ thống: ' + err);
+    });
+}
+
+// Close modal when clicking outside
+document.addEventListener('click', function(event) {
+    const modal = document.getElementById('replyModal');
+    if (event.target === modal) {
+        closeReplyModal();
+    }
+});
+</script>
 {% endblock %}

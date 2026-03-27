@@ -5,33 +5,80 @@
 {% block content %}
 <h1 class="page-title">📊 Tổng Quan</h1>
 
+<style>
+    .filter-group {
+        display: flex;
+        gap: 0.75rem;
+        margin-bottom: 1.5rem;
+        flex-wrap: wrap;
+    }
+
+    .filter-btn {
+        display: inline-block;
+        padding: 0.45rem 0.9rem;
+        border: 1px solid #374151;
+        border-radius: 999px;
+        color: #d1d5db;
+        text-decoration: none;
+        background-color: #1f2937;
+        font-weight: 600;
+    }
+
+    .filter-btn.active {
+        background-color: #fb923c;
+        border-color: #fb923c;
+        color: #fff;
+    }
+
+    .status-badge {
+        display: inline-block;
+        padding: 4px 8px;
+        border-radius: 999px;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+
+    .status-pending { background-color: #f59e0b; color: #fff; }
+    .status-confirmed { background-color: #22c55e; color: #fff; }
+    .status-processing { background-color: #3b82f6; color: #fff; }
+    .status-delivered { background-color: #8b5cf6; color: #fff; }
+    .status-cancelled { background-color: #ef4444; color: #fff; }
+</style>
+
+<div class="filter-group">
+    <a href="{{ url_for('admin.overview', period='all') }}" class="filter-btn {% if overview.selected_period == 'all' %}active{% endif %}">Tất cả</a>
+    <a href="{{ url_for('admin.overview', period='today') }}" class="filter-btn {% if overview.selected_period == 'today' %}active{% endif %}">Hôm nay</a>
+    <a href="{{ url_for('admin.overview', period='yesterday') }}" class="filter-btn {% if overview.selected_period == 'yesterday' %}active{% endif %}">Hôm qua</a>
+    <a href="{{ url_for('admin.overview', period='week') }}" class="filter-btn {% if overview.selected_period == 'week' %}active{% endif %}">Tuần này</a>
+</div>
+
 <!-- Stats -->
 <div class="stats-grid">
     <div class="stat-card">
         <div class="stat-icon">🛍️</div>
-        <div class="stat-label">Đơn Hàng Hôm Nay</div>
-        <div class="stat-value">24</div>
+        <div class="stat-label">Đơn Hàng {{ overview.period_label }}</div>
+        <div class="stat-value">{{ overview.order_count }}</div>
     </div>
     <div class="stat-card">
         <div class="stat-icon">💰</div>
-        <div class="stat-label">Tổng Doanh Thu</div>
-        <div class="stat-value">₫2.4M</div>
+        <div class="stat-label">Doanh Thu {{ overview.period_label }}</div>
+        <div class="stat-value">₫{{ '{:,}'.format(overview.revenue) }}</div>
     </div>
     <div class="stat-card">
         <div class="stat-icon">👥</div>
-        <div class="stat-label">Khách Hàng Mới</div>
-        <div class="stat-value">12</div>
+        <div class="stat-label">Tổng Khách Hàng</div>
+        <div class="stat-value">{{ stats.total_users }}</div>
     </div>
     <div class="stat-card">
         <div class="stat-icon">⭐</div>
-        <div class="stat-label">Điểm Đánh Giá</div>
-        <div class="stat-value">4.8/5.0</div>
+        <div class="stat-label">Đơn Hoàn Tất</div>
+        <div class="stat-value">{{ overview.completed_count }}</div>
     </div>
 </div>
 
 <!-- Recent Orders -->
 <div style="background-color: #1f2937; border-radius: 8px; border: 1px solid #374151; padding: 1.5rem; margin-top: 2rem;">
-    <h2 style="color: #fb923c; margin-bottom: 1.5rem;">📦 Đơn Hàng Gần Đây</h2>
+    <h2 style="color: #fb923c; margin-bottom: 1.5rem;">📦 Đơn Hàng {{ overview.period_label }}</h2>
     <div class="admin-table">
         <table>
             <thead>
@@ -40,31 +87,40 @@
                     <th>Khách Hàng</th>
                     <th>Sản Phẩm</th>
                     <th>Giá</th>
+                    <th>Thời Gian</th>
                     <th>Trạng Thái</th>
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td>#ORD-001</td>
-                    <td>Nguyễn Văn A</td>
-                    <td>Bánh Chocolate x2</td>
-                    <td>₫90,000</td>
-                    <td><span class="status-badge status-success">✓ Hoàn Tất</span></td>
-                </tr>
-                <tr>
-                    <td>#ORD-002</td>
-                    <td>Trần Thị B</td>
-                    <td>Bánh Bagel Cá Hồi x1</td>
-                    <td>₫22,000</td>
-                    <td><span class="status-badge status-pending">⏱ Xử Lý</span></td>
-                </tr>
-                <tr>
-                    <td>#ORD-003</td>
-                    <td>Lê Văn C</td>
-                    <td>Bánh Tiramisu x3</td>
-                    <td>₫114,000</td>
-                    <td><span class="status-badge status-pending">⏱ Chờ</span></td>
-                </tr>
+                {% if overview.orders %}
+                    {% for order in overview.orders %}
+                    <tr>
+                        <td>#{{ order.id }}</td>
+                        <td>{{ order.customer.username if order.customer else 'N/A' }}</td>
+                        <td>
+                            {% if order.items %}
+                                {% for item in order.items[:2] %}
+                                    {{ item.name }}{% if not loop.last %}, {% endif %}
+                                {% endfor %}
+                                {% if order.items|length > 2 %}...{% endif %}
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                        <td>₫{{ '{:,}'.format((order.total or 0) + (order.shipping_fee or 0)) }}</td>
+                        <td>{{ order.created_at.strftime('%d/%m/%Y %H:%M') if order.created_at else '-' }}</td>
+                        <td>
+                            <span class="status-badge status-{{ order.status }}">
+                                {{ order.status }}
+                            </span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="6" style="text-align: center; color: #9ca3af;">Không có đơn hàng trong khoảng thời gian này.</td>
+                    </tr>
+                {% endif %}
             </tbody>
         </table>
     </div>
