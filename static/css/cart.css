@@ -171,6 +171,9 @@
         cursor: pointer;
         transition: all 0.3s;
         margin-bottom: 1rem;
+        display: block;
+        text-align: center;
+        text-decoration: none;
     }
 
     .checkout-btn:hover {
@@ -190,6 +193,7 @@
         text-decoration: none;
         text-align: center;
         display: block;
+        margin-top: 0.25rem;
     }
 
     .continue-btn:hover {

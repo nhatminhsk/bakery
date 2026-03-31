@@ -2,7 +2,7 @@
 
 {% block title %}{{ product.name }} - BubbleBakery{% endblock %}
 
-{% block extra_css %}
+{% block styles %}
 <style>
     .product-detail-container {
         display: grid;
@@ -222,7 +222,7 @@
 <div style="margin-bottom: 2rem; color: #9ca3af;">
     <a href="/" style="color: #fb923c; text-decoration: none;">Trang Chủ</a>
     <span> / </span>
-    <a href="/index" style="color: #fb923c; text-decoration: none;">Sản Phẩm</a>
+    <a href="{{ url_for('products.index') }}" style="color: #fb923c; text-decoration: none;">Sản Phẩm</a>
     <span> / {{ product.name }}</span>
 </div>
 
@@ -235,8 +235,8 @@
         <h1 class="product-title">{{ product.name }}</h1>
         
         <div class="product-rating">
-            <span class="stars">⭐ {{ product.rating }} / 5.0</span>
-            <span style="color: #9ca3af;">({{ product.reviewCount }} đánh giá)</span>
+            <span class="stars">⭐ {{ product.rating or 0 }} / 5.0</span>
+            <span style="color: #9ca3af;">({{ product.reviewCount or 0 }} đánh giá)</span>
         </div>
 
         <div class="product-price">₫{{ "{:,}".format(product.price) }}</div>
@@ -252,7 +252,7 @@
             </div>
             <div class="spec-item">
                 <span class="spec-label">Tình Trạng</span>
-                <span class="spec-value">{% if product.inStock %}Còn Hàng{% else %}Hết Hàng{% endif %}</span>
+                <span class="spec-value">{% if product.inStock is not defined or product.inStock %}Còn Hàng{% else %}Hết Hàng{% endif %}</span>
             </div>
             <div class="spec-item">
                 <span class="spec-label">Giao Hàng</span>
@@ -267,10 +267,10 @@
         </div>
 
         <div class="action-buttons">
-            <button class="btn-large btn-buy" onclick="addToCart({{ product.id }})">
+            <button class="btn-large btn-buy" data-product-id="{{ product.id }}" id="btn-add-to-cart" type="button">
                 🛒 Thêm Vào Giỏ
             </button>
-            <button class="btn-large btn-wishlist">
+            <button class="btn-large btn-wishlist" data-product-id="{{ product.id }}" id="btn-add-to-wishlist" type="button">
                 ❤️ Thêm Vào Yêu Thích
             </button>
         </div>
@@ -293,43 +293,96 @@
     <h2 class="section-title">Sản Phẩm Liên Quan</h2>
     <div class="related-grid">
         {% for related in related_products %}
-        <a href="/product/{{ related.id }}" style="text-decoration: none; color: inherit;">
-            <div class="related-card">
-                <img src="{{ related.image_url }}" alt="{{ related.name }}" class="related-image">
-                <div class="related-info">
-                    <div class="related-name">{{ related.name }}</div>
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
-                        <span style="color: #fbbf24;">⭐ {{ related.rating }}</span>
-                    </div>
-                    <div class="related-price">₫{{ "{:,}".format(related.price) }}</div>
-                    <button class="btn-add" onclick="event.preventDefault(); addToCart({{ related.id }});" style="width: 100%; border: none; padding: 8px; background-color: #fb923c; color: white; border-radius: 6px; cursor: pointer;">
-                        🛒 Thêm
-                    </button>
+        <div class="related-card" style="cursor: pointer;" data-product-url="/product/{{ related.id }}">
+            <img src="{{ related.image_url }}" alt="{{ related.name }}" class="related-image">
+            <div class="related-info">
+                <div class="related-name">{{ related.name }}</div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                    <span style="color: #fbbf24;">⭐ {{ related.rating or 0 }}</span>
                 </div>
+                <div class="related-price">₫{{ "{:,}".format(related.price) }}</div>
+                <button class="btn-add btn-add-quick" data-product-id="{{ related.id }}" style="width: 100%; border: none; padding: 8px; background-color: #fb923c; color: white; border-radius: 6px; cursor: pointer; font-weight: 600;">
+                    🛒 Thêm
+                </button>
             </div>
-        </a>
+        </div>
         {% endfor %}
     </div>
 </div>
 {% endif %}
 {% endblock %}
 
-{% block extra_js %}
+{% block scripts %}
 <script>
+    // Event bindings
+    document.addEventListener('DOMContentLoaded', function() {
+        // Main product add to cart
+        const btnAddCart = document.getElementById('btn-add-to-cart');
+        if (btnAddCart) {
+            btnAddCart.addEventListener('click', function() {
+                const productId = this.getAttribute('data-product-id');
+                addToCart(parseInt(productId));
+            });
+        }
+        
+        // Main product add to wishlist
+        const btnWishlist = document.getElementById('btn-add-to-wishlist');
+        if (btnWishlist) {
+            btnWishlist.addEventListener('click', function() {
+                const productId = this.getAttribute('data-product-id');
+                addToWishlist(parseInt(productId));
+            });
+        }
+        
+        // Related products: click card to navigate
+        const relatedCards = document.querySelectorAll('.related-card');
+        relatedCards.forEach(card => {
+            const link = card.getAttribute('data-product-url');
+            card.addEventListener('click', function(e) {
+                if (!e.target.closest('.btn-add-quick')) {
+                    window.location.href = link;
+                }
+            });
+        });
+        
+        // Related products: quick add button
+        const btnAddQuick = document.querySelectorAll('.btn-add-quick');
+        btnAddQuick.forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const productId = this.getAttribute('data-product-id');
+                addToCart(parseInt(productId), 1);
+            });
+        });
+    });
+
     function increaseQuantity() {
         const input = document.getElementById('quantity');
-        input.value = parseInt(input.value) + 1;
+        const currentValue = parseInt(input.value) || 1;
+        const maxValue = parseInt(input.getAttribute('max')) || 10;
+        if (currentValue < maxValue) {
+            input.value = currentValue + 1;
+        }
     }
 
     function decreaseQuantity() {
         const input = document.getElementById('quantity');
-        if (parseInt(input.value) > 1) {
-            input.value = parseInt(input.value) - 1;
+        const currentValue = parseInt(input.value) || 1;
+        const minValue = parseInt(input.getAttribute('min')) || 1;
+        if (currentValue > minValue) {
+            input.value = currentValue - 1;
         }
     }
 
-    function addToCart(productId) {
-        const quantity = parseInt(document.getElementById('quantity').value);
+    function addToCart(productId, defaultQuantity = null) {
+        const quantityElement = document.getElementById('quantity');
+        let quantity = 1;
+        if (defaultQuantity !== null) {
+            quantity = defaultQuantity;
+        } else if (quantityElement) {
+            quantity = parseInt(quantityElement.value) || 1;
+        }
+        
         fetch('/api/cart/add', {
             method: 'POST',
             headers: {
@@ -344,15 +397,52 @@
         .then(data => {
             if (data.success) {
                 alert('Đã thêm ' + quantity + ' sản phẩm vào giỏ hàng!');
-                updateCartCount();
+                updateCartCount(quantity);
+            } else {
+                alert('Có lỗi xảy ra. Vui lòng thử lại.');
             }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Có lỗi xảy ra. Vui lòng thử lại.');
         });
     }
 
-    function updateCartCount() {
+    function updateCartCount(quantity = 1) {
         const cartCount = document.getElementById('cart-count');
-        const current = parseInt(cartCount.textContent) || 0;
-        cartCount.textContent = current + 1;
+        if (cartCount) {
+            const current = parseInt(cartCount.textContent) || 0;
+            cartCount.textContent = current + quantity;
+        }
+        // Reset quantity input
+        const quantityInput = document.getElementById('quantity');
+        if (quantityInput) {
+            quantityInput.value = 1;
+        }
+    }
+
+    function addToWishlist(productId) {
+        fetch('/api/wishlist/add', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                product_id: productId
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Đã thêm sản phẩm vào yêu thích!');
+            } else {
+                alert('Có lỗi xảy ra. Vui lòng thử lại.');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Có lỗi xảy ra. Vui lòng thử lại.');
+        });
     }
 </script>
 {% endblock %}
