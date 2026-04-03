@@ -4,26 +4,18 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="e51cebda-8123-4506-928c-d11624fa9a34" name="Changes" comment="">
+    <list default="true" id="e51cebda-8123-4506-928c-d11624fa9a34" name="Changes" comment="UPDATE CLOUD, DATABASE">
       <change afterPath="$PROJECT_DIR$/.env" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/chat/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/chat/api_chat.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/chat/routes.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/bakery.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/bakery.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Templates/admin/base.html" beforeDir="false" afterPath="$PROJECT_DIR$/Templates/admin/base.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Templates/admin/dashboard.html" beforeDir="false" afterPath="$PROJECT_DIR$/Templates/admin/dashboard.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Templates/admin/feedbacks.html" beforeDir="false" afterPath="$PROJECT_DIR$/Templates/admin/feedbacks.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Templates/admin/new_orders.html" beforeDir="false" afterPath="$PROJECT_DIR$/Templates/admin/new_orders.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Templates/admin/overview.html" beforeDir="false" afterPath="$PROJECT_DIR$/Templates/admin/overview.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Templates/admin/products.html" beforeDir="false" afterPath="$PROJECT_DIR$/Templates/admin/products.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Templates/admin/settings.html" beforeDir="false" afterPath="$PROJECT_DIR$/Templates/admin/settings.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Templates/admin/todo_lists.html" beforeDir="false" afterPath="$PROJECT_DIR$/Templates/admin/todo_lists.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Templates/cart.html" beforeDir="false" afterPath="$PROJECT_DIR$/Templates/cart.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Templates/checkout.html" beforeDir="false" afterPath="$PROJECT_DIR$/Templates/checkout.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Templates/login.html" beforeDir="false" afterPath="$PROJECT_DIR$/Templates/login.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Templates/product_detail.html" beforeDir="false" afterPath="$PROJECT_DIR$/Templates/product_detail.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Templates/search.html" beforeDir="false" afterPath="$PROJECT_DIR$/Templates/search.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/admin/services.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/admin/services.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/admin_settings.json" beforeDir="false" afterPath="$PROJECT_DIR$/data/admin_settings.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/local_snapshot.json" beforeDir="false" afterPath="$PROJECT_DIR$/data/local_snapshot.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/run.py" beforeDir="false" afterPath="$PROJECT_DIR$/run.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/HƯỚNG DẪN CHẠY APP.md" beforeDir="false" afterPath="$PROJECT_DIR$/HƯỚNG DẪN CHẠY APP.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Templates/base.html" beforeDir="false" afterPath="$PROJECT_DIR$/Templates/base.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -71,11 +63,13 @@
     &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
     &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;last_opened_file_path&quot;: &quot;E:/lập trình web/Cua_Hang_Ban_Banh&quot;
+    &quot;last_opened_file_path&quot;: &quot;E:/lập trình web/Cua_Hang_Ban_Banh&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;
   }
 }</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\ADMIN\PycharmProjects\bakery\app\chat" />
       <recent name="C:\Users\ADMIN\PycharmProjects\bakery\data" />
     </key>
   </component>
@@ -118,6 +112,15 @@
       <option name="presentableId" value="Default" />
       <updated>1773647190211</updated>
     </task>
+    <task id="LOCAL-00001" summary="UPDATE CLOUD, DATABASE">
+      <option name="closed" value="true" />
+      <created>1775229194838</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1775229194838</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -130,5 +133,9 @@
         </entry>
       </map>
     </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="UPDATE CLOUD, DATABASE" />
+    <option name="LAST_COMMIT_MESSAGE" value="UPDATE CLOUD, DATABASE" />
   </component>
 </project>

@@ -31,7 +31,9 @@ def create_app(config_name='development'):
     from app.cart.routes import cart_bp
     from app.orders.routes import orders_bp
     from app.admin.routes import admin_bp
+    from app.chat.routes import chat_bp
 
+    app.register_blueprint(chat_bp)
     app.register_blueprint(auth_bp)
     app.register_blueprint(products_bp)
     app.register_blueprint(cart_bp)
