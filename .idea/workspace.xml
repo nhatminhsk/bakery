@@ -5,11 +5,25 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e51cebda-8123-4506-928c-d11624fa9a34" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/.env" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Templates/base.html" beforeDir="false" afterPath="$PROJECT_DIR$/Templates/base.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Templates/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/Templates/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/cart/routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/cart/routes.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/instance/bakery_dev.db" beforeDir="false" afterPath="$PROJECT_DIR$/instance/bakery_dev.db" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Templates/admin/base.html" beforeDir="false" afterPath="$PROJECT_DIR$/Templates/admin/base.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Templates/admin/dashboard.html" beforeDir="false" afterPath="$PROJECT_DIR$/Templates/admin/dashboard.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Templates/admin/feedbacks.html" beforeDir="false" afterPath="$PROJECT_DIR$/Templates/admin/feedbacks.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Templates/admin/new_orders.html" beforeDir="false" afterPath="$PROJECT_DIR$/Templates/admin/new_orders.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Templates/admin/overview.html" beforeDir="false" afterPath="$PROJECT_DIR$/Templates/admin/overview.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Templates/admin/products.html" beforeDir="false" afterPath="$PROJECT_DIR$/Templates/admin/products.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Templates/admin/settings.html" beforeDir="false" afterPath="$PROJECT_DIR$/Templates/admin/settings.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Templates/admin/todo_lists.html" beforeDir="false" afterPath="$PROJECT_DIR$/Templates/admin/todo_lists.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Templates/cart.html" beforeDir="false" afterPath="$PROJECT_DIR$/Templates/cart.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Templates/checkout.html" beforeDir="false" afterPath="$PROJECT_DIR$/Templates/checkout.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Templates/login.html" beforeDir="false" afterPath="$PROJECT_DIR$/Templates/login.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Templates/product_detail.html" beforeDir="false" afterPath="$PROJECT_DIR$/Templates/product_detail.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Templates/search.html" beforeDir="false" afterPath="$PROJECT_DIR$/Templates/search.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/admin/services.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/admin/services.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/admin_settings.json" beforeDir="false" afterPath="$PROJECT_DIR$/data/admin_settings.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/local_snapshot.json" beforeDir="false" afterPath="$PROJECT_DIR$/data/local_snapshot.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/run.py" beforeDir="false" afterPath="$PROJECT_DIR$/run.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -20,6 +34,7 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="Dockerfile" />
+        <option value="Python Script" />
       </list>
     </option>
   </component>
@@ -48,13 +63,22 @@
   </component>
   <component name="PropertiesComponent">{
   &quot;keyToString&quot;: {
+    &quot;Python.initdata.executor&quot;: &quot;Run&quot;,
     &quot;Python.run.executor&quot;: &quot;Run&quot;,
+    &quot;Python.upData.executor&quot;: &quot;Run&quot;,
+    &quot;Python.updatedata.executor&quot;: &quot;Run&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
     &quot;git-widget-placeholder&quot;: &quot;main&quot;,
     &quot;last_opened_file_path&quot;: &quot;E:/lập trình web/Cua_Hang_Ban_Banh&quot;
   }
 }</component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\ADMIN\PycharmProjects\bakery\data" />
+    </key>
+  </component>
   <component name="RunManager">
     <configuration name="run" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
       <module name="bakery" />

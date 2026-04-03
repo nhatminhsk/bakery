@@ -1,9 +1,9 @@
 {% extends "admin/base.html" %}
 
-{% block page_title %}✓ Danh Sách Công Việc{% endblock %}
+{% block page_title %} Danh Sách Công Việc{% endblock %}
 
 {% block content %}
-<h1 class="page-title">✓ Danh Sách Công Việc</h1>
+<h1 class="page-title">Danh Sách Công Việc</h1>
 
 <style>
     .todo-toolbar {
@@ -159,7 +159,7 @@
         <div class="todo-item">
             <form method="POST" action="{{ url_for('admin.todo_toggle', todo_id=item.id) }}">
                 <button class="icon-btn" type="submit" title="Chuyển trạng thái">
-                    {% if item.is_done %}✓{% else %}○{% endif %}
+                    {% if item.is_done %}{% else %}○{% endif %}
                 </button>
             </form>
 

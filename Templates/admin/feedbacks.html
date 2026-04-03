@@ -1,16 +1,16 @@
 {% extends "admin/base.html" %}
 
-{% block page_title %}💬 Phản Hồi Khách Hàng{% endblock %}
+{% block page_title %} Phản Hồi Khách Hàng{% endblock %}
 
 {% block content %}
-<h1 class="page-title">💬 Phản Hồi Khách Hàng</h1>
+<h1 class="page-title"> Phản Hồi Khách Hàng</h1>
 
 <form method="GET" action="{{ url_for('admin.feedbacks') }}" style="margin-bottom: 1.5rem; display: flex; gap: 1rem;">
     <input
         type="text"
         name="q"
         value="{{ feedback.search }}"
-        placeholder="🔍 Tìm kiếm phản hồi..."
+        placeholder="Tìm kiếm phản hồi..."
         style="flex: 1; padding: 10px; background-color: #1f2937; border: 1px solid #374151; border-radius: 6px; color: #fff;"
     >
     <select name="rating" style="padding: 10px; background-color: #1f2937; border: 1px solid #374151; border-radius: 6px; color: #fff;">
@@ -61,7 +61,7 @@
                             style="padding: 6px 12px; font-size: 0.9rem;"
                             onclick="openReplyModal({{ item.id }}, '{{ item.username }}', '{{ item.product_name }}')"
                         >
-                            💬 Phản Hồi
+                            Phản Hồi
                         </button>
                     </td>
                 </tr>

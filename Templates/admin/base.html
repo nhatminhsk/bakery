@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Admin Dashboard - BubbleBakery{% endblock %}</title>
+    <title>{% block title %}Admin Dashboard - Fresh Garden{% endblock %}</title>
     <style>
         * {
             margin: 0;
@@ -315,35 +315,35 @@
             <div class="sidebar-section-title">MENU</div>
             <nav class="sidebar-nav">
                 <a href="{{ url_for('admin.overview') }}" {% if request.endpoint == 'admin.overview' %}class="active"{% endif %}>
-                    📊 Tổng Quan
+                    Tổng Quan
                 </a>
                 <a href="{{ url_for('admin.dashboard') }}" {% if request.endpoint in ['admin.dashboard', 'admin.dashboard_alias'] %}class="active"{% endif %}>
-                    📈 Dashboard
+                    Dashboard
                 </a>
                 <a href="{{ url_for('admin.orders') }}" {% if request.endpoint in ['admin.orders', 'admin.orders_alias', 'admin.order_status'] %}class="active"{% endif %}>
-                    📦 Đơn Hàng Mới
+                    Đơn Hàng Mới
                 </a>
                 <a href="{{ url_for('admin.products') }}" {% if request.endpoint in ['admin.products', 'admin.product_create', 'admin.product_update', 'admin.product_delete'] %}class="active"{% endif %}>
-                    🛍️ Sản Phẩm
+                    Sản Phẩm
                 </a>
             </nav>
 
             <div class="sidebar-section-title">QUẢN LÝ</div>
             <nav class="sidebar-nav">
                 <a href="{{ url_for('admin.todo_lists') }}" {% if request.endpoint == 'admin.todo_lists' %}class="active"{% endif %}>
-                    ✓ Công Việc
+                    Công Việc
                 </a>
                 <a href="{{ url_for('admin.feedbacks') }}" {% if request.endpoint == 'admin.feedbacks' %}class="active"{% endif %}>
-                    💬 Phản Hồi
+                    Phản Hồi
                 </a>
                 <a href="{{ url_for('admin.settings') }}" {% if request.endpoint == 'admin.settings' %}class="active"{% endif %}>
-                    ⚙️ Cài Đặt
+                    Cài Đặt
                 </a>
             </nav>
 
             <div style="padding: 1.5rem; margin-top: auto; border-top: 1px solid #374151;">
                 <a href="/" style="color: #fb923c; text-decoration: none; display: flex; align-items: center; gap: 8px;">
-                    👈 Quay về trang chính
+                    Quay về trang chính
                 </a>
             </div>
         </aside>

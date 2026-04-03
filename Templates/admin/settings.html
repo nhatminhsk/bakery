@@ -1,15 +1,15 @@
 {% extends "admin/base.html" %}
 
-{% block page_title %}⚙️ Cài Đặt{% endblock %}
+{% block page_title %}Cài Đặt{% endblock %}
 
 {% block content %}
-<h1 class="page-title">⚙️ Cài Đặt</h1>
+<h1 class="page-title">Cài Đặt</h1>
 
 <form method="POST" action="{{ url_for('admin.settings') }}">
 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
     <!-- Store Settings -->
     <div style="background-color: #1f2937; border-radius: 8px; border: 1px solid #374151; padding: 1.5rem;">
-        <h3 style="color: #fb923c; margin-bottom: 1.5rem;">🏪 Cài Đặt Cửa Hàng</h3>
+        <h3 style="color: #fb923c; margin-bottom: 1.5rem;">Cài Đặt Cửa Hàng</h3>
         
         <div style="margin-bottom: 1.5rem;">
             <label style="display: block; color: #fb923c; margin-bottom: 0.5rem;">Tên Cửa Hàng</label>
@@ -31,12 +31,12 @@
             <input type="text" name="address" value="{{ settings.address }}" style="width: 100%; padding: 10px; background-color: #111827; border: 1px solid #374151; border-radius: 6px; color: #fff;">
         </div>
 
-        <button type="submit" class="admin-btn" style="width: 100%;">💾 Lưu Thay Đổi</button>
+        <button type="submit" class="admin-btn" style="width: 100%;">Lưu Thay Đổi</button>
     </div>
 
     <!-- Delivery Settings -->
     <div style="background-color: #1f2937; border-radius: 8px; border: 1px solid #374151; padding: 1.5rem;">
-        <h3 style="color: #fb923c; margin-bottom: 1.5rem;">🚚 Cài Đặt Giao Hàng</h3>
+        <h3 style="color: #fb923c; margin-bottom: 1.5rem;">Cài Đặt Giao Hàng</h3>
         
         <div style="margin-bottom: 1.5rem;">
             <label style="display: block; color: #fb923c; margin-bottom: 0.5rem;">Phí Giao Hàng Cơ Bản</label>
@@ -61,42 +61,42 @@
             </label>
         </div>
 
-        <button type="submit" class="admin-btn" style="width: 100%;">💾 Lưu Thay Đổi</button>
+        <button type="submit" class="admin-btn" style="width: 100%;">Lưu Thay Đổi</button>
     </div>
 </div>
 
 <!-- Payment Settings -->
 <div style="background-color: #1f2937; border-radius: 8px; border: 1px solid #374151; padding: 1.5rem; margin-top: 2rem;">
-    <h3 style="color: #fb923c; margin-bottom: 1.5rem;">💳 Cài Đặt Thanh Toán</h3>
+    <h3 style="color: #fb923c; margin-bottom: 1.5rem;">Cài Đặt Thanh Toán</h3>
     
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem;">
         <div>
             <label style="display: flex; align-items: center; gap: 0.5rem;">
                 <input type="checkbox" name="payment_cod" {% if settings.payment_cod %}checked{% endif %}>
-                <span style="color: #d1d5db;">💵 Thanh Toán Khi Nhận</span>
+                <span style="color: #d1d5db;">Thanh Toán Khi Nhận</span>
             </label>
         </div>
         <div>
             <label style="display: flex; align-items: center; gap: 0.5rem;">
                 <input type="checkbox" name="payment_credit_card" {% if settings.payment_credit_card %}checked{% endif %}>
-                <span style="color: #d1d5db;">💳 Thẻ Tín Dụng</span>
+                <span style="color: #d1d5db;">Thẻ Tín Dụng</span>
             </label>
         </div>
         <div>
             <label style="display: flex; align-items: center; gap: 0.5rem;">
                 <input type="checkbox" name="payment_bank_transfer" {% if settings.payment_bank_transfer %}checked{% endif %}>
-                <span style="color: #d1d5db;">🏦 Chuyển Khoản Ngân Hàng</span>
+                <span style="color: #d1d5db;">Chuyển Khoản Ngân Hàng</span>
             </label>
         </div>
         <div>
             <label style="display: flex; align-items: center; gap: 0.5rem;">
                 <input type="checkbox" name="payment_ewallet" {% if settings.payment_ewallet %}checked{% endif %}>
-                <span style="color: #d1d5db;">💰 Ví Điện Tử</span>
+                <span style="color: #d1d5db;">Ví Điện Tử</span>
             </label>
         </div>
     </div>
 
-    <button type="submit" class="admin-btn" style="width: 100%; margin-top: 1.5rem;">💾 Lưu Thay Đổi</button>
+    <button type="submit" class="admin-btn" style="width: 100%; margin-top: 1.5rem;">Lưu Thay Đổi</button>
 </div>
 </form>
 {% endblock %}

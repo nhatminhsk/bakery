@@ -9,7 +9,7 @@ from app.models.order import Order
 from app.models.payment import Payment
 from app.models.user import User
 from app.models.admin import AdminTodo
-from app.utils.cloudinary_helper import delete_image
+from app.utils.cloudinary_helper import delete_image, upload_image
 from app.utils.review_store import list_reviews
 from sqlalchemy import func
 from werkzeug.utils import secure_filename
@@ -135,6 +135,36 @@ def _delete_local_image(image_url):
             image_path.unlink()
     except Exception:
         pass
+
+
+def _upload_image_to_cloudinary(image_file):
+    """Validate extension then upload to Cloudinary.
+
+    Returns:
+        (image_url, image_id, error_message)
+        On success: (str, str, None)
+        On failure: (None, None, str)
+    """
+    if not image_file or not image_file.filename:
+        return None, None, None
+
+    safe_filename = secure_filename(image_file.filename)
+    if not safe_filename:
+        return None, None, 'Tên file ảnh không hợp lệ.'
+
+    ext = Path(safe_filename).suffix.lower()
+    if ext not in ALLOWED_IMAGE_EXTENSIONS:
+        return None, None, 'Ảnh chỉ hỗ trợ định dạng: jpg, jpeg, png, webp, gif.'
+
+    try:
+        image_url, image_id = upload_image(image_file)
+    except Exception as e:
+        return None, None, f'Tải ảnh lên Cloudinary thất bại: {e}'
+
+    if not image_url:
+        return None, None, 'Cloudinary không trả về URL ảnh hợp lệ.'
+
+    return image_url, image_id, None
 
 
 def get_dashboard_stats():
@@ -404,7 +434,8 @@ def create_product(data, image_file=None):
         if in_stock < 0:
             return None, 'Số lượng tồn kho không được âm.'
 
-        image_url, image_error = _save_image_to_static(image_file)
+        # Upload ảnh lên Cloudinary thay vì lưu local
+        image_url, image_id, image_error = _upload_image_to_cloudinary(image_file)
         if image_error:
             return None, image_error
 
@@ -415,7 +446,7 @@ def create_product(data, image_file=None):
             category    = category,
             in_stock    = in_stock,
             image_url   = image_url,
-            image_id    = None,
+            image_id    = image_id,
         )
         db.session.add(product)
         db.session.commit()

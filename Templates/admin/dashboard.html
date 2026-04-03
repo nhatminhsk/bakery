@@ -1,6 +1,6 @@
 {% extends "admin/base.html" %}
 
-{% block page_title %}📈 Dashboard{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -26,22 +26,22 @@
 {% endblock %}
 
 {% block content %}
-<h1 class="page-title">📈 Dashboard</h1>
+<h1 class="page-title">Dashboard</h1>
 
 <!-- Charts Section -->
 <div class="stats-grid">
     <div class="stat-card">
-        <div class="stat-icon">📊</div>
+        <div class="stat-icon"></div>
         <div class="stat-label">Doanh Thu Tuần Này</div>
         <div class="stat-value">₫{{ '{:,}'.format(stats.weekly_revenue or 0) }}</div>
     </div>
     <div class="stat-card">
-        <div class="stat-icon">📈</div>
+        <div class="stat-icon"></div>
         <div class="stat-label">Doanh Thu Tháng Này</div>
         <div class="stat-value" style="color: #22c55e;">₫{{ '{:,}'.format(stats.monthly_revenue or 0) }}</div>
     </div>
     <div class="stat-card">
-        <div class="stat-icon">🏆</div>
+        <div class="stat-icon"></div>
         <div class="stat-label">Đơn Chờ Xử Lý</div>
         <div class="stat-value">{{ stats.pending_orders or 0 }}</div>
     </div>
@@ -49,7 +49,7 @@
 
 <!-- Analytics -->
 <div style="background-color: #1f2937; border-radius: 8px; border: 1px solid #374151; padding: 2rem; margin-top: 2rem;">
-    <h2 class="chart-title">📉 Doanh Số Theo Tuần (paid_at)</h2>
+    <h2 class="chart-title">Doanh Số Theo Tuần (paid_at)</h2>
     <div class="chart-wrap">
         <canvas id="weeklyRevenueChart"></canvas>
         <div id="weekly-empty" class="chart-empty" style="display:none;">Chưa có dữ liệu doanh số theo tuần.</div>
@@ -58,7 +58,7 @@
 
 <!-- Monthly Breakdown -->
 <div style="background-color: #1f2937; border-radius: 8px; border: 1px solid #374151; padding: 1.5rem; margin-top: 2rem;">
-    <h2 class="chart-title">📅 Doanh Số Theo Tháng (paid_at)</h2>
+    <h2 class="chart-title">Doanh Số Theo Tháng (paid_at)</h2>
     <div class="chart-wrap">
         <canvas id="monthlyRevenueChart"></canvas>
         <div id="monthly-empty" class="chart-empty" style="display:none;">Chưa có dữ liệu doanh số theo tháng.</div>

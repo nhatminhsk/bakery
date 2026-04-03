@@ -1,6 +1,6 @@
 {% extends "admin/base.html" %}
 
-{% block page_title %}🛍️ Quản Lý Sản Phẩm{% endblock %}
+{% block page_title %}Quản Lý Sản Phẩm{% endblock %}
 
 {% block content %}
 <style>
@@ -85,12 +85,12 @@
 </style>
 
 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
-    <h1 class="page-title">🛍️ Quản Lý Sản Phẩm</h1>
-    <button id="open-add-product-modal" type="button" class="admin-btn">➕ Thêm Sản Phẩm</button>
+    <h1 class="page-title"> Quản Lý Sản Phẩm</h1>
+    <button id="open-add-product-modal" type="button" class="admin-btn">Thêm Sản Phẩm</button>
 </div>
 
 <div style="margin-bottom: 1.5rem; display: flex; gap: 1rem;">
-    <input id="admin-product-search" type="text" placeholder="🔍 Tìm kiếm sản phẩm..." style="flex: 1; padding: 10px; background-color: #1f2937; border: 1px solid #374151; border-radius: 6px; color: #fff;">
+    <input id="admin-product-search" type="text" placeholder="Tìm kiếm sản phẩm..." style="flex: 1; padding: 10px; background-color: #1f2937; border: 1px solid #374151; border-radius: 6px; color: #fff;">
     <select id="admin-product-category" style="padding: 10px; background-color: #1f2937; border: 1px solid #374151; border-radius: 6px; color: #fff;">
         <option value="all">Tất Cả</option>
     </select>
@@ -125,10 +125,10 @@
                             data-name="{{ product.name }}"
                             data-category="{{ product.category }}"
                             data-price="{{ product.price }}"
-                        >✏️ Sửa</button>
+                        >Sửa</button>
 
                         <form method="POST" action="{{ url_for('admin.product_delete', product_id=product.id) }}" class="delete-product-form" style="display: inline;">
-                            <button type="submit" class="action-btn delete-btn">🗑️ Xóa</button>
+                            <button type="submit" class="action-btn delete-btn">Xóa</button>
                         </form>
                     </div>
                 </td>

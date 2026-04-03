@@ -1,12 +1,12 @@
 {% extends "admin/base.html" %}
 
-{% block page_title %}📦 Đơn Hàng Mới{% endblock %}
+{% block page_title %}Đơn Hàng Mới{% endblock %}
 
 {% block content %}
-<h1 class="page-title">📦 Đơn Hàng Mới</h1>
+<h1 class="page-title">Đơn Hàng Mới</h1>
 
 <div style="margin-bottom: 1.5rem;">
-    <input type="text" id="search-order" placeholder="🔍 Tìm kiếm đơn hàng..." style="width: 100%; max-width: 400px; padding: 10px; background-color: #1f2937; border: 1px solid #374151; border-radius: 6px; color: #fff;">
+    <input type="text" id="search-order" placeholder="Tìm kiếm đơn hàng..." style="width: 100%; max-width: 400px; padding: 10px; background-color: #1f2937; border: 1px solid #374151; border-radius: 6px; color: #fff;">
 </div>
 
 <div class="admin-table">
@@ -40,15 +40,15 @@
                     <td>{{ order.created_at.strftime('%H:%M') if order.created_at else '-' }}</td>
                     <td>
                         {% if order.status == 'pending' %}
-                            <span class="status-badge status-pending">⏱ Chờ</span>
+                            <span class="status-badge status-pending">Chờ</span>
                         {% elif order.status == 'confirmed' %}
-                            <span class="status-badge status-confirmed">✓ Đã duyệt</span>
+                            <span class="status-badge status-confirmed">Đã duyệt</span>
                         {% elif order.status == 'processing' %}
-                            <span class="status-badge status-processing">⚙ Đang xử lý</span>
+                            <span class="status-badge status-processing">Đang xử lý</span>
                         {% elif order.status == 'delivered' %}
-                            <span class="status-badge status-delivered">🎉 Đã giao</span>
+                            <span class="status-badge status-delivered">Đã giao</span>
                         {% elif order.status == 'cancelled' %}
-                            <span class="status-badge status-cancelled">❌ Hủy</span>
+                            <span class="status-badge status-cancelled">Hủy</span>
                         {% else %}
                             <span class="status-badge">{{ order.status }}</span>
                         {% endif %}
@@ -56,11 +56,11 @@
                     <td>
                         <form method="POST" action="{{ url_for('admin.order_status', order_id=order.id) }}" style="display: inline;">
                             {% if order.status == 'pending' %}
-                                <button type="submit" name="status" value="confirmed" style="padding: 6px 12px; background-color: #fb923c; color: white; border: none; border-radius: 4px; cursor: pointer;">✓ Duyệt</button>
+                                <button type="submit" name="status" value="confirmed" style="padding: 6px 12px; background-color: #fb923c; color: white; border: none; border-radius: 4px; cursor: pointer;">Duyệt</button>
                             {% elif order.status == 'confirmed' %}
-                                <button type="submit" name="status" value="processing" style="padding: 6px 12px; background-color: #3b82f6; color: white; border: none; border-radius: 4px; cursor: pointer;">⚙ Xử lý</button>
+                                <button type="submit" name="status" value="processing" style="padding: 6px 12px; background-color: #3b82f6; color: white; border: none; border-radius: 4px; cursor: pointer;">Xử lý</button>
                             {% elif order.status == 'processing' %}
-                                <button type="submit" name="status" value="delivered" style="padding: 6px 12px; background-color: #10b981; color: white; border: none; border-radius: 4px; cursor: pointer;">📤 Giao</button>
+                                <button type="submit" name="status" value="delivered" style="padding: 6px 12px; background-color: #10b981; color: white; border: none; border-radius: 4px; cursor: pointer;">Giao</button>
                             {% else %}
                                 <button type="submit" name="status" value="{{ order.status }}" style="padding: 6px 12px; background-color: #374151; color: #9ca3af; border: none; border-radius: 4px; cursor: pointer;" disabled>Hoàn tất</button>
                             {% endif %}

@@ -1,9 +1,9 @@
 {% extends "admin/base.html" %}
 
-{% block page_title %}📊 Tổng Quan{% endblock %}
+{% block page_title %}Tổng Quan{% endblock %}
 
 {% block content %}
-<h1 class="page-title">📊 Tổng Quan</h1>
+<h1 class="page-title">Tổng Quan</h1>
 
 <style>
     .filter-group {
@@ -55,22 +55,22 @@
 <!-- Stats -->
 <div class="stats-grid">
     <div class="stat-card">
-        <div class="stat-icon">🛍️</div>
+        <div class="stat-icon"></div>
         <div class="stat-label">Đơn Hàng {{ overview.period_label }}</div>
         <div class="stat-value">{{ overview.order_count }}</div>
     </div>
     <div class="stat-card">
-        <div class="stat-icon">💰</div>
+        <div class="stat-icon"></div>
         <div class="stat-label">Doanh Thu {{ overview.period_label }}</div>
         <div class="stat-value">₫{{ '{:,}'.format(overview.revenue) }}</div>
     </div>
     <div class="stat-card">
-        <div class="stat-icon">👥</div>
+        <div class="stat-icon"></div>
         <div class="stat-label">Tổng Khách Hàng</div>
         <div class="stat-value">{{ stats.total_users }}</div>
     </div>
     <div class="stat-card">
-        <div class="stat-icon">⭐</div>
+        <div class="stat-icon"></div>
         <div class="stat-label">Đơn Hoàn Tất</div>
         <div class="stat-value">{{ overview.completed_count }}</div>
     </div>
