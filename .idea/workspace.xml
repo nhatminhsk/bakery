@@ -6,16 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="e51cebda-8123-4506-928c-d11624fa9a34" name="Changes" comment="UPDATE CLOUD, DATABASE">
       <change afterPath="$PROJECT_DIR$/.env" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/chat/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/chat/api_chat.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/chat/routes.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/bakery.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/bakery.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/HƯỚNG DẪN CHẠY APP.md" beforeDir="false" afterPath="$PROJECT_DIR$/HƯỚNG DẪN CHẠY APP.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Templates/base.html" beforeDir="false" afterPath="$PROJECT_DIR$/Templates/base.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -120,7 +111,15 @@
       <option name="project" value="LOCAL" />
       <updated>1775229194838</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="UPDATE CLOUD, DATABASE">
+      <option name="closed" value="true" />
+      <created>1775232657072</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1775232657072</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">

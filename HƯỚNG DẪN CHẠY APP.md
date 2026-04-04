@@ -1,13 +1,10 @@
-# Tài khoản mẫu
-
-- admin: `admin` / `Admin123`
-- user: `user1` / `User1234`
-
----
-
 # Hướng dẫn chạy app
 
 ## 1) Lần đầu pull về máy
+1 Tao virtual env (khuyen nghi) phải là python > 3.9
+```bash
+conda create -n env python=3.12 -y
+```
 
 1. Cài thư viện:
 
@@ -77,10 +74,7 @@ chatbot.py: LangGraph flow + chat_once(...)
 databases/sqlite_db.py: tao schema va luu lịch su hoi thoai
 test.py: client chat terminal de test API
 ## 3. Chuan bi moi truong
-3.1 Tao virtual env (khuyen nghi)
-```bash
-conda create -n env python=3.12 -y
-```
+
 3.2 Cai dependencies
 pip install -r requirements.txt
 ## 4. Chay API
