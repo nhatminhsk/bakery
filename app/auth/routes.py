@@ -8,7 +8,11 @@ auth_bp = Blueprint('auth', __name__)
 
 def _get_home_route_by_role(role):
     """Xác định route giao diện mặc định theo quyền người dùng."""
-    return 'admin.dashboard' if role == 'admin' else 'products.index'
+    if role == 'admin':
+        return 'admin.dashboard'
+    if role == 'staff':
+        return 'staff.dashboard'
+    return 'products.index'
 
 
 @auth_bp.route('/register', methods=['GET', 'POST'])

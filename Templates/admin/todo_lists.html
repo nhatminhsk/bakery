@@ -6,6 +6,13 @@
 <h1 class="page-title">Danh Sách Công Việc</h1>
 
 <style>
+    :root {
+        --tone-accent: #fb923c;
+        --tone-accent-strong: #ea580c;
+        --tone-accent-soft: rgba(251, 146, 60, 0.16);
+        --tone-accent-text: #fdba74;
+    }
+
     .todo-toolbar {
         display: grid;
         gap: 1rem;
@@ -14,7 +21,7 @@
 
     .todo-create-form {
         display: grid;
-        grid-template-columns: 1fr 160px auto;
+        grid-template-columns: 1fr 160px 220px auto;
         gap: 0.75rem;
     }
 
@@ -31,6 +38,74 @@
         display: flex;
         gap: 0.5rem;
         flex-wrap: wrap;
+    }
+
+    .staff-inline-tools {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+    }
+
+    .staff-dropdown-panel {
+        display: none;
+        width: min(520px, 100%);
+        background-color: #111827;
+        border: 1px solid #374151;
+        border-radius: 8px;
+        padding: 0.75rem;
+    }
+
+    .staff-dropdown-panel.show {
+        display: block;
+    }
+
+    .staff-checkbox-list {
+        max-height: 220px;
+        overflow-y: auto;
+        border: 1px solid #374151;
+        border-radius: 6px;
+        background-color: #0f172a;
+        padding: 0.25rem;
+    }
+
+    .staff-checkbox-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+        padding: 0.5rem 0.6rem;
+        border-radius: 6px;
+        min-height: 40px;
+    }
+
+    .staff-checkbox-item:hover {
+        background-color: rgba(251, 146, 60, 0.1);
+    }
+
+    .staff-checkbox-item label {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        cursor: pointer;
+        color: #d1d5db;
+    }
+
+    .role-badge {
+        font-size: 0.72rem;
+        font-weight: 700;
+        border-radius: 999px;
+        padding: 0.2rem 0.5rem;
+    }
+
+    .role-badge.staff {
+        background: var(--tone-accent-soft);
+        color: var(--tone-accent-text);
+    }
+
+    .role-badge.customer {
+        background: rgba(148, 163, 184, 0.18);
+        color: #cbd5e1;
     }
 
     .todo-filter-btn {
@@ -65,7 +140,7 @@
 
     .todo-item {
         display: grid;
-        grid-template-columns: auto 1fr auto auto;
+        grid-template-columns: auto 1fr auto auto auto auto;
         gap: 0.75rem;
         align-items: center;
         padding: 0.9rem 1rem;
@@ -114,6 +189,153 @@
         padding: 2rem;
     }
 
+    .assignee-chip {
+        display: inline-block;
+        background: var(--tone-accent-soft);
+        color: var(--tone-accent-text);
+        border: 1px solid rgba(251, 146, 60, 0.35);
+        padding: 2px 8px;
+        border-radius: 999px;
+        margin-right: 6px;
+        margin-bottom: 4px;
+        font-size: 0.8rem;
+    }
+
+    .unassigned-note {
+        color: #fca5a5;
+    }
+
+    #assignment-modal {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.72);
+        z-index: 1000;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .assignment-modal-panel {
+        background: #1f2937;
+        border-radius: 8px;
+        border: 1px solid #374151;
+        padding: 1.5rem;
+        width: 90%;
+        max-width: 500px;
+        max-height: 80vh;
+        overflow-y: auto;
+    }
+
+    .assignment-modal-title {
+        margin: 0;
+        color: var(--tone-accent);
+    }
+
+    .assignment-section-title {
+        color: #f3f4f6;
+        margin: 0 0 0.75rem 0;
+        font-weight: 700;
+    }
+
+    .assignment-list-box {
+        background: #0f172a;
+        border: 1px solid #334155;
+        border-radius: 6px;
+        padding: 0.75rem;
+        min-height: 40px;
+        max-height: 200px;
+        overflow-y: auto;
+    }
+
+    .assignment-list-box.secondary {
+        padding: 0.5rem;
+    }
+
+    .assignment-modal-close {
+        background: none;
+        border: none;
+        color: #9ca3af;
+        font-size: 1.5rem;
+        cursor: pointer;
+    }
+
+    .assigned-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.5rem;
+        background: #f7ead8;
+        border: 1px solid rgba(251, 146, 60, 0.42);
+        margin-bottom: 0.25rem;
+        border-radius: 4px;
+    }
+
+    .assigned-name {
+        color: #7c3f0e;
+        font-weight: 600;
+    }
+
+    .remove-staff-btn {
+        background: #b91c1c;
+        border: none;
+        color: #fff;
+        border-radius: 4px;
+        padding: 2px 8px;
+        cursor: pointer;
+        font-size: 0.85rem;
+    }
+
+    .remove-staff-btn:hover {
+        background: #991b1b;
+    }
+
+    .available-staff-option {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem;
+        cursor: pointer;
+        border-radius: 6px;
+        background: #172033;
+        border: 1px solid #2a3953;
+        margin-bottom: 0.4rem;
+    }
+
+    .available-staff-option:hover {
+        background: #22304a;
+        border-color: #3b4d6b;
+    }
+
+    .available-staff-option input[type="checkbox"] {
+        accent-color: var(--tone-accent);
+    }
+
+    .available-staff-name {
+        color: #f3f4f6;
+        font-weight: 600;
+    }
+
+    .available-staff-email {
+        color: #cbd5e1;
+        font-size: 0.85rem;
+    }
+
+    .assignment-empty-note {
+        color: #cbd5e1;
+        padding: 0.5rem;
+    }
+
+    .assignment-actions {
+        display: flex;
+        gap: 0.5rem;
+        justify-content: flex-end;
+    }
+
+    .assignment-cancel-btn {
+        background: #4b5563 !important;
+        color: #f9fafb !important;
+    }
+
     @media (max-width: 768px) {
         .todo-create-form {
             grid-template-columns: 1fr;
@@ -133,8 +355,40 @@
             <option value="medium" selected>Ưu tiên trung bình</option>
             <option value="low">Ưu tiên thấp</option>
         </select>
+        <select class="todo-select" name="assigned_user_id">
+            <option value="">Giao cho nhân viên</option>
+            {% for user in staff_users %}
+                <option value="{{ user.id }}">#{{ user.id }} - {{ user.username }}</option>
+            {% endfor %}
+        </select>
         <button class="admin-btn" type="submit">Thêm</button>
     </form>
+
+    <div class="staff-inline-tools">
+        <button id="toggle-add-staff" type="button" class="admin-btn">Thêm nhân viên</button>
+        <div id="staff-dropdown-panel" class="staff-dropdown-panel" aria-hidden="true">
+            <form method="POST" action="{{ url_for('admin.todo_add_staff') }}">
+                <div class="staff-checkbox-list">
+                    {% if staff_candidates %}
+                        {% for user in staff_candidates %}
+                        <div class="staff-checkbox-item">
+                            <label>
+                                <input type="checkbox" name="user_ids" value="{{ user.id }}" {% if user.role == 'staff' %}checked{% endif %}>
+                                <span>#{{ user.id }} - {{ user.username }} ({{ user.email }})</span>
+                            </label>
+                            <span class="role-badge {{ user.role }}">{{ user.role }}</span>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="todo-empty" style="padding: 1rem;">Không có tài khoản để thêm.</div>
+                    {% endif %}
+                </div>
+                <div style="display:flex; justify-content:flex-end; margin-top:0.75rem;">
+                    <button type="submit" class="admin-btn">Cập nhật nhân viên</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
     <div class="todo-filters">
         <a class="todo-filter-btn {% if todo.status_filter == 'all' %}active{% endif %}" href="{{ url_for('admin.todo_lists', status='all', priority=todo.priority_filter) }}">Tất cả</a>
@@ -159,15 +413,29 @@
         <div class="todo-item">
             <form method="POST" action="{{ url_for('admin.todo_toggle', todo_id=item.id) }}">
                 <button class="icon-btn" type="submit" title="Chuyển trạng thái">
-                    {% if item.is_done %}{% else %}○{% endif %}
+                    {% if item.is_done %}✓{% else %}○{% endif %}
                 </button>
             </form>
 
             <div class="todo-title {% if item.is_done %}done{% endif %}">
                 {{ item.title }}
+                <div style="font-size: 0.85rem; color: #9ca3af; margin-top: 4px;">
+                    {% if item.assigned_staff and item.assigned_staff|length > 0 %}
+                        Giao cho:
+                        {% for staff in item.assigned_staff %}
+                            <span class="assignee-chip">{{ staff.username }}</span>
+                        {% endfor %}
+                    {% else %}
+                        <span class="unassigned-note">Chưa giao cho ai</span>
+                    {% endif %}
+                </div>
             </div>
 
             <span class="priority {{ item.priority }}">{{ item.priority }}</span>
+
+            <button type="button" class="icon-btn edit-assignments-btn" data-todo-id="{{ item.id }}" title="Phân công bổ sung">
+                👥
+            </button>
 
             <form method="POST" action="{{ url_for('admin.todo_delete', todo_id=item.id) }}" onsubmit="return confirm('Xóa công việc này?');">
                 <button class="icon-btn" type="submit" title="Xóa">🗑</button>
@@ -178,4 +446,154 @@
         <div class="todo-empty">Không có công việc phù hợp bộ lọc.</div>
     {% endif %}
 </div>
+
+<!-- Modal: Edit Assignments -->
+<div id="assignment-modal">
+    <div class="assignment-modal-panel">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+            <h3 class="assignment-modal-title">Phân công bổ sung</h3>
+            <button id="close-modal" type="button" class="assignment-modal-close">×</button>
+        </div>
+
+        <form id="assignment-form" method="POST" action="{{ url_for('admin.todo_assign') }}">
+            <input type="hidden" name="todo_id" id="modal-todo-id">
+            <input type="hidden" name="action" id="modal-action" value="set">
+
+            <div style="margin-bottom: 1rem;">
+                <h4 class="assignment-section-title">Đã giao cho:</h4>
+                <div id="assigned-staff-list" class="assignment-list-box">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+
+            <div style="margin-bottom: 1rem;">
+                <h4 class="assignment-section-title">Chọn nhân viên để giao/bổ sung:</h4>
+                <div id="available-staff-list" class="assignment-list-box secondary">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+
+            <div class="assignment-actions">
+                <button type="button" id="cancel-modal" class="admin-btn assignment-cancel-btn">Hủy</button>
+                <button type="submit" class="admin-btn">Cập nhật giao việc</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    (function () {
+        const toggleButton = document.getElementById('toggle-add-staff');
+        const panel = document.getElementById('staff-dropdown-panel');
+        const modal = document.getElementById('assignment-modal');
+        const closeBtn = document.getElementById('close-modal');
+        const cancelBtn = document.getElementById('cancel-modal');
+        const editButtons = document.querySelectorAll('.edit-assignments-btn');
+
+        // Staff promotion toggle
+        if (toggleButton && panel) {
+            toggleButton.addEventListener('click', function () {
+                const isOpen = panel.classList.toggle('show');
+                panel.setAttribute('aria-hidden', isOpen ? 'false' : 'true');
+            });
+
+            document.addEventListener('click', function (event) {
+                if (!panel.contains(event.target) && event.target !== toggleButton) {
+                    panel.classList.remove('show');
+                    panel.setAttribute('aria-hidden', 'true');
+                }
+            });
+        }
+
+        // Modal controls
+        function closeModal() {
+            modal.style.display = 'none';
+        }
+
+        closeBtn?.addEventListener('click', closeModal);
+        cancelBtn?.addEventListener('click', closeModal);
+
+        modal?.addEventListener('click', function (e) {
+            if (e.target === modal) closeModal();
+        });
+
+        // Open modal for edit assignments
+        editButtons.forEach(btn => {
+            btn.addEventListener('click', async function () {
+                const todoId = this.dataset.todoId;
+                modal.style.display = 'flex';
+
+                try {
+                    const response = await fetch(`{{ url_for('admin.todo_assign') }}?todo_id=${todoId}`);
+                    const data = await response.json();
+
+                    // Populate assigned staff
+                    const assignedList = document.getElementById('assigned-staff-list');
+                    if (data.assigned_staff && data.assigned_staff.length > 0) {
+                        assignedList.innerHTML = data.assigned_staff.map(user => `
+                            <div class="assigned-item">
+                                <span class="assigned-name">${user.username}</span>
+                                <button type="button" class="remove-staff-btn" data-user-id="${user.id}">X</button>
+                            </div>
+                        `).join('');
+
+                        // Add remove listeners
+                        assignedList.querySelectorAll('.remove-staff-btn').forEach(rmBtn => {
+                            rmBtn.addEventListener('click', async (e) => {
+                                e.preventDefault();
+                                const userId = rmBtn.dataset.userId;
+                                // Submit form with remove action
+                                const form = document.getElementById('assignment-form');
+                                form.innerHTML = `
+                                    <input type="hidden" name="todo_id" value="${todoId}">
+                                    <input type="hidden" name="action" value="remove">
+                                    <input type="hidden" name="staff_user_id" value="${userId}">
+                                `;
+                                form.submit();
+                            });
+                        });
+                    } else {
+                        assignedList.innerHTML = '<div class="assignment-empty-note">Chưa giao cho ai</div>';
+                    }
+
+                    // Populate available staff
+                    const availableList = document.getElementById('available-staff-list');
+                    if (data.available_staff && data.available_staff.length > 0) {
+                        availableList.innerHTML = data.available_staff
+                            .filter(user => !user.is_assigned)  // Only show unassigned
+                            .map(user => `
+                                <label class="available-staff-option">
+                                    <input type="checkbox" name="staff_user_ids" value="${user.id}">
+                                    <span class="available-staff-name">${user.username}</span>
+                                    <span class="available-staff-email">(${user.email})</span>
+                                </label>
+                            `).join('');
+                    } else {
+                        availableList.innerHTML = '<div class="assignment-empty-note">Tất cả nhân viên đã được giao.</div>';
+                    }
+
+                    // Set todo ID and action
+                    document.getElementById('modal-todo-id').value = todoId;
+                    document.getElementById('modal-action').value = 'add';  // Default to add action
+                } catch (error) {
+                    alert('Lỗi: Không thể tải dữ liệu');
+                    closeModal();
+                }
+            });
+        });
+
+        // Form submission
+        const form = document.getElementById('assignment-form');
+        form?.addEventListener('submit', function (e) {
+            const action = document.getElementById('modal-action').value;
+            if (action === 'add') {
+                const selectedIds = Array.from(form.querySelectorAll('input[name="staff_user_ids"]:checked')).map(el => el.value);
+                if (selectedIds.length === 0) {
+                    e.preventDefault();
+                    alert('Vui lòng chọn ít nhất 1 nhân viên để thêm.');
+                }
+            }
+        });
+    })();
+</script>
 {% endblock %}

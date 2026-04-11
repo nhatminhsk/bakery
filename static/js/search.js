@@ -28,10 +28,32 @@ function processSearchResults() {
             // Thêm event listener cho nút mua ngay
             const buyButton = card.querySelector('.btn-custom');
             if (buyButton) {
-                buyButton.addEventListener('click', function() {
+                buyButton.addEventListener('click', function(event) {
+                    event.stopPropagation();
                     handleAddToCart(card);
                 });
             }
+
+            card.addEventListener('click', function(event) {
+                if (event.target.closest('button, a, input, select, textarea, label, form')) {
+                    return;
+                }
+                const detailUrl = card.dataset.productUrl || `/product/${card.dataset.productId}`;
+                if (detailUrl) {
+                    window.location.href = detailUrl;
+                }
+            });
+
+            card.addEventListener('keydown', function(event) {
+                if (event.key !== 'Enter' && event.key !== ' ') {
+                    return;
+                }
+                event.preventDefault();
+                const detailUrl = card.dataset.productUrl || `/product/${card.dataset.productId}`;
+                if (detailUrl) {
+                    window.location.href = detailUrl;
+                }
+            });
         });
 
         console.log(`Đã xử lý ${productCards.length} sản phẩm`);

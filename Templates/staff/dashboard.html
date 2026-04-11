@@ -1,0 +1,116 @@
+{% extends "staff/base.html" %}
+
+{% block page_title %}Tổng Quan Nhân Viên{% endblock %}
+
+{% block content %}
+<h1 class="page-title">Tổng Quan Nhân Viên</h1>
+
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-label">Tổng Đơn Hàng (Toàn Thời Gian)</div>
+        <div class="stat-value">{{ data.stats.total_orders }}</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-label">Doanh Thu Tháng</div>
+        <div class="stat-value">₫{{ '{:,}'.format(data.stats.monthly_revenue or 0) }}</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-label">Sản Phẩm Tồn Kho Thấp</div>
+        <div class="stat-value">{{ data.low_stock_products|length }}</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-label">Đánh Giá Chưa Phản Hồi</div>
+        <div class="stat-value">{{ data.pending_review_count }}</div>
+    </div>
+</div>
+
+<div style="display:grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+    <div class="admin-table">
+        <table>
+            <thead>
+                <tr><th colspan="4">Sản Phẩm Sắp Hết</th></tr>
+                <tr>
+                    <th>Tên</th>
+                    <th>Tồn</th>
+                    <th>Hạn</th>
+                    <th>Cảnh Báo</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if data.low_stock_products %}
+                    {% for product in data.low_stock_products[:8] %}
+                    <tr>
+                        <td>{{ product.name }}</td>
+                        <td>{{ product.display_in_stock if product.display_in_stock is defined else (product.in_stock or 0) }}</td>
+                        <td>{% if product.nearest_expiry_date %}{{ product.nearest_expiry_date.strftime('%d/%m/%Y') }}{% else %}-{% endif %}</td>
+                        <td><span class="status-badge status-pending">Sắp hết</span></td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr><td colspan="4">Không có sản phẩm sắp hết.</td></tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="admin-table">
+        <table>
+            <thead>
+                <tr><th colspan="4">Đơn Mới Gần Đây</th></tr>
+                <tr>
+                    <th>Mã</th>
+                    <th>Khách</th>
+                    <th>Giá</th>
+                    <th>Trạng thái</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if data.recent_orders %}
+                    {% for order in data.recent_orders[:8] %}
+                    <tr>
+                        <td>#{{ order.id }}</td>
+                        <td>{{ order.customer.username if order.customer else 'N/A' }}</td>
+                        <td>₫{{ '{:,}'.format((order.total or 0) + (order.shipping_fee or 0)) }}</td>
+                        <td>{{ order.status }}</td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr><td colspan="4">Chưa có đơn mới.</td></tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="admin-table" style="margin-top: 1.5rem;">
+    <table>
+        <thead>
+            <tr><th colspan="4">5 Đánh Giá Chưa Phản Hồi Gần Nhất</th></tr>
+            <tr>
+                <th>Khách</th>
+                <th>Sản phẩm</th>
+                <th>Điểm</th>
+                <th>Ngày</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if data.pending_reviews %}
+                {% for review in data.pending_reviews %}
+                <tr>
+                    <td>{{ review.username }}</td>
+                    <td>{{ review.product_name }}</td>
+                    <td>{{ review.rating }}/5</td>
+                    <td>{{ review.created_at[:10] if review.created_at else '-' }}</td>
+                </tr>
+                {% endfor %}
+            {% else %}
+                <tr><td colspan="4">Không có đánh giá chờ phản hồi.</td></tr>
+            {% endif %}
+        </tbody>
+    </table>
+    <div style="padding: 0.9rem 1rem; border-top: 1px solid #dbe8d5; color: #6b7a68;">
+        Xem chi tiết và phản hồi tại tab
+        <a href="{{ url_for('staff.feedbacks', reply_status='unreplied') }}" style="color: #3f7d4a; font-weight: 600; text-decoration: underline;">Phản Hồi Khách Hàng</a>.
+    </div>
+</div>
+{% endblock %}

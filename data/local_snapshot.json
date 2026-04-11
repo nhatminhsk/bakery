@@ -1,44 +1,21 @@
 {
   "meta": {
-    "generated_at": "2026-04-03T14:10:08.610010",
+    "generated_at": "2026-04-11T03:11:02.542803",
     "table_names": [
-      "admin_todos",
       "categories",
       "promotions",
       "users",
+      "admin_todos",
       "orders",
       "products",
+      "admin_todo_assignments",
       "order_items",
-      "payments"
+      "payments",
+      "product_batches",
+      "product_reviews"
     ]
   },
   "tables": {
-    "admin_todos": [
-      {
-        "id": 1,
-        "title": "Kiểm tra tồn kho nguyên liệu đầu ca",
-        "priority": "high",
-        "is_done": false,
-        "created_at": "2026-03-26T15:55:48.438249",
-        "completed_at": null
-      },
-      {
-        "id": 2,
-        "title": "Xác nhận lịch giao hàng đơn quan trọng",
-        "priority": "medium",
-        "is_done": false,
-        "created_at": "2026-03-26T15:55:48.438253",
-        "completed_at": null
-      },
-      {
-        "id": 3,
-        "title": "Tổng vệ sinh khu vực đóng gói",
-        "priority": "low",
-        "is_done": true,
-        "created_at": "2026-03-26T15:55:48.438255",
-        "completed_at": "2026-03-26T15:55:48.436779"
-      }
-    ],
     "categories": [
       {
         "id": 1,
@@ -49,7 +26,41 @@
         "name": "Banh ngot"
       }
     ],
-    "promotions": [],
+    "promotions": [
+      {
+        "id": 1,
+        "code": "WELCOME10",
+        "type": "percent",
+        "value": 10,
+        "min_order": 100000,
+        "start_date": null,
+        "end_date": null,
+        "is_active": true,
+        "created_at": "2026-04-06T05:01:29.105397"
+      },
+      {
+        "id": 2,
+        "code": "SAVE30K",
+        "type": "fixed",
+        "value": 30000,
+        "min_order": 150000,
+        "start_date": null,
+        "end_date": null,
+        "is_active": true,
+        "created_at": "2026-04-06T05:01:29.105407"
+      },
+      {
+        "id": 3,
+        "code": "FREEDAY15",
+        "type": "percent",
+        "value": 15,
+        "min_order": 200000,
+        "start_date": null,
+        "end_date": null,
+        "is_active": true,
+        "created_at": "2026-04-06T05:01:29.105412"
+      }
+    ],
     "users": [
       {
         "id": 1,
@@ -82,7 +93,7 @@
         "username": "demo_user_01",
         "email": "demo_user_01@example.com",
         "password": "$2b$12$/9Wow4JQpDIC505i3lekb.CxgHJzr6LsnM5gpEZaYxCe/8Pxy5bs.",
-        "role": "customer",
+        "role": "staff",
         "is_active": true,
         "last_login": null,
         "phone": "0962335595",
@@ -95,7 +106,7 @@
         "username": "demo_user_02",
         "email": "demo_user_02@example.com",
         "password": "$2b$12$V1IvuM.54RTeRNLflQ7J4.FFa8SVYHrZw26gNCVtpbUcUt4RkrFh2",
-        "role": "customer",
+        "role": "staff",
         "is_active": true,
         "last_login": null,
         "phone": "0983440982",
@@ -206,6 +217,17 @@
         "points": 0,
         "rank": "bronze",
         "created_at": "2026-03-26T14:52:35.777230"
+      }
+    ],
+    "admin_todos": [
+      {
+        "id": 2,
+        "title": "sdad",
+        "priority": "medium",
+        "assigned_user_id": 3,
+        "is_done": false,
+        "created_at": "2026-04-08T15:31:36.937625",
+        "completed_at": null
       }
     ],
     "orders": [
@@ -1781,6 +1803,45 @@
         "note": "Recipient: demo_user_10 Demo | 0976107442 | demo_user_10@example.com\nAddress: 123 Seed Street, Quan 1, TP HCM, 700000\nCustomer note: Don test de tao feedback ao",
         "created_at": "2026-03-26T15:35:13.855154",
         "updated_at": "2026-03-26T15:35:13.875522"
+      },
+      {
+        "id": 122,
+        "user_id": 2,
+        "promotion_id": 3,
+        "status": "delivered",
+        "total": 1385500,
+        "shipping_fee": 0,
+        "payment_method": "cash",
+        "paid_at": "2026-04-06T05:02:34.404198",
+        "note": "Recipient: D Dũng | 0999999999 | user1@gmail.com\nAddress: =ada, AC, AB, ABC\nCustomer note: dfd",
+        "created_at": "2026-04-06T05:02:03.883364",
+        "updated_at": "2026-04-06T05:02:36.767756"
+      },
+      {
+        "id": 123,
+        "user_id": 2,
+        "promotion_id": 1,
+        "status": "delivered",
+        "total": 1620000,
+        "shipping_fee": 0,
+        "payment_method": "cash",
+        "paid_at": "2026-04-07T09:17:31.713423",
+        "note": "Recipient: D Dũng | 0999999999 | user1@gmail.com\nAddress: =ada, AC, AB, ABC",
+        "created_at": "2026-04-07T09:16:50.102928",
+        "updated_at": "2026-04-07T09:17:34.708965"
+      },
+      {
+        "id": 124,
+        "user_id": 2,
+        "promotion_id": null,
+        "status": "delivered",
+        "total": 41400000,
+        "shipping_fee": 0,
+        "payment_method": "cash",
+        "paid_at": "2026-04-08T13:35:05.840028",
+        "note": "Recipient: D Dũng | 0999999999 | user1@gmail.com\nAddress: =ada, AC, AB, ABC",
+        "created_at": "2026-04-08T13:34:46.812353",
+        "updated_at": "2026-04-08T13:35:06.996963"
       }
     ],
     "products": [
@@ -1792,7 +1853,7 @@
         "category": "Banh kem",
         "category_id": 1,
         "rating": 4.4,
-        "in_stock": 100,
+        "in_stock": 90,
         "cost_price": 0,
         "is_active": true,
         "unit": "cai",
@@ -1808,7 +1869,7 @@
         "category": "Banh kem",
         "category_id": 1,
         "rating": 4.6,
-        "in_stock": 100,
+        "in_stock": 82,
         "cost_price": 0,
         "is_active": true,
         "unit": "cai",
@@ -1824,7 +1885,7 @@
         "category": "Banh ngot",
         "category_id": 2,
         "rating": 4.3,
-        "in_stock": 100,
+        "in_stock": 88,
         "cost_price": 0,
         "is_active": true,
         "unit": "cai",
@@ -1840,7 +1901,7 @@
         "category": "Banh ngot",
         "category_id": 2,
         "rating": 4.4,
-        "in_stock": 100,
+        "in_stock": 90,
         "cost_price": 0,
         "is_active": true,
         "unit": "cai",
@@ -1856,7 +1917,7 @@
         "category": "Banh ngot",
         "category_id": 2,
         "rating": 4.6,
-        "in_stock": 100,
+        "in_stock": 92,
         "cost_price": 0,
         "is_active": true,
         "unit": "cai",
@@ -1872,7 +1933,7 @@
         "category": "Banh ngot",
         "category_id": 2,
         "rating": 4.5,
-        "in_stock": 100,
+        "in_stock": 90,
         "cost_price": 0,
         "is_active": true,
         "unit": "cai",
@@ -1888,7 +1949,7 @@
         "category": "Banh ngot",
         "category_id": 2,
         "rating": 4.7,
-        "in_stock": 100,
+        "in_stock": 83,
         "cost_price": 0,
         "is_active": true,
         "unit": "cai",
@@ -1904,7 +1965,7 @@
         "category": "Banh ngot",
         "category_id": 2,
         "rating": 4.5,
-        "in_stock": 100,
+        "in_stock": 83,
         "cost_price": 0,
         "is_active": true,
         "unit": "cai",
@@ -1920,7 +1981,7 @@
         "category": "Banh ngot",
         "category_id": 2,
         "rating": 4.2,
-        "in_stock": 100,
+        "in_stock": 84,
         "cost_price": 0,
         "is_active": true,
         "unit": "cai",
@@ -1936,7 +1997,7 @@
         "category": "Banh ngot",
         "category_id": 2,
         "rating": 4.4,
-        "in_stock": 100,
+        "in_stock": 90,
         "cost_price": 0,
         "is_active": true,
         "unit": "cai",
@@ -1952,7 +2013,7 @@
         "category": "Banh ngot",
         "category_id": 2,
         "rating": 4.5,
-        "in_stock": 100,
+        "in_stock": 93,
         "cost_price": 0,
         "is_active": true,
         "unit": "cai",
@@ -1968,7 +2029,7 @@
         "category": "Banh ngot",
         "category_id": 2,
         "rating": 4.9,
-        "in_stock": 100,
+        "in_stock": 87,
         "cost_price": 0,
         "is_active": true,
         "unit": "cai",
@@ -1984,7 +2045,7 @@
         "category": "Banh ngot",
         "category_id": 2,
         "rating": 4.8,
-        "in_stock": 100,
+        "in_stock": 92,
         "cost_price": 0,
         "is_active": true,
         "unit": "cai",
@@ -2000,7 +2061,7 @@
         "category": "Banh ngot",
         "category_id": 2,
         "rating": 4.3,
-        "in_stock": 100,
+        "in_stock": 89,
         "cost_price": 0,
         "is_active": true,
         "unit": "cai",
@@ -2016,7 +2077,7 @@
         "category": "Banh kem",
         "category_id": 1,
         "rating": 4.6,
-        "in_stock": 100,
+        "in_stock": 91,
         "cost_price": 0,
         "is_active": true,
         "unit": "cai",
@@ -2032,7 +2093,7 @@
         "category": "Banh ngot",
         "category_id": 2,
         "rating": 4.0,
-        "in_stock": 100,
+        "in_stock": 89,
         "cost_price": 0,
         "is_active": true,
         "unit": "cai",
@@ -2048,7 +2109,7 @@
         "category": "Banh ngot",
         "category_id": 2,
         "rating": 4.6,
-        "in_stock": 100,
+        "in_stock": 87,
         "cost_price": 0,
         "is_active": true,
         "unit": "cai",
@@ -2064,7 +2125,7 @@
         "category": "Banh kem",
         "category_id": 1,
         "rating": 4.5,
-        "in_stock": 100,
+        "in_stock": 90,
         "cost_price": 0,
         "is_active": true,
         "unit": "cai",
@@ -2080,7 +2141,7 @@
         "category": "Banh ngot",
         "category_id": 2,
         "rating": 4.4,
-        "in_stock": 100,
+        "in_stock": 86,
         "cost_price": 0,
         "is_active": true,
         "unit": "cai",
@@ -2096,7 +2157,7 @@
         "category": "Banh kem",
         "category_id": 1,
         "rating": 4.2,
-        "in_stock": 100,
+        "in_stock": 93,
         "cost_price": 0,
         "is_active": true,
         "unit": "cai",
@@ -2112,7 +2173,7 @@
         "category": "Banh kem",
         "category_id": 1,
         "rating": 4.5,
-        "in_stock": 100,
+        "in_stock": 89,
         "cost_price": 0,
         "is_active": true,
         "unit": "cai",
@@ -2128,7 +2189,7 @@
         "category": "Banh kem",
         "category_id": 1,
         "rating": 4.8,
-        "in_stock": 100,
+        "in_stock": 91,
         "cost_price": 0,
         "is_active": true,
         "unit": "cai",
@@ -2144,7 +2205,7 @@
         "category": "Banh kem",
         "category_id": 1,
         "rating": 4.5,
-        "in_stock": 100,
+        "in_stock": 85,
         "cost_price": 0,
         "is_active": true,
         "unit": "cai",
@@ -2160,7 +2221,7 @@
         "category": "Banh ngot",
         "category_id": 2,
         "rating": 4.8,
-        "in_stock": 100,
+        "in_stock": 89,
         "cost_price": 0,
         "is_active": true,
         "unit": "cai",
@@ -2176,7 +2237,7 @@
         "category": "Banh kem",
         "category_id": 1,
         "rating": 4.5,
-        "in_stock": 100,
+        "in_stock": 89,
         "cost_price": 0,
         "is_active": true,
         "unit": "cai",
@@ -2192,7 +2253,7 @@
         "category": "Banh kem",
         "category_id": 1,
         "rating": 4.3,
-        "in_stock": 100,
+        "in_stock": 86,
         "cost_price": 0,
         "is_active": true,
         "unit": "cai",
@@ -2208,7 +2269,7 @@
         "category": "Banh ngot",
         "category_id": 2,
         "rating": 4.8,
-        "in_stock": 100,
+        "in_stock": 88,
         "cost_price": 0,
         "is_active": true,
         "unit": "cai",
@@ -2224,7 +2285,7 @@
         "category": "Banh ngot",
         "category_id": 2,
         "rating": 4.3,
-        "in_stock": 100,
+        "in_stock": 86,
         "cost_price": 0,
         "is_active": true,
         "unit": "cai",
@@ -2240,7 +2301,7 @@
         "category": "Banh ngot",
         "category_id": 2,
         "rating": 4.7,
-        "in_stock": 100,
+        "in_stock": 93,
         "cost_price": 0,
         "is_active": true,
         "unit": "cai",
@@ -2256,7 +2317,7 @@
         "category": "Banh ngot",
         "category_id": 2,
         "rating": 4.0,
-        "in_stock": 100,
+        "in_stock": 98,
         "cost_price": 0,
         "is_active": true,
         "unit": "cai",
@@ -2272,7 +2333,7 @@
         "category": "Banh ngot",
         "category_id": 2,
         "rating": 4.5,
-        "in_stock": 100,
+        "in_stock": 88,
         "cost_price": 0,
         "is_active": true,
         "unit": "cai",
@@ -2288,7 +2349,7 @@
         "category": "Banh ngot",
         "category_id": 2,
         "rating": 4.0,
-        "in_stock": 100,
+        "in_stock": 92,
         "cost_price": 0,
         "is_active": true,
         "unit": "cai",
@@ -2304,7 +2365,7 @@
         "category": "Banh ngot",
         "category_id": 2,
         "rating": 4.1,
-        "in_stock": 100,
+        "in_stock": 90,
         "cost_price": 0,
         "is_active": true,
         "unit": "cai",
@@ -2320,7 +2381,7 @@
         "category": "Banh kem",
         "category_id": 1,
         "rating": 4.3,
-        "in_stock": 100,
+        "in_stock": 94,
         "cost_price": 0,
         "is_active": true,
         "unit": "cai",
@@ -2336,7 +2397,7 @@
         "category": "Banh kem",
         "category_id": 1,
         "rating": 4.2,
-        "in_stock": 100,
+        "in_stock": 87,
         "cost_price": 0,
         "is_active": true,
         "unit": "cai",
@@ -2352,7 +2413,7 @@
         "category": "Banh kem",
         "category_id": 1,
         "rating": 4.3,
-        "in_stock": 100,
+        "in_stock": 95,
         "cost_price": 0,
         "is_active": true,
         "unit": "cai",
@@ -2368,7 +2429,7 @@
         "category": "Banh kem",
         "category_id": 1,
         "rating": 4.5,
-        "in_stock": 100,
+        "in_stock": 81,
         "cost_price": 0,
         "is_active": true,
         "unit": "cai",
@@ -2384,7 +2445,7 @@
         "category": "Banh kem",
         "category_id": 1,
         "rating": 4.8,
-        "in_stock": 100,
+        "in_stock": 94,
         "cost_price": 0,
         "is_active": true,
         "unit": "cai",
@@ -2400,7 +2461,7 @@
         "category": "Banh kem",
         "category_id": 1,
         "rating": 4.7,
-        "in_stock": 100,
+        "in_stock": 88,
         "cost_price": 0,
         "is_active": true,
         "unit": "cai",
@@ -2416,7 +2477,7 @@
         "category": "Banh kem",
         "category_id": 1,
         "rating": 4.1,
-        "in_stock": 100,
+        "in_stock": 84,
         "cost_price": 0,
         "is_active": true,
         "unit": "cai",
@@ -2432,7 +2493,7 @@
         "category": "Banh kem",
         "category_id": 1,
         "rating": 4.3,
-        "in_stock": 100,
+        "in_stock": 87,
         "cost_price": 0,
         "is_active": true,
         "unit": "cai",
@@ -2448,7 +2509,7 @@
         "category": "Banh kem",
         "category_id": 1,
         "rating": 4.5,
-        "in_stock": 100,
+        "in_stock": 81,
         "cost_price": 0,
         "is_active": true,
         "unit": "cai",
@@ -2464,13 +2525,19 @@
         "category": "Banh kem",
         "category_id": 1,
         "rating": 4.7,
-        "in_stock": 100,
+        "in_stock": 0,
         "cost_price": 0,
         "is_active": true,
         "unit": "cai",
         "image_url": "https://res.cloudinary.com/dbuvoyl4e/image/upload/v1775225019/bakery/banh-mousse-vai-hoa-hong.png",
         "image_id": "bakery/banh-mousse-vai-hoa-hong",
         "created_at": "2026-03-04T03:30:14"
+      }
+    ],
+    "admin_todo_assignments": [
+      {
+        "admin_todo_id": 2,
+        "user_id": 3
       }
     ],
     "order_items": [
@@ -4615,6 +4682,69 @@
         "price": 35000,
         "quantity": 1,
         "image_url": "https://product.hstatic.net/200000411281/product/banh_cuon_so_co_la_2_ffe70b00519b40afb89dc669b28468a5.png"
+      },
+      {
+        "id": 239,
+        "order_id": 122,
+        "product_id": 1073435393,
+        "name": "Bánh mousse Quả mọng",
+        "price": 450000,
+        "quantity": 1,
+        "image_url": "https://res.cloudinary.com/dbuvoyl4e/image/upload/v1775225017/bakery/banh-mousse-qua-mong.png"
+      },
+      {
+        "id": 240,
+        "order_id": 122,
+        "product_id": 1073435410,
+        "name": "Bánh mousse Vải hoa hồng",
+        "price": 450000,
+        "quantity": 1,
+        "image_url": "https://res.cloudinary.com/dbuvoyl4e/image/upload/v1775225019/bakery/banh-mousse-vai-hoa-hong.png"
+      },
+      {
+        "id": 241,
+        "order_id": 122,
+        "product_id": 1073373566,
+        "name": "Bánh kem Ngọc bích",
+        "price": 350000,
+        "quantity": 1,
+        "image_url": "https://res.cloudinary.com/dbuvoyl4e/image/upload/v1775225016/bakery/banh-kem-ngoc-bich.png"
+      },
+      {
+        "id": 242,
+        "order_id": 122,
+        "product_id": 1073370413,
+        "name": "Bánh kem Vàng anh",
+        "price": 380000,
+        "quantity": 1,
+        "image_url": "https://res.cloudinary.com/dbuvoyl4e/image/upload/v1775225014/bakery/banh-kem-vang-anh.png"
+      },
+      {
+        "id": 243,
+        "order_id": 123,
+        "product_id": 1070454919,
+        "name": "Bánh mousse Dừa tuyết",
+        "price": 450000,
+        "quantity": 2,
+        "image_url": "https://res.cloudinary.com/dbuvoyl4e/image/upload/v1775225005/bakery/banh-coconut-mousse.png"
+      },
+      {
+        "id": 244,
+        "order_id": 123,
+        "product_id": 1073435393,
+        "name": "Bánh mousse Quả mọng",
+        "price": 450000,
+        "quantity": 2,
+        "image_url": "https://res.cloudinary.com/dbuvoyl4e/image/upload/v1775225017/bakery/banh-mousse-qua-mong.png"
+      },
+      {
+        "id": 245,
+        "order_id": 124,
+        "product_id": 1073435410,
+        "name": "Bánh mousse Vải hoa hồng",
+        "price": 450000,
+        "quantity": 92,
+        "image_url": "https://res.cloudinary.com/dbuvoyl4e/image/upload/v1775225019/bakery/banh-mousse-vai-hoa-hong.png"
       }
     ],
     "payments": [
@@ -5585,2608 +5715,3214 @@
         "amount": 515000,
         "status": "success",
         "created_at": "2026-03-26T15:35:13.856672"
+      },
+      {
+        "id": 122,
+        "order_id": 122,
+        "method": "cash",
+        "amount": 1385500,
+        "status": "success",
+        "created_at": "2026-04-06T05:02:03.889903"
+      },
+      {
+        "id": 123,
+        "order_id": 123,
+        "method": "cash",
+        "amount": 1620000,
+        "status": "success",
+        "created_at": "2026-04-07T09:16:50.109431"
+      },
+      {
+        "id": 124,
+        "order_id": 124,
+        "method": "cash",
+        "amount": 41400000,
+        "status": "success",
+        "created_at": "2026-04-08T13:34:46.826394"
       }
-    ]
-  },
-  "local_files": {
+    ],
+    "product_batches": [
+      {
+        "id": 1,
+        "product_id": 1035837467,
+        "quantity": 90,
+        "cost_price": 0,
+        "expiry_date": "2026-05-07",
+        "imported_at": "2021-10-14T07:36:01"
+      },
+      {
+        "id": 2,
+        "product_id": 1035837470,
+        "quantity": 82,
+        "cost_price": 0,
+        "expiry_date": "2026-05-07",
+        "imported_at": "2021-10-14T07:36:03"
+      },
+      {
+        "id": 3,
+        "product_id": 1035917261,
+        "quantity": 88,
+        "cost_price": 0,
+        "expiry_date": "2026-05-07",
+        "imported_at": "2021-10-19T07:11:28"
+      },
+      {
+        "id": 4,
+        "product_id": 1035917326,
+        "quantity": 90,
+        "cost_price": 0,
+        "expiry_date": "2026-05-07",
+        "imported_at": "2021-10-19T07:16:12"
+      },
+      {
+        "id": 5,
+        "product_id": 1035917330,
+        "quantity": 92,
+        "cost_price": 0,
+        "expiry_date": "2026-05-07",
+        "imported_at": "2021-10-19T07:17:03"
+      },
+      {
+        "id": 6,
+        "product_id": 1035917338,
+        "quantity": 90,
+        "cost_price": 0,
+        "expiry_date": "2026-05-07",
+        "imported_at": "2021-10-19T07:18:03"
+      },
+      {
+        "id": 7,
+        "product_id": 1035917350,
+        "quantity": 83,
+        "cost_price": 0,
+        "expiry_date": "2026-05-07",
+        "imported_at": "2021-10-19T07:19:45"
+      },
+      {
+        "id": 8,
+        "product_id": 1035917528,
+        "quantity": 83,
+        "cost_price": 0,
+        "expiry_date": "2026-05-07",
+        "imported_at": "2021-10-19T07:35:05"
+      },
+      {
+        "id": 9,
+        "product_id": 1035917554,
+        "quantity": 84,
+        "cost_price": 0,
+        "expiry_date": "2026-05-07",
+        "imported_at": "2021-10-19T07:38:27"
+      },
+      {
+        "id": 10,
+        "product_id": 1035917772,
+        "quantity": 90,
+        "cost_price": 0,
+        "expiry_date": "2026-05-07",
+        "imported_at": "2021-10-19T07:45:32"
+      },
+      {
+        "id": 11,
+        "product_id": 1035917791,
+        "quantity": 93,
+        "cost_price": 0,
+        "expiry_date": "2026-05-07",
+        "imported_at": "2021-10-19T07:47:40"
+      },
+      {
+        "id": 12,
+        "product_id": 1035918009,
+        "quantity": 87,
+        "cost_price": 0,
+        "expiry_date": "2026-05-07",
+        "imported_at": "2021-10-19T07:58:47"
+      },
+      {
+        "id": 13,
+        "product_id": 1035918468,
+        "quantity": 92,
+        "cost_price": 0,
+        "expiry_date": "2026-05-07",
+        "imported_at": "2021-10-19T08:26:37"
+      },
+      {
+        "id": 14,
+        "product_id": 1035918484,
+        "quantity": 89,
+        "cost_price": 0,
+        "expiry_date": "2026-05-07",
+        "imported_at": "2021-10-19T08:28:49"
+      },
+      {
+        "id": 15,
+        "product_id": 1037847369,
+        "quantity": 91,
+        "cost_price": 0,
+        "expiry_date": "2026-05-07",
+        "imported_at": "2022-01-18T06:39:07"
+      },
+      {
+        "id": 16,
+        "product_id": 1038165706,
+        "quantity": 89,
+        "cost_price": 0,
+        "expiry_date": "2026-05-07",
+        "imported_at": "2022-03-01T10:12:51"
+      },
+      {
+        "id": 17,
+        "product_id": 1038165740,
+        "quantity": 87,
+        "cost_price": 0,
+        "expiry_date": "2026-05-07",
+        "imported_at": "2022-03-01T10:15:17"
+      },
+      {
+        "id": 18,
+        "product_id": 1039545543,
+        "quantity": 90,
+        "cost_price": 0,
+        "expiry_date": "2026-05-07",
+        "imported_at": "2022-04-21T06:14:53"
+      },
+      {
+        "id": 19,
+        "product_id": 1039736395,
+        "quantity": 86,
+        "cost_price": 0,
+        "expiry_date": "2026-05-07",
+        "imported_at": "2022-05-04T02:19:16"
+      },
+      {
+        "id": 20,
+        "product_id": 1041477008,
+        "quantity": 93,
+        "cost_price": 0,
+        "expiry_date": "2026-05-07",
+        "imported_at": "2022-08-26T02:27:53"
+      },
+      {
+        "id": 21,
+        "product_id": 1044766302,
+        "quantity": 89,
+        "cost_price": 0,
+        "expiry_date": "2026-05-07",
+        "imported_at": "2023-02-09T06:47:31"
+      },
+      {
+        "id": 22,
+        "product_id": 1046067881,
+        "quantity": 91,
+        "cost_price": 0,
+        "expiry_date": "2026-05-07",
+        "imported_at": "2023-04-10T01:58:03"
+      },
+      {
+        "id": 23,
+        "product_id": 1046930513,
+        "quantity": 85,
+        "cost_price": 0,
+        "expiry_date": "2026-05-07",
+        "imported_at": "2023-05-18T08:00:23"
+      },
+      {
+        "id": 24,
+        "product_id": 1050145697,
+        "quantity": 89,
+        "cost_price": 0,
+        "expiry_date": "2026-05-07",
+        "imported_at": "2023-09-19T03:23:05"
+      },
+      {
+        "id": 25,
+        "product_id": 1057466727,
+        "quantity": 89,
+        "cost_price": 0,
+        "expiry_date": "2026-05-07",
+        "imported_at": "2024-10-13T04:31:39"
+      },
+      {
+        "id": 26,
+        "product_id": 1063502432,
+        "quantity": 86,
+        "cost_price": 0,
+        "expiry_date": "2026-05-07",
+        "imported_at": "2025-02-07T03:02:58"
+      },
+      {
+        "id": 27,
+        "product_id": 1065282623,
+        "quantity": 88,
+        "cost_price": 0,
+        "expiry_date": "2026-05-07",
+        "imported_at": "2025-03-27T03:38:30"
+      },
+      {
+        "id": 28,
+        "product_id": 1065284725,
+        "quantity": 86,
+        "cost_price": 0,
+        "expiry_date": "2026-05-07",
+        "imported_at": "2025-03-27T03:42:56"
+      },
+      {
+        "id": 29,
+        "product_id": 1065284910,
+        "quantity": 93,
+        "cost_price": 0,
+        "expiry_date": "2026-05-07",
+        "imported_at": "2025-03-27T03:46:59"
+      },
+      {
+        "id": 30,
+        "product_id": 1065285108,
+        "quantity": 98,
+        "cost_price": 0,
+        "expiry_date": "2026-05-07",
+        "imported_at": "2025-03-27T03:50:31"
+      },
+      {
+        "id": 31,
+        "product_id": 1065285306,
+        "quantity": 88,
+        "cost_price": 0,
+        "expiry_date": "2026-05-07",
+        "imported_at": "2025-03-27T03:52:25"
+      },
+      {
+        "id": 32,
+        "product_id": 1065285436,
+        "quantity": 92,
+        "cost_price": 0,
+        "expiry_date": "2026-05-07",
+        "imported_at": "2025-03-27T03:54:36"
+      },
+      {
+        "id": 33,
+        "product_id": 1065287121,
+        "quantity": 90,
+        "cost_price": 0,
+        "expiry_date": "2026-05-07",
+        "imported_at": "2025-03-27T04:18:04"
+      },
+      {
+        "id": 34,
+        "product_id": 1065567578,
+        "quantity": 94,
+        "cost_price": 0,
+        "expiry_date": "2026-05-07",
+        "imported_at": "2025-04-03T02:38:07"
+      },
+      {
+        "id": 35,
+        "product_id": 1070454919,
+        "quantity": 87,
+        "cost_price": 0,
+        "expiry_date": "2026-05-07",
+        "imported_at": "2025-10-09T06:29:48"
+      },
+      {
+        "id": 36,
+        "product_id": 1073092224,
+        "quantity": 95,
+        "cost_price": 0,
+        "expiry_date": "2026-05-07",
+        "imported_at": "2026-02-06T04:48:04"
+      },
+      {
+        "id": 37,
+        "product_id": 1073092257,
+        "quantity": 81,
+        "cost_price": 0,
+        "expiry_date": "2026-05-07",
+        "imported_at": "2026-02-06T04:50:12"
+      },
+      {
+        "id": 38,
+        "product_id": 1073183496,
+        "quantity": 94,
+        "cost_price": 0,
+        "expiry_date": "2026-05-07",
+        "imported_at": "2026-02-13T04:29:24"
+      },
+      {
+        "id": 39,
+        "product_id": 1073183508,
+        "quantity": 88,
+        "cost_price": 0,
+        "expiry_date": "2026-05-07",
+        "imported_at": "2026-02-13T04:32:02"
+      },
+      {
+        "id": 40,
+        "product_id": 1073370413,
+        "quantity": 84,
+        "cost_price": 0,
+        "expiry_date": "2026-05-07",
+        "imported_at": "2026-02-28T01:45:28"
+      },
+      {
+        "id": 41,
+        "product_id": 1073373566,
+        "quantity": 87,
+        "cost_price": 0,
+        "expiry_date": "2026-05-07",
+        "imported_at": "2026-02-28T06:32:54"
+      },
+      {
+        "id": 42,
+        "product_id": 1073435393,
+        "quantity": 81,
+        "cost_price": 0,
+        "expiry_date": "2026-05-07",
+        "imported_at": "2026-03-04T03:28:21"
+      },
+      {
+        "id": 43,
+        "product_id": 1073435410,
+        "quantity": 0,
+        "cost_price": 0,
+        "expiry_date": "2026-05-07",
+        "imported_at": "2026-03-04T03:30:14"
+      }
+    ],
     "product_reviews": [
       {
         "id": 1,
         "order_id": 7,
         "user_id": 3,
-        "username": "demo_user_01",
         "product_id": 1041477008,
-        "product_name": "Bánh mousse Hawaii",
         "rating": 4,
         "comment": "Chất lượng tốt, gia đình mình ai cũng thích.",
-        "created_at": "2026-03-26T15:31:14.191438"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:14.191438",
+        "updated_at": "2026-03-26T15:31:14.191438"
       },
       {
         "id": 2,
         "order_id": 7,
         "user_id": 3,
-        "username": "demo_user_01",
         "product_id": 1035917554,
-        "product_name": "Bánh sô cô la sữa",
         "rating": 4,
         "comment": "Chất lượng tốt, gia đình mình ai cũng thích.",
-        "created_at": "2026-03-26T15:31:14.191438"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:14.191438",
+        "updated_at": "2026-03-26T15:31:14.191438"
       },
       {
         "id": 3,
         "order_id": 7,
         "user_id": 3,
-        "username": "demo_user_01",
         "product_id": 1038165706,
-        "product_name": "Bánh cuộn trà xanh 110G",
         "rating": 4,
         "comment": "Chất lượng tốt, gia đình mình ai cũng thích.",
-        "created_at": "2026-03-26T15:31:14.191438"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:14.191438",
+        "updated_at": "2026-03-26T15:31:14.191438"
       },
       {
         "id": 4,
         "order_id": 9,
         "user_id": 3,
-        "username": "demo_user_01",
         "product_id": 1065285436,
-        "product_name": "Bánh cuộn ổi hồng",
         "rating": 4,
         "comment": "Tổng thể rất tốt, phù hợp để đặt cho gia đình.",
-        "created_at": "2026-03-26T15:31:14.225675"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:14.225675",
+        "updated_at": "2026-03-26T15:31:14.225675"
       },
       {
         "id": 5,
         "order_id": 9,
         "user_id": 3,
-        "username": "demo_user_01",
         "product_id": 1039736395,
-        "product_name": "Bánh donut sô cô la trà xanh",
         "rating": 4,
         "comment": "Tổng thể rất tốt, phù hợp để đặt cho gia đình.",
-        "created_at": "2026-03-26T15:31:14.225675"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:14.225675",
+        "updated_at": "2026-03-26T15:31:14.225675"
       },
       {
         "id": 6,
         "order_id": 9,
         "user_id": 3,
-        "username": "demo_user_01",
         "product_id": 1035917772,
-        "product_name": "Bánh trứng vàng baby",
         "rating": 4,
         "comment": "Tổng thể rất tốt, phù hợp để đặt cho gia đình.",
-        "created_at": "2026-03-26T15:31:14.225675"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:14.225675",
+        "updated_at": "2026-03-26T15:31:14.225675"
       },
       {
         "id": 7,
         "order_id": 8,
         "user_id": 3,
-        "username": "demo_user_01",
         "product_id": 1038165706,
-        "product_name": "Bánh cuộn trà xanh 110G",
         "rating": 4,
         "comment": "Đơn giao đầy đủ, chất lượng vượt mong đợi.",
-        "created_at": "2026-03-26T15:31:14.249645"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:14.249645",
+        "updated_at": "2026-03-26T15:31:14.249645"
       },
       {
         "id": 8,
         "order_id": 8,
         "user_id": 3,
-        "username": "demo_user_01",
         "product_id": 1035917554,
-        "product_name": "Bánh sô cô la sữa",
         "rating": 4,
         "comment": "Đơn giao đầy đủ, chất lượng vượt mong đợi.",
-        "created_at": "2026-03-26T15:31:14.249645"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:14.249645",
+        "updated_at": "2026-03-26T15:31:14.249645"
       },
       {
         "id": 9,
         "order_id": 10,
         "user_id": 3,
-        "username": "demo_user_01",
         "product_id": 1065282623,
-        "product_name": "Bánh chiffon trà bá tước",
         "rating": 5,
         "comment": "Chất lượng tốt, gia đình mình ai cũng thích.",
-        "created_at": "2026-03-26T15:31:14.265664"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:14.265664",
+        "updated_at": "2026-03-26T15:31:14.265664"
       },
       {
         "id": 10,
         "order_id": 10,
         "user_id": 3,
-        "username": "demo_user_01",
         "product_id": 1035918009,
-        "product_name": "Bánh opera",
         "rating": 5,
         "comment": "Chất lượng tốt, gia đình mình ai cũng thích.",
-        "created_at": "2026-03-26T15:31:14.265664"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:14.265664",
+        "updated_at": "2026-03-26T15:31:14.265664"
       },
       {
         "id": 11,
         "order_id": 11,
         "user_id": 3,
-        "username": "demo_user_01",
         "product_id": 1065282623,
-        "product_name": "Bánh chiffon trà bá tước",
         "rating": 5,
         "comment": "Bánh mềm và ngon, phần kem không bị ngọt gắt.",
-        "created_at": "2026-03-26T15:31:14.290796"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:14.290796",
+        "updated_at": "2026-03-26T15:31:14.290796"
       },
       {
         "id": 12,
         "order_id": 11,
         "user_id": 3,
-        "username": "demo_user_01",
         "product_id": 1035837467,
-        "product_name": "Bánh mousse Chanh leo",
         "rating": 5,
         "comment": "Bánh mềm và ngon, phần kem không bị ngọt gắt.",
-        "created_at": "2026-03-26T15:31:14.290796"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:14.290796",
+        "updated_at": "2026-03-26T15:31:14.290796"
       },
       {
         "id": 13,
         "order_id": 5,
         "user_id": 3,
-        "username": "demo_user_01",
         "product_id": 1035917326,
-        "product_name": "Bánh chiffon ba vị",
         "rating": 5,
         "comment": "Rất ưng ý, lần sau sẽ đặt thêm nhiều vị khác.",
-        "created_at": "2026-03-26T15:31:14.316626"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:14.316626",
+        "updated_at": "2026-03-26T15:31:14.316626"
       },
       {
         "id": 14,
         "order_id": 5,
         "user_id": 3,
-        "username": "demo_user_01",
         "product_id": 1035917791,
-        "product_name": "Bánh tiramisu",
         "rating": 5,
         "comment": "Rất ưng ý, lần sau sẽ đặt thêm nhiều vị khác.",
-        "created_at": "2026-03-26T15:31:14.316626"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:14.316626",
+        "updated_at": "2026-03-26T15:31:14.316626"
       },
       {
         "id": 15,
         "order_id": 5,
         "user_id": 3,
-        "username": "demo_user_01",
         "product_id": 1063502432,
-        "product_name": "Bánh kem Mây hồng",
         "rating": 5,
         "comment": "Rất ưng ý, lần sau sẽ đặt thêm nhiều vị khác.",
-        "created_at": "2026-03-26T15:31:14.316626"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:14.316626",
+        "updated_at": "2026-03-26T15:31:14.316626"
       },
       {
         "id": 16,
         "order_id": 3,
         "user_id": 3,
-        "username": "demo_user_01",
         "product_id": 1041477008,
-        "product_name": "Bánh mousse Hawaii",
         "rating": 4,
         "comment": "Đơn giao đầy đủ, chất lượng vượt mong đợi.",
-        "created_at": "2026-03-26T15:31:14.343563"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:14.343563",
+        "updated_at": "2026-03-26T15:31:14.343563"
       },
       {
         "id": 17,
         "order_id": 3,
         "user_id": 3,
-        "username": "demo_user_01",
         "product_id": 1073373566,
-        "product_name": "Bánh kem Ngọc bích",
         "rating": 4,
         "comment": "Đơn giao đầy đủ, chất lượng vượt mong đợi.",
-        "created_at": "2026-03-26T15:31:14.343563"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:14.343563",
+        "updated_at": "2026-03-26T15:31:14.343563"
       },
       {
         "id": 18,
         "order_id": 6,
         "user_id": 3,
-        "username": "demo_user_01",
         "product_id": 1044766302,
-        "product_name": "Bánh kem Vườn hồng",
         "rating": 4,
         "comment": "Tổng thể rất tốt, phù hợp để đặt cho gia đình.",
-        "created_at": "2026-03-26T15:31:14.369864"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:14.369864",
+        "updated_at": "2026-03-26T15:31:14.369864"
       },
       {
         "id": 19,
         "order_id": 6,
         "user_id": 3,
-        "username": "demo_user_01",
         "product_id": 1038165706,
-        "product_name": "Bánh cuộn trà xanh 110G",
         "rating": 4,
         "comment": "Tổng thể rất tốt, phù hợp để đặt cho gia đình.",
-        "created_at": "2026-03-26T15:31:14.369864"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:14.369864",
+        "updated_at": "2026-03-26T15:31:14.369864"
       },
       {
         "id": 20,
         "order_id": 2,
         "user_id": 3,
-        "username": "demo_user_01",
         "product_id": 1038165740,
-        "product_name": "Bánh cuộn vani 110G",
         "rating": 5,
         "comment": "Sản phẩm tươi mới, vị vừa ăn, đáng tiền.",
-        "created_at": "2026-03-26T15:31:14.398224"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:14.398224",
+        "updated_at": "2026-03-26T15:31:14.398224"
       },
       {
         "id": 21,
         "order_id": 2,
         "user_id": 3,
-        "username": "demo_user_01",
         "product_id": 1073435410,
-        "product_name": "Bánh mousse Vải hoa hồng",
         "rating": 5,
         "comment": "Sản phẩm tươi mới, vị vừa ăn, đáng tiền.",
-        "created_at": "2026-03-26T15:31:14.398224"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:14.398224",
+        "updated_at": "2026-03-26T15:31:14.398224"
       },
       {
         "id": 22,
         "order_id": 2,
         "user_id": 3,
-        "username": "demo_user_01",
         "product_id": 1039736395,
-        "product_name": "Bánh donut sô cô la trà xanh",
         "rating": 5,
         "comment": "Sản phẩm tươi mới, vị vừa ăn, đáng tiền.",
-        "created_at": "2026-03-26T15:31:14.398224"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:14.398224",
+        "updated_at": "2026-03-26T15:31:14.398224"
       },
       {
         "id": 23,
         "order_id": 4,
         "user_id": 3,
-        "username": "demo_user_01",
         "product_id": 1073370413,
-        "product_name": "Bánh kem Vàng anh",
         "rating": 4,
         "comment": "Chất lượng tốt, gia đình mình ai cũng thích.",
-        "created_at": "2026-03-26T15:31:14.433396"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:14.433396",
+        "updated_at": "2026-03-26T15:31:14.433396"
       },
       {
         "id": 24,
         "order_id": 12,
         "user_id": 4,
-        "username": "demo_user_02",
         "product_id": 1035917330,
-        "product_name": "Bánh cuộn sô cô la",
         "rating": 4,
         "comment": "Bánh rất ngon, giao hàng đúng hẹn, sẽ ủng hộ tiếp.",
-        "created_at": "2026-03-26T15:31:14.463982"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:14.463982",
+        "updated_at": "2026-03-26T15:31:14.463982"
       },
       {
         "id": 25,
         "order_id": 12,
         "user_id": 4,
-        "username": "demo_user_02",
         "product_id": 1038165706,
-        "product_name": "Bánh cuộn trà xanh 110G",
         "rating": 4,
         "comment": "Bánh rất ngon, giao hàng đúng hẹn, sẽ ủng hộ tiếp.",
-        "created_at": "2026-03-26T15:31:14.463982"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:14.463982",
+        "updated_at": "2026-03-26T15:31:14.463982"
       },
       {
         "id": 26,
         "order_id": 12,
         "user_id": 4,
-        "username": "demo_user_02",
         "product_id": 1035837467,
-        "product_name": "Bánh mousse Chanh leo",
         "rating": 4,
         "comment": "Bánh rất ngon, giao hàng đúng hẹn, sẽ ủng hộ tiếp.",
-        "created_at": "2026-03-26T15:31:14.463982"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:14.463982",
+        "updated_at": "2026-03-26T15:31:14.463982"
       },
       {
         "id": 27,
         "order_id": 16,
         "user_id": 4,
-        "username": "demo_user_02",
         "product_id": 1035917528,
-        "product_name": "Tiramisu",
         "rating": 4,
         "comment": "Bánh mềm và ngon, phần kem không bị ngọt gắt.",
-        "created_at": "2026-03-26T15:31:14.494359"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:14.494359",
+        "updated_at": "2026-03-26T15:31:14.494359"
       },
       {
         "id": 28,
         "order_id": 19,
         "user_id": 4,
-        "username": "demo_user_02",
         "product_id": 1041477008,
-        "product_name": "Bánh mousse Hawaii",
         "rating": 4,
         "comment": "Bánh rất ngon, giao hàng đúng hẹn, sẽ ủng hộ tiếp.",
-        "created_at": "2026-03-26T15:31:14.526404"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:14.526404",
+        "updated_at": "2026-03-26T15:31:14.526404"
       },
       {
         "id": 29,
         "order_id": 19,
         "user_id": 4,
-        "username": "demo_user_02",
         "product_id": 1050145697,
-        "product_name": "Bánh macaron 90g",
         "rating": 4,
         "comment": "Bánh rất ngon, giao hàng đúng hẹn, sẽ ủng hộ tiếp.",
-        "created_at": "2026-03-26T15:31:14.526404"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:14.526404",
+        "updated_at": "2026-03-26T15:31:14.526404"
       },
       {
         "id": 30,
         "order_id": 13,
         "user_id": 4,
-        "username": "demo_user_02",
         "product_id": 1039736395,
-        "product_name": "Bánh donut sô cô la trà xanh",
         "rating": 5,
         "comment": "Bánh rất ngon, giao hàng đúng hẹn, sẽ ủng hộ tiếp.",
-        "created_at": "2026-03-26T15:31:14.558317"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:14.558317",
+        "updated_at": "2026-03-26T15:31:14.558317"
       },
       {
         "id": 31,
         "order_id": 15,
         "user_id": 4,
-        "username": "demo_user_02",
         "product_id": 1035837467,
-        "product_name": "Bánh mousse Chanh leo",
         "rating": 5,
         "comment": "Đơn giao đầy đủ, chất lượng vượt mong đợi.",
-        "created_at": "2026-03-26T15:31:14.588677"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:14.588677",
+        "updated_at": "2026-03-26T15:31:14.588677"
       },
       {
         "id": 32,
         "order_id": 15,
         "user_id": 4,
-        "username": "demo_user_02",
         "product_id": 1044766302,
-        "product_name": "Bánh kem Vườn hồng",
         "rating": 5,
         "comment": "Đơn giao đầy đủ, chất lượng vượt mong đợi.",
-        "created_at": "2026-03-26T15:31:14.588677"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:14.588677",
+        "updated_at": "2026-03-26T15:31:14.588677"
       },
       {
         "id": 33,
         "order_id": 21,
         "user_id": 4,
-        "username": "demo_user_02",
         "product_id": 1035917326,
-        "product_name": "Bánh chiffon ba vị",
         "rating": 4,
         "comment": "Bánh mềm và ngon, phần kem không bị ngọt gắt.",
-        "created_at": "2026-03-26T15:31:14.619078"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:14.619078",
+        "updated_at": "2026-03-26T15:31:14.619078"
       },
       {
         "id": 34,
         "order_id": 21,
         "user_id": 4,
-        "username": "demo_user_02",
         "product_id": 1035917554,
-        "product_name": "Bánh sô cô la sữa",
         "rating": 4,
         "comment": "Bánh mềm và ngon, phần kem không bị ngọt gắt.",
-        "created_at": "2026-03-26T15:31:14.619078"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:14.619078",
+        "updated_at": "2026-03-26T15:31:14.619078"
       },
       {
         "id": 35,
         "order_id": 14,
         "user_id": 4,
-        "username": "demo_user_02",
         "product_id": 1065287121,
-        "product_name": "Bánh madeleine sô cô la",
         "rating": 4,
         "comment": "Chất lượng tốt, gia đình mình ai cũng thích.",
-        "created_at": "2026-03-26T15:31:14.649999"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:14.649999",
+        "updated_at": "2026-03-26T15:31:14.649999"
       },
       {
         "id": 36,
         "order_id": 14,
         "user_id": 4,
-        "username": "demo_user_02",
         "product_id": 1044766302,
-        "product_name": "Bánh kem Vườn hồng",
         "rating": 4,
         "comment": "Chất lượng tốt, gia đình mình ai cũng thích.",
-        "created_at": "2026-03-26T15:31:14.649999"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:14.649999",
+        "updated_at": "2026-03-26T15:31:14.649999"
       },
       {
         "id": 37,
         "order_id": 14,
         "user_id": 4,
-        "username": "demo_user_02",
         "product_id": 1037847369,
-        "product_name": "Bánh mousse xoài mịn",
         "rating": 4,
         "comment": "Chất lượng tốt, gia đình mình ai cũng thích.",
-        "created_at": "2026-03-26T15:31:14.649999"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:14.649999",
+        "updated_at": "2026-03-26T15:31:14.649999"
       },
       {
         "id": 38,
         "order_id": 17,
         "user_id": 4,
-        "username": "demo_user_02",
         "product_id": 1039545543,
-        "product_name": "Bánh kem Choco trân châu",
         "rating": 4,
         "comment": "Mình đánh giá cao độ ổn định chất lượng của shop.",
-        "created_at": "2026-03-26T15:31:14.682229"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:14.682229",
+        "updated_at": "2026-03-26T15:31:14.682229"
       },
       {
         "id": 39,
         "order_id": 18,
         "user_id": 4,
-        "username": "demo_user_02",
         "product_id": 1073435393,
-        "product_name": "Bánh mousse Quả mọng",
         "rating": 5,
         "comment": "Bánh rất ngon, giao hàng đúng hẹn, sẽ ủng hộ tiếp.",
-        "created_at": "2026-03-26T15:31:14.715948"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:14.715948",
+        "updated_at": "2026-03-26T15:31:14.715948"
       },
       {
         "id": 40,
         "order_id": 20,
         "user_id": 4,
-        "username": "demo_user_02",
         "product_id": 1063502432,
-        "product_name": "Bánh kem Mây hồng",
         "rating": 5,
         "comment": "Bánh rất ngon, giao hàng đúng hẹn, sẽ ủng hộ tiếp.",
-        "created_at": "2026-03-26T15:31:14.748602"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:14.748602",
+        "updated_at": "2026-03-26T15:31:14.748602"
       },
       {
         "id": 41,
         "order_id": 20,
         "user_id": 4,
-        "username": "demo_user_02",
         "product_id": 1035918468,
-        "product_name": "Bánh donut sô cô la hương dâu",
         "rating": 5,
         "comment": "Bánh rất ngon, giao hàng đúng hẹn, sẽ ủng hộ tiếp.",
-        "created_at": "2026-03-26T15:31:14.748602"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:14.748602",
+        "updated_at": "2026-03-26T15:31:14.748602"
       },
       {
         "id": 42,
         "order_id": 20,
         "user_id": 4,
-        "username": "demo_user_02",
         "product_id": 1039736395,
-        "product_name": "Bánh donut sô cô la trà xanh",
         "rating": 5,
         "comment": "Bánh rất ngon, giao hàng đúng hẹn, sẽ ủng hộ tiếp.",
-        "created_at": "2026-03-26T15:31:14.748602"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:14.748602",
+        "updated_at": "2026-03-26T15:31:14.748602"
       },
       {
         "id": 43,
         "order_id": 27,
         "user_id": 5,
-        "username": "demo_user_03",
         "product_id": 1065284725,
-        "product_name": "Bánh chuối hạt óc chó",
         "rating": 4,
         "comment": "Bánh rất ngon, giao hàng đúng hẹn, sẽ ủng hộ tiếp.",
-        "created_at": "2026-03-26T15:31:14.785312"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:14.785312",
+        "updated_at": "2026-03-26T15:31:14.785312"
       },
       {
         "id": 44,
         "order_id": 31,
         "user_id": 5,
-        "username": "demo_user_03",
         "product_id": 1070454919,
-        "product_name": "Bánh mousse Dừa tuyết",
         "rating": 5,
         "comment": "Rất ưng ý, lần sau sẽ đặt thêm nhiều vị khác.",
-        "created_at": "2026-03-26T15:31:14.834030"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:14.834030",
+        "updated_at": "2026-03-26T15:31:14.834030"
       },
       {
         "id": 45,
         "order_id": 31,
         "user_id": 5,
-        "username": "demo_user_03",
         "product_id": 1050145697,
-        "product_name": "Bánh macaron 90g",
         "rating": 5,
         "comment": "Rất ưng ý, lần sau sẽ đặt thêm nhiều vị khác.",
-        "created_at": "2026-03-26T15:31:14.834030"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:14.834030",
+        "updated_at": "2026-03-26T15:31:14.834030"
       },
       {
         "id": 46,
         "order_id": 28,
         "user_id": 5,
-        "username": "demo_user_03",
         "product_id": 1035917528,
-        "product_name": "Tiramisu",
         "rating": 5,
         "comment": "Tổng thể rất tốt, phù hợp để đặt cho gia đình.",
-        "created_at": "2026-03-26T15:31:14.874926"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:14.874926",
+        "updated_at": "2026-03-26T15:31:14.874926"
       },
       {
         "id": 47,
         "order_id": 28,
         "user_id": 5,
-        "username": "demo_user_03",
         "product_id": 1065285306,
-        "product_name": "Bánh cuộn đào",
         "rating": 5,
         "comment": "Tổng thể rất tốt, phù hợp để đặt cho gia đình.",
-        "created_at": "2026-03-26T15:31:14.874926"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:14.874926",
+        "updated_at": "2026-03-26T15:31:14.874926"
       },
       {
         "id": 48,
         "order_id": 28,
         "user_id": 5,
-        "username": "demo_user_03",
         "product_id": 1057466727,
-        "product_name": "Bánh kem Hổ phách",
         "rating": 5,
         "comment": "Tổng thể rất tốt, phù hợp để đặt cho gia đình.",
-        "created_at": "2026-03-26T15:31:14.874926"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:14.874926",
+        "updated_at": "2026-03-26T15:31:14.874926"
       },
       {
         "id": 49,
         "order_id": 22,
         "user_id": 5,
-        "username": "demo_user_03",
         "product_id": 1073092257,
-        "product_name": "Bánh kem Choco ngọc trai",
         "rating": 5,
         "comment": "Rất ưng ý, lần sau sẽ đặt thêm nhiều vị khác.",
-        "created_at": "2026-03-26T15:31:14.919406"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:14.919406",
+        "updated_at": "2026-03-26T15:31:14.919406"
       },
       {
         "id": 50,
         "order_id": 22,
         "user_id": 5,
-        "username": "demo_user_03",
         "product_id": 1073435393,
-        "product_name": "Bánh mousse Quả mọng",
         "rating": 5,
         "comment": "Rất ưng ý, lần sau sẽ đặt thêm nhiều vị khác.",
-        "created_at": "2026-03-26T15:31:14.919406"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:14.919406",
+        "updated_at": "2026-03-26T15:31:14.919406"
       },
       {
         "id": 51,
         "order_id": 22,
         "user_id": 5,
-        "username": "demo_user_03",
         "product_id": 1035917338,
-        "product_name": "Bánh madeleine",
         "rating": 5,
         "comment": "Rất ưng ý, lần sau sẽ đặt thêm nhiều vị khác.",
-        "created_at": "2026-03-26T15:31:14.919406"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:14.919406",
+        "updated_at": "2026-03-26T15:31:14.919406"
       },
       {
         "id": 52,
         "order_id": 25,
         "user_id": 5,
-        "username": "demo_user_03",
         "product_id": 1073092224,
-        "product_name": "Bánh kem Sương mai",
         "rating": 5,
         "comment": "Rất ưng ý, lần sau sẽ đặt thêm nhiều vị khác.",
-        "created_at": "2026-03-26T15:31:14.966450"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:14.966450",
+        "updated_at": "2026-03-26T15:31:14.966450"
       },
       {
         "id": 53,
         "order_id": 25,
         "user_id": 5,
-        "username": "demo_user_03",
         "product_id": 1035837470,
-        "product_name": "Bánh kem Mật ngọt",
         "rating": 5,
         "comment": "Rất ưng ý, lần sau sẽ đặt thêm nhiều vị khác.",
-        "created_at": "2026-03-26T15:31:14.966450"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:14.966450",
+        "updated_at": "2026-03-26T15:31:14.966450"
       },
       {
         "id": 54,
         "order_id": 24,
         "user_id": 5,
-        "username": "demo_user_03",
         "product_id": 1065284910,
-        "product_name": "Bánh cuộn ba vị",
         "rating": 5,
         "comment": "Hương vị ổn định, đóng gói cẩn thận, rất hài lòng.",
-        "created_at": "2026-03-26T15:31:15.010134"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:15.010134",
+        "updated_at": "2026-03-26T15:31:15.010134"
       },
       {
         "id": 55,
         "order_id": 24,
         "user_id": 5,
-        "username": "demo_user_03",
         "product_id": 1046067881,
-        "product_name": "Bánh kem Thiên thần",
         "rating": 5,
         "comment": "Hương vị ổn định, đóng gói cẩn thận, rất hài lòng.",
-        "created_at": "2026-03-26T15:31:15.010134"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:15.010134",
+        "updated_at": "2026-03-26T15:31:15.010134"
       },
       {
         "id": 56,
         "order_id": 30,
         "user_id": 5,
-        "username": "demo_user_03",
         "product_id": 1065567578,
-        "product_name": "Bánh kem Cara-men-say",
         "rating": 4,
         "comment": "Rất ưng ý, lần sau sẽ đặt thêm nhiều vị khác.",
-        "created_at": "2026-03-26T15:31:15.050674"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:15.050674",
+        "updated_at": "2026-03-26T15:31:15.050674"
       },
       {
         "id": 57,
         "order_id": 26,
         "user_id": 5,
-        "username": "demo_user_03",
         "product_id": 1035917528,
-        "product_name": "Tiramisu",
         "rating": 4,
         "comment": "Rất ưng ý, lần sau sẽ đặt thêm nhiều vị khác.",
-        "created_at": "2026-03-26T15:31:15.089449"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:15.089449",
+        "updated_at": "2026-03-26T15:31:15.089449"
       },
       {
         "id": 58,
         "order_id": 26,
         "user_id": 5,
-        "username": "demo_user_03",
         "product_id": 1035837467,
-        "product_name": "Bánh mousse Chanh leo",
         "rating": 4,
         "comment": "Rất ưng ý, lần sau sẽ đặt thêm nhiều vị khác.",
-        "created_at": "2026-03-26T15:31:15.089449"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:15.089449",
+        "updated_at": "2026-03-26T15:31:15.089449"
       },
       {
         "id": 59,
         "order_id": 29,
         "user_id": 5,
-        "username": "demo_user_03",
         "product_id": 1070454919,
-        "product_name": "Bánh mousse Dừa tuyết",
         "rating": 4,
         "comment": "Bánh rất ngon, giao hàng đúng hẹn, sẽ ủng hộ tiếp.",
-        "created_at": "2026-03-26T15:31:15.130707"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:15.130707",
+        "updated_at": "2026-03-26T15:31:15.130707"
       },
       {
         "id": 60,
         "order_id": 29,
         "user_id": 5,
-        "username": "demo_user_03",
         "product_id": 1057466727,
-        "product_name": "Bánh kem Hổ phách",
         "rating": 4,
         "comment": "Bánh rất ngon, giao hàng đúng hẹn, sẽ ủng hộ tiếp.",
-        "created_at": "2026-03-26T15:31:15.130707"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:15.130707",
+        "updated_at": "2026-03-26T15:31:15.130707"
       },
       {
         "id": 61,
         "order_id": 29,
         "user_id": 5,
-        "username": "demo_user_03",
         "product_id": 1035917772,
-        "product_name": "Bánh trứng vàng baby",
         "rating": 4,
         "comment": "Bánh rất ngon, giao hàng đúng hẹn, sẽ ủng hộ tiếp.",
-        "created_at": "2026-03-26T15:31:15.130707"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:15.130707",
+        "updated_at": "2026-03-26T15:31:15.130707"
       },
       {
         "id": 62,
         "order_id": 23,
         "user_id": 5,
-        "username": "demo_user_03",
         "product_id": 1065282623,
-        "product_name": "Bánh chiffon trà bá tước",
         "rating": 5,
         "comment": "Đơn giao đầy đủ, chất lượng vượt mong đợi.",
-        "created_at": "2026-03-26T15:31:15.170102"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:15.170102",
+        "updated_at": "2026-03-26T15:31:15.170102"
       },
       {
         "id": 63,
         "order_id": 23,
         "user_id": 5,
-        "username": "demo_user_03",
         "product_id": 1046930513,
-        "product_name": "Bánh kem Hoa viên",
         "rating": 5,
         "comment": "Đơn giao đầy đủ, chất lượng vượt mong đợi.",
-        "created_at": "2026-03-26T15:31:15.170102"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:15.170102",
+        "updated_at": "2026-03-26T15:31:15.170102"
       },
       {
         "id": 64,
         "order_id": 23,
         "user_id": 5,
-        "username": "demo_user_03",
         "product_id": 1044766302,
-        "product_name": "Bánh kem Vườn hồng",
         "rating": 5,
         "comment": "Đơn giao đầy đủ, chất lượng vượt mong đợi.",
-        "created_at": "2026-03-26T15:31:15.170102"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:15.170102",
+        "updated_at": "2026-03-26T15:31:15.170102"
       },
       {
         "id": 65,
         "order_id": 36,
         "user_id": 6,
-        "username": "demo_user_04",
         "product_id": 1035918009,
-        "product_name": "Bánh opera",
         "rating": 5,
         "comment": "Bánh mềm và ngon, phần kem không bị ngọt gắt.",
-        "created_at": "2026-03-26T15:31:15.209190"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:15.209190",
+        "updated_at": "2026-03-26T15:31:15.209190"
       },
       {
         "id": 66,
         "order_id": 36,
         "user_id": 6,
-        "username": "demo_user_04",
         "product_id": 1035917791,
-        "product_name": "Bánh tiramisu",
         "rating": 5,
         "comment": "Bánh mềm và ngon, phần kem không bị ngọt gắt.",
-        "created_at": "2026-03-26T15:31:15.209190"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:15.209190",
+        "updated_at": "2026-03-26T15:31:15.209190"
       },
       {
         "id": 67,
         "order_id": 36,
         "user_id": 6,
-        "username": "demo_user_04",
         "product_id": 1065285306,
-        "product_name": "Bánh cuộn đào",
         "rating": 5,
         "comment": "Bánh mềm và ngon, phần kem không bị ngọt gắt.",
-        "created_at": "2026-03-26T15:31:15.209190"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:15.209190",
+        "updated_at": "2026-03-26T15:31:15.209190"
       },
       {
         "id": 68,
         "order_id": 34,
         "user_id": 6,
-        "username": "demo_user_04",
         "product_id": 1035837470,
-        "product_name": "Bánh kem Mật ngọt",
         "rating": 4,
         "comment": "Chất lượng tốt, gia đình mình ai cũng thích.",
-        "created_at": "2026-03-26T15:31:15.243143"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:15.243143",
+        "updated_at": "2026-03-26T15:31:15.243143"
       },
       {
         "id": 69,
         "order_id": 34,
         "user_id": 6,
-        "username": "demo_user_04",
         "product_id": 1046067881,
-        "product_name": "Bánh kem Thiên thần",
         "rating": 4,
         "comment": "Chất lượng tốt, gia đình mình ai cũng thích.",
-        "created_at": "2026-03-26T15:31:15.243143"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:15.243143",
+        "updated_at": "2026-03-26T15:31:15.243143"
       },
       {
         "id": 70,
         "order_id": 34,
         "user_id": 6,
-        "username": "demo_user_04",
         "product_id": 1057466727,
-        "product_name": "Bánh kem Hổ phách",
         "rating": 4,
         "comment": "Chất lượng tốt, gia đình mình ai cũng thích.",
-        "created_at": "2026-03-26T15:31:15.243143"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:15.243143",
+        "updated_at": "2026-03-26T15:31:15.243143"
       },
       {
         "id": 71,
         "order_id": 35,
         "user_id": 6,
-        "username": "demo_user_04",
         "product_id": 1065285436,
-        "product_name": "Bánh cuộn ổi hồng",
         "rating": 4,
         "comment": "Chất lượng tốt, gia đình mình ai cũng thích.",
-        "created_at": "2026-03-26T15:31:15.282915"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:15.282915",
+        "updated_at": "2026-03-26T15:31:15.282915"
       },
       {
         "id": 72,
         "order_id": 39,
         "user_id": 6,
-        "username": "demo_user_04",
         "product_id": 1035837467,
-        "product_name": "Bánh mousse Chanh leo",
         "rating": 4,
         "comment": "Chất lượng tốt, gia đình mình ai cũng thích.",
-        "created_at": "2026-03-26T15:31:15.317240"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:15.317240",
+        "updated_at": "2026-03-26T15:31:15.317240"
       },
       {
         "id": 73,
         "order_id": 33,
         "user_id": 6,
-        "username": "demo_user_04",
         "product_id": 1038165706,
-        "product_name": "Bánh cuộn trà xanh 110G",
         "rating": 4,
         "comment": "Rất ưng ý, lần sau sẽ đặt thêm nhiều vị khác.",
-        "created_at": "2026-03-26T15:31:15.356065"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:15.356065",
+        "updated_at": "2026-03-26T15:31:15.356065"
       },
       {
         "id": 74,
         "order_id": 37,
         "user_id": 6,
-        "username": "demo_user_04",
         "product_id": 1035918484,
-        "product_name": "Bánh donut sô cô la",
         "rating": 4,
         "comment": "Bánh mềm và ngon, phần kem không bị ngọt gắt.",
-        "created_at": "2026-03-26T15:31:15.397241"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:15.397241",
+        "updated_at": "2026-03-26T15:31:15.397241"
       },
       {
         "id": 75,
         "order_id": 40,
         "user_id": 6,
-        "username": "demo_user_04",
         "product_id": 1035917350,
-        "product_name": "Bánh su kem",
         "rating": 5,
         "comment": "Sản phẩm tươi mới, vị vừa ăn, đáng tiền.",
-        "created_at": "2026-03-26T15:31:15.439724"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:15.439724",
+        "updated_at": "2026-03-26T15:31:15.439724"
       },
       {
         "id": 76,
         "order_id": 40,
         "user_id": 6,
-        "username": "demo_user_04",
         "product_id": 1035837470,
-        "product_name": "Bánh kem Mật ngọt",
         "rating": 5,
         "comment": "Sản phẩm tươi mới, vị vừa ăn, đáng tiền.",
-        "created_at": "2026-03-26T15:31:15.439724"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:15.439724",
+        "updated_at": "2026-03-26T15:31:15.439724"
       },
       {
         "id": 77,
         "order_id": 32,
         "user_id": 6,
-        "username": "demo_user_04",
         "product_id": 1035917261,
-        "product_name": "Bánh su kem sô cô la",
         "rating": 4,
         "comment": "Tổng thể rất tốt, phù hợp để đặt cho gia đình.",
-        "created_at": "2026-03-26T15:31:15.482379"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:15.482379",
+        "updated_at": "2026-03-26T15:31:15.482379"
       },
       {
         "id": 78,
         "order_id": 32,
         "user_id": 6,
-        "username": "demo_user_04",
         "product_id": 1065287121,
-        "product_name": "Bánh madeleine sô cô la",
         "rating": 4,
         "comment": "Tổng thể rất tốt, phù hợp để đặt cho gia đình.",
-        "created_at": "2026-03-26T15:31:15.482379"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:15.482379",
+        "updated_at": "2026-03-26T15:31:15.482379"
       },
       {
         "id": 79,
         "order_id": 38,
         "user_id": 6,
-        "username": "demo_user_04",
         "product_id": 1073370413,
-        "product_name": "Bánh kem Vàng anh",
         "rating": 4,
         "comment": "Chất lượng tốt, gia đình mình ai cũng thích.",
-        "created_at": "2026-03-26T15:31:15.524862"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:15.524862",
+        "updated_at": "2026-03-26T15:31:15.524862"
       },
       {
         "id": 80,
         "order_id": 41,
         "user_id": 6,
-        "username": "demo_user_04",
         "product_id": 1035918009,
-        "product_name": "Bánh opera",
         "rating": 5,
         "comment": "Bánh rất ngon, giao hàng đúng hẹn, sẽ ủng hộ tiếp.",
-        "created_at": "2026-03-26T15:31:15.569374"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:15.569374",
+        "updated_at": "2026-03-26T15:31:15.569374"
       },
       {
         "id": 81,
         "order_id": 41,
         "user_id": 6,
-        "username": "demo_user_04",
         "product_id": 1035917261,
-        "product_name": "Bánh su kem sô cô la",
         "rating": 5,
         "comment": "Bánh rất ngon, giao hàng đúng hẹn, sẽ ủng hộ tiếp.",
-        "created_at": "2026-03-26T15:31:15.569374"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:15.569374",
+        "updated_at": "2026-03-26T15:31:15.569374"
       },
       {
         "id": 82,
         "order_id": 41,
         "user_id": 6,
-        "username": "demo_user_04",
         "product_id": 1050145697,
-        "product_name": "Bánh macaron 90g",
         "rating": 5,
         "comment": "Bánh rất ngon, giao hàng đúng hẹn, sẽ ủng hộ tiếp.",
-        "created_at": "2026-03-26T15:31:15.569374"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:15.569374",
+        "updated_at": "2026-03-26T15:31:15.569374"
       },
       {
         "id": 83,
         "order_id": 42,
         "user_id": 7,
-        "username": "demo_user_05",
         "product_id": 1035917326,
-        "product_name": "Bánh chiffon ba vị",
         "rating": 4,
         "comment": "Bánh rất ngon, giao hàng đúng hẹn, sẽ ủng hộ tiếp.",
-        "created_at": "2026-03-26T15:31:15.615670"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:15.615670",
+        "updated_at": "2026-03-26T15:31:15.615670"
       },
       {
         "id": 84,
         "order_id": 48,
         "user_id": 7,
-        "username": "demo_user_05",
         "product_id": 1035917261,
-        "product_name": "Bánh su kem sô cô la",
         "rating": 4,
         "comment": "Bánh thơm ngon, phục vụ nhanh, trải nghiệm tốt.",
-        "created_at": "2026-03-26T15:31:15.657119"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:15.657119",
+        "updated_at": "2026-03-26T15:31:15.657119"
       },
       {
         "id": 85,
         "order_id": 48,
         "user_id": 7,
-        "username": "demo_user_05",
         "product_id": 1065567578,
-        "product_name": "Bánh kem Cara-men-say",
         "rating": 4,
         "comment": "Bánh thơm ngon, phục vụ nhanh, trải nghiệm tốt.",
-        "created_at": "2026-03-26T15:31:15.657119"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:15.657119",
+        "updated_at": "2026-03-26T15:31:15.657119"
       },
       {
         "id": 86,
         "order_id": 47,
         "user_id": 7,
-        "username": "demo_user_05",
         "product_id": 1073183496,
-        "product_name": "Bánh kem Vườn trăng",
         "rating": 5,
         "comment": "Đơn giao đầy đủ, chất lượng vượt mong đợi.",
-        "created_at": "2026-03-26T15:31:15.699643"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:15.699643",
+        "updated_at": "2026-03-26T15:31:15.699643"
       },
       {
         "id": 87,
         "order_id": 47,
         "user_id": 7,
-        "username": "demo_user_05",
         "product_id": 1046930513,
-        "product_name": "Bánh kem Hoa viên",
         "rating": 5,
         "comment": "Đơn giao đầy đủ, chất lượng vượt mong đợi.",
-        "created_at": "2026-03-26T15:31:15.699643"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:15.699643",
+        "updated_at": "2026-03-26T15:31:15.699643"
       },
       {
         "id": 88,
         "order_id": 47,
         "user_id": 7,
-        "username": "demo_user_05",
         "product_id": 1039545543,
-        "product_name": "Bánh kem Choco trân châu",
         "rating": 5,
         "comment": "Đơn giao đầy đủ, chất lượng vượt mong đợi.",
-        "created_at": "2026-03-26T15:31:15.699643"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:15.699643",
+        "updated_at": "2026-03-26T15:31:15.699643"
       },
       {
         "id": 89,
         "order_id": 50,
         "user_id": 7,
-        "username": "demo_user_05",
         "product_id": 1065284725,
-        "product_name": "Bánh chuối hạt óc chó",
         "rating": 4,
         "comment": "Tổng thể rất tốt, phù hợp để đặt cho gia đình.",
-        "created_at": "2026-03-26T15:31:15.741262"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:15.741262",
+        "updated_at": "2026-03-26T15:31:15.741262"
       },
       {
         "id": 90,
         "order_id": 50,
         "user_id": 7,
-        "username": "demo_user_05",
         "product_id": 1035918009,
-        "product_name": "Bánh opera",
         "rating": 4,
         "comment": "Tổng thể rất tốt, phù hợp để đặt cho gia đình.",
-        "created_at": "2026-03-26T15:31:15.741262"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:15.741262",
+        "updated_at": "2026-03-26T15:31:15.741262"
       },
       {
         "id": 91,
         "order_id": 50,
         "user_id": 7,
-        "username": "demo_user_05",
         "product_id": 1035917528,
-        "product_name": "Tiramisu",
         "rating": 4,
         "comment": "Tổng thể rất tốt, phù hợp để đặt cho gia đình.",
-        "created_at": "2026-03-26T15:31:15.741262"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:15.741262",
+        "updated_at": "2026-03-26T15:31:15.741262"
       },
       {
         "id": 92,
         "order_id": 46,
         "user_id": 7,
-        "username": "demo_user_05",
         "product_id": 1073092257,
-        "product_name": "Bánh kem Choco ngọc trai",
         "rating": 4,
         "comment": "Bánh mềm và ngon, phần kem không bị ngọt gắt.",
-        "created_at": "2026-03-26T15:31:15.785129"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:15.785129",
+        "updated_at": "2026-03-26T15:31:15.785129"
       },
       {
         "id": 93,
         "order_id": 49,
         "user_id": 7,
-        "username": "demo_user_05",
         "product_id": 1035917350,
-        "product_name": "Bánh su kem",
         "rating": 5,
         "comment": "Bánh rất ngon, giao hàng đúng hẹn, sẽ ủng hộ tiếp.",
-        "created_at": "2026-03-26T15:31:15.830399"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:15.830399",
+        "updated_at": "2026-03-26T15:31:15.830399"
       },
       {
         "id": 94,
         "order_id": 49,
         "user_id": 7,
-        "username": "demo_user_05",
         "product_id": 1035917326,
-        "product_name": "Bánh chiffon ba vị",
         "rating": 5,
         "comment": "Bánh rất ngon, giao hàng đúng hẹn, sẽ ủng hộ tiếp.",
-        "created_at": "2026-03-26T15:31:15.830399"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:15.830399",
+        "updated_at": "2026-03-26T15:31:15.830399"
       },
       {
         "id": 95,
         "order_id": 43,
         "user_id": 7,
-        "username": "demo_user_05",
         "product_id": 1065282623,
-        "product_name": "Bánh chiffon trà bá tước",
         "rating": 5,
         "comment": "Sản phẩm tươi mới, vị vừa ăn, đáng tiền.",
-        "created_at": "2026-03-26T15:31:15.870390"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:15.870390",
+        "updated_at": "2026-03-26T15:31:15.870390"
       },
       {
         "id": 96,
         "order_id": 43,
         "user_id": 7,
-        "username": "demo_user_05",
         "product_id": 1065285306,
-        "product_name": "Bánh cuộn đào",
         "rating": 5,
         "comment": "Sản phẩm tươi mới, vị vừa ăn, đáng tiền.",
-        "created_at": "2026-03-26T15:31:15.870390"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:15.870390",
+        "updated_at": "2026-03-26T15:31:15.870390"
       },
       {
         "id": 97,
         "order_id": 43,
         "user_id": 7,
-        "username": "demo_user_05",
         "product_id": 1038165740,
-        "product_name": "Bánh cuộn vani 110G",
         "rating": 5,
         "comment": "Sản phẩm tươi mới, vị vừa ăn, đáng tiền.",
-        "created_at": "2026-03-26T15:31:15.870390"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:15.870390",
+        "updated_at": "2026-03-26T15:31:15.870390"
       },
       {
         "id": 98,
         "order_id": 44,
         "user_id": 7,
-        "username": "demo_user_05",
         "product_id": 1035917330,
-        "product_name": "Bánh cuộn sô cô la",
         "rating": 5,
         "comment": "Đơn giao đầy đủ, chất lượng vượt mong đợi.",
-        "created_at": "2026-03-26T15:31:15.909151"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:15.909151",
+        "updated_at": "2026-03-26T15:31:15.909151"
       },
       {
         "id": 99,
         "order_id": 51,
         "user_id": 7,
-        "username": "demo_user_05",
         "product_id": 1057466727,
-        "product_name": "Bánh kem Hổ phách",
         "rating": 4,
         "comment": "Bánh thơm ngon, phục vụ nhanh, trải nghiệm tốt.",
-        "created_at": "2026-03-26T15:31:15.954099"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:15.954099",
+        "updated_at": "2026-03-26T15:31:15.954099"
       },
       {
         "id": 100,
         "order_id": 51,
         "user_id": 7,
-        "username": "demo_user_05",
         "product_id": 1073183508,
-        "product_name": "Bánh kem Mai mơ",
         "rating": 4,
         "comment": "Bánh thơm ngon, phục vụ nhanh, trải nghiệm tốt.",
-        "created_at": "2026-03-26T15:31:15.954099"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:15.954099",
+        "updated_at": "2026-03-26T15:31:15.954099"
       },
       {
         "id": 101,
         "order_id": 51,
         "user_id": 7,
-        "username": "demo_user_05",
         "product_id": 1065282623,
-        "product_name": "Bánh chiffon trà bá tước",
         "rating": 4,
         "comment": "Bánh thơm ngon, phục vụ nhanh, trải nghiệm tốt.",
-        "created_at": "2026-03-26T15:31:15.954099"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:15.954099",
+        "updated_at": "2026-03-26T15:31:15.954099"
       },
       {
         "id": 102,
         "order_id": 45,
         "user_id": 7,
-        "username": "demo_user_05",
         "product_id": 1037847369,
-        "product_name": "Bánh mousse xoài mịn",
         "rating": 4,
         "comment": "Rất ưng ý, lần sau sẽ đặt thêm nhiều vị khác.",
-        "created_at": "2026-03-26T15:31:16.000489"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:16.000489",
+        "updated_at": "2026-03-26T15:31:16.000489"
       },
       {
         "id": 103,
         "order_id": 53,
         "user_id": 8,
-        "username": "demo_user_06",
         "product_id": 1073183508,
-        "product_name": "Bánh kem Mai mơ",
         "rating": 4,
         "comment": "Sản phẩm tươi mới, vị vừa ăn, đáng tiền.",
-        "created_at": "2026-03-26T15:31:16.043540"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:16.043540",
+        "updated_at": "2026-03-26T15:31:16.043540"
       },
       {
         "id": 104,
         "order_id": 53,
         "user_id": 8,
-        "username": "demo_user_06",
         "product_id": 1065284725,
-        "product_name": "Bánh chuối hạt óc chó",
         "rating": 4,
         "comment": "Sản phẩm tươi mới, vị vừa ăn, đáng tiền.",
-        "created_at": "2026-03-26T15:31:16.043540"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:16.043540",
+        "updated_at": "2026-03-26T15:31:16.043540"
       },
       {
         "id": 105,
         "order_id": 53,
         "user_id": 8,
-        "username": "demo_user_06",
         "product_id": 1039736395,
-        "product_name": "Bánh donut sô cô la trà xanh",
         "rating": 4,
         "comment": "Sản phẩm tươi mới, vị vừa ăn, đáng tiền.",
-        "created_at": "2026-03-26T15:31:16.043540"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:16.043540",
+        "updated_at": "2026-03-26T15:31:16.043540"
       },
       {
         "id": 106,
         "order_id": 61,
         "user_id": 8,
-        "username": "demo_user_06",
         "product_id": 1035917330,
-        "product_name": "Bánh cuộn sô cô la",
         "rating": 4,
         "comment": "Bánh thơm ngon, phục vụ nhanh, trải nghiệm tốt.",
-        "created_at": "2026-03-26T15:31:16.086198"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:16.086198",
+        "updated_at": "2026-03-26T15:31:16.086198"
       },
       {
         "id": 107,
         "order_id": 61,
         "user_id": 8,
-        "username": "demo_user_06",
         "product_id": 1046930513,
-        "product_name": "Bánh kem Hoa viên",
         "rating": 4,
         "comment": "Bánh thơm ngon, phục vụ nhanh, trải nghiệm tốt.",
-        "created_at": "2026-03-26T15:31:16.086198"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:16.086198",
+        "updated_at": "2026-03-26T15:31:16.086198"
       },
       {
         "id": 108,
         "order_id": 59,
         "user_id": 8,
-        "username": "demo_user_06",
         "product_id": 1073092257,
-        "product_name": "Bánh kem Choco ngọc trai",
         "rating": 4,
         "comment": "Bánh mềm và ngon, phần kem không bị ngọt gắt.",
-        "created_at": "2026-03-26T15:31:16.130946"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:16.130946",
+        "updated_at": "2026-03-26T15:31:16.130946"
       },
       {
         "id": 109,
         "order_id": 55,
         "user_id": 8,
-        "username": "demo_user_06",
         "product_id": 1035837470,
-        "product_name": "Bánh kem Mật ngọt",
         "rating": 5,
         "comment": "Chất lượng tốt, gia đình mình ai cũng thích.",
-        "created_at": "2026-03-26T15:31:16.177532"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:16.177532",
+        "updated_at": "2026-03-26T15:31:16.177532"
       },
       {
         "id": 110,
         "order_id": 55,
         "user_id": 8,
-        "username": "demo_user_06",
         "product_id": 1073435393,
-        "product_name": "Bánh mousse Quả mọng",
         "rating": 5,
         "comment": "Chất lượng tốt, gia đình mình ai cũng thích.",
-        "created_at": "2026-03-26T15:31:16.177532"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:16.177532",
+        "updated_at": "2026-03-26T15:31:16.177532"
       },
       {
         "id": 111,
         "order_id": 58,
         "user_id": 8,
-        "username": "demo_user_06",
         "product_id": 1035837467,
-        "product_name": "Bánh mousse Chanh leo",
         "rating": 5,
         "comment": "Bánh rất ngon, giao hàng đúng hẹn, sẽ ủng hộ tiếp.",
-        "created_at": "2026-03-26T15:31:16.220441"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:16.220441",
+        "updated_at": "2026-03-26T15:31:16.220441"
       },
       {
         "id": 112,
         "order_id": 58,
         "user_id": 8,
-        "username": "demo_user_06",
         "product_id": 1035837470,
-        "product_name": "Bánh kem Mật ngọt",
         "rating": 5,
         "comment": "Bánh rất ngon, giao hàng đúng hẹn, sẽ ủng hộ tiếp.",
-        "created_at": "2026-03-26T15:31:16.220441"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:16.220441",
+        "updated_at": "2026-03-26T15:31:16.220441"
       },
       {
         "id": 113,
         "order_id": 58,
         "user_id": 8,
-        "username": "demo_user_06",
         "product_id": 1035917528,
-        "product_name": "Tiramisu",
         "rating": 5,
         "comment": "Bánh rất ngon, giao hàng đúng hẹn, sẽ ủng hộ tiếp.",
-        "created_at": "2026-03-26T15:31:16.220441"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:16.220441",
+        "updated_at": "2026-03-26T15:31:16.220441"
       },
       {
         "id": 114,
         "order_id": 52,
         "user_id": 8,
-        "username": "demo_user_06",
         "product_id": 1065287121,
-        "product_name": "Bánh madeleine sô cô la",
         "rating": 4,
         "comment": "Bánh rất ngon, giao hàng đúng hẹn, sẽ ủng hộ tiếp.",
-        "created_at": "2026-03-26T15:31:16.261777"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:16.261777",
+        "updated_at": "2026-03-26T15:31:16.261777"
       },
       {
         "id": 115,
         "order_id": 52,
         "user_id": 8,
-        "username": "demo_user_06",
         "product_id": 1073435410,
-        "product_name": "Bánh mousse Vải hoa hồng",
         "rating": 4,
         "comment": "Bánh rất ngon, giao hàng đúng hẹn, sẽ ủng hộ tiếp.",
-        "created_at": "2026-03-26T15:31:16.261777"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:16.261777",
+        "updated_at": "2026-03-26T15:31:16.261777"
       },
       {
         "id": 116,
         "order_id": 60,
         "user_id": 8,
-        "username": "demo_user_06",
         "product_id": 1035917350,
-        "product_name": "Bánh su kem",
         "rating": 5,
         "comment": "Mình đánh giá cao độ ổn định chất lượng của shop.",
-        "created_at": "2026-03-26T15:31:16.301843"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:16.301843",
+        "updated_at": "2026-03-26T15:31:16.301843"
       },
       {
         "id": 117,
         "order_id": 54,
         "user_id": 8,
-        "username": "demo_user_06",
         "product_id": 1065282623,
-        "product_name": "Bánh chiffon trà bá tước",
         "rating": 5,
         "comment": "Mình đánh giá cao độ ổn định chất lượng của shop.",
-        "created_at": "2026-03-26T15:31:16.338453"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:16.338453",
+        "updated_at": "2026-03-26T15:31:16.338453"
       },
       {
         "id": 118,
         "order_id": 56,
         "user_id": 8,
-        "username": "demo_user_06",
         "product_id": 1035917330,
-        "product_name": "Bánh cuộn sô cô la",
         "rating": 5,
         "comment": "Hương vị ổn định, đóng gói cẩn thận, rất hài lòng.",
-        "created_at": "2026-03-26T15:31:16.375308"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:16.375308",
+        "updated_at": "2026-03-26T15:31:16.375308"
       },
       {
         "id": 119,
         "order_id": 57,
         "user_id": 8,
-        "username": "demo_user_06",
         "product_id": 1035917350,
-        "product_name": "Bánh su kem",
         "rating": 4,
         "comment": "Hương vị ổn định, đóng gói cẩn thận, rất hài lòng.",
-        "created_at": "2026-03-26T15:31:16.428834"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:16.428834",
+        "updated_at": "2026-03-26T15:31:16.428834"
       },
       {
         "id": 120,
         "order_id": 57,
         "user_id": 8,
-        "username": "demo_user_06",
         "product_id": 1035917554,
-        "product_name": "Bánh sô cô la sữa",
         "rating": 4,
         "comment": "Hương vị ổn định, đóng gói cẩn thận, rất hài lòng.",
-        "created_at": "2026-03-26T15:31:16.428834"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:16.428834",
+        "updated_at": "2026-03-26T15:31:16.428834"
       },
       {
         "id": 121,
         "order_id": 57,
         "user_id": 8,
-        "username": "demo_user_06",
         "product_id": 1063502432,
-        "product_name": "Bánh kem Mây hồng",
         "rating": 4,
         "comment": "Hương vị ổn định, đóng gói cẩn thận, rất hài lòng.",
-        "created_at": "2026-03-26T15:31:16.428834"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:16.428834",
+        "updated_at": "2026-03-26T15:31:16.428834"
       },
       {
         "id": 122,
         "order_id": 67,
         "user_id": 9,
-        "username": "demo_user_07",
         "product_id": 1035837470,
-        "product_name": "Bánh kem Mật ngọt",
         "rating": 4,
         "comment": "Bánh thơm ngon, phục vụ nhanh, trải nghiệm tốt.",
-        "created_at": "2026-03-26T15:31:16.481906"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:16.481906",
+        "updated_at": "2026-03-26T15:31:16.481906"
       },
       {
         "id": 123,
         "order_id": 67,
         "user_id": 9,
-        "username": "demo_user_07",
         "product_id": 1035917338,
-        "product_name": "Bánh madeleine",
         "rating": 4,
         "comment": "Bánh thơm ngon, phục vụ nhanh, trải nghiệm tốt.",
-        "created_at": "2026-03-26T15:31:16.481906"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:16.481906",
+        "updated_at": "2026-03-26T15:31:16.481906"
       },
       {
         "id": 124,
         "order_id": 67,
         "user_id": 9,
-        "username": "demo_user_07",
         "product_id": 1035917554,
-        "product_name": "Bánh sô cô la sữa",
         "rating": 4,
         "comment": "Bánh thơm ngon, phục vụ nhanh, trải nghiệm tốt.",
-        "created_at": "2026-03-26T15:31:16.481906"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:16.481906",
+        "updated_at": "2026-03-26T15:31:16.481906"
       },
       {
         "id": 125,
         "order_id": 69,
         "user_id": 9,
-        "username": "demo_user_07",
         "product_id": 1046067881,
-        "product_name": "Bánh kem Thiên thần",
         "rating": 5,
         "comment": "Bánh rất ngon, giao hàng đúng hẹn, sẽ ủng hộ tiếp.",
-        "created_at": "2026-03-26T15:31:16.529097"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:16.529097",
+        "updated_at": "2026-03-26T15:31:16.529097"
       },
       {
         "id": 126,
         "order_id": 69,
         "user_id": 9,
-        "username": "demo_user_07",
         "product_id": 1035837470,
-        "product_name": "Bánh kem Mật ngọt",
         "rating": 5,
         "comment": "Bánh rất ngon, giao hàng đúng hẹn, sẽ ủng hộ tiếp.",
-        "created_at": "2026-03-26T15:31:16.529097"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:16.529097",
+        "updated_at": "2026-03-26T15:31:16.529097"
       },
       {
         "id": 127,
         "order_id": 71,
         "user_id": 9,
-        "username": "demo_user_07",
         "product_id": 1073373566,
-        "product_name": "Bánh kem Ngọc bích",
         "rating": 5,
         "comment": "Chất lượng tốt, gia đình mình ai cũng thích.",
-        "created_at": "2026-03-26T15:31:16.573282"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:16.573282",
+        "updated_at": "2026-03-26T15:31:16.573282"
       },
       {
         "id": 128,
         "order_id": 71,
         "user_id": 9,
-        "username": "demo_user_07",
         "product_id": 1035918468,
-        "product_name": "Bánh donut sô cô la hương dâu",
         "rating": 5,
         "comment": "Chất lượng tốt, gia đình mình ai cũng thích.",
-        "created_at": "2026-03-26T15:31:16.573282"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:16.573282",
+        "updated_at": "2026-03-26T15:31:16.573282"
       },
       {
         "id": 129,
         "order_id": 71,
         "user_id": 9,
-        "username": "demo_user_07",
         "product_id": 1041477008,
-        "product_name": "Bánh mousse Hawaii",
         "rating": 5,
         "comment": "Chất lượng tốt, gia đình mình ai cũng thích.",
-        "created_at": "2026-03-26T15:31:16.573282"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:16.573282",
+        "updated_at": "2026-03-26T15:31:16.573282"
       },
       {
         "id": 130,
         "order_id": 66,
         "user_id": 9,
-        "username": "demo_user_07",
         "product_id": 1037847369,
-        "product_name": "Bánh mousse xoài mịn",
         "rating": 5,
         "comment": "Chất lượng tốt, gia đình mình ai cũng thích.",
-        "created_at": "2026-03-26T15:31:16.615116"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:16.615116",
+        "updated_at": "2026-03-26T15:31:16.615116"
       },
       {
         "id": 131,
         "order_id": 66,
         "user_id": 9,
-        "username": "demo_user_07",
         "product_id": 1035918484,
-        "product_name": "Bánh donut sô cô la",
         "rating": 5,
         "comment": "Chất lượng tốt, gia đình mình ai cũng thích.",
-        "created_at": "2026-03-26T15:31:16.615116"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:16.615116",
+        "updated_at": "2026-03-26T15:31:16.615116"
       },
       {
         "id": 132,
         "order_id": 62,
         "user_id": 9,
-        "username": "demo_user_07",
         "product_id": 1073373566,
-        "product_name": "Bánh kem Ngọc bích",
         "rating": 4,
         "comment": "Đơn giao đầy đủ, chất lượng vượt mong đợi.",
-        "created_at": "2026-03-26T15:31:16.661062"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:16.661062",
+        "updated_at": "2026-03-26T15:31:16.661062"
       },
       {
         "id": 133,
         "order_id": 63,
         "user_id": 9,
-        "username": "demo_user_07",
         "product_id": 1035917772,
-        "product_name": "Bánh trứng vàng baby",
         "rating": 4,
         "comment": "Sản phẩm tươi mới, vị vừa ăn, đáng tiền.",
-        "created_at": "2026-03-26T15:31:16.701564"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:16.701564",
+        "updated_at": "2026-03-26T15:31:16.701564"
       },
       {
         "id": 134,
         "order_id": 63,
         "user_id": 9,
-        "username": "demo_user_07",
         "product_id": 1073370413,
-        "product_name": "Bánh kem Vàng anh",
         "rating": 4,
         "comment": "Sản phẩm tươi mới, vị vừa ăn, đáng tiền.",
-        "created_at": "2026-03-26T15:31:16.701564"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:16.701564",
+        "updated_at": "2026-03-26T15:31:16.701564"
       },
       {
         "id": 135,
         "order_id": 68,
         "user_id": 9,
-        "username": "demo_user_07",
         "product_id": 1046067881,
-        "product_name": "Bánh kem Thiên thần",
         "rating": 5,
         "comment": "Sản phẩm tươi mới, vị vừa ăn, đáng tiền.",
-        "created_at": "2026-03-26T15:31:16.738485"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:16.738485",
+        "updated_at": "2026-03-26T15:31:16.738485"
       },
       {
         "id": 136,
         "order_id": 70,
         "user_id": 9,
-        "username": "demo_user_07",
         "product_id": 1065284725,
-        "product_name": "Bánh chuối hạt óc chó",
         "rating": 5,
         "comment": "Sản phẩm tươi mới, vị vừa ăn, đáng tiền.",
-        "created_at": "2026-03-26T15:31:16.780100"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:16.780100",
+        "updated_at": "2026-03-26T15:31:16.780100"
       },
       {
         "id": 137,
         "order_id": 70,
         "user_id": 9,
-        "username": "demo_user_07",
         "product_id": 1035917261,
-        "product_name": "Bánh su kem sô cô la",
         "rating": 5,
         "comment": "Sản phẩm tươi mới, vị vừa ăn, đáng tiền.",
-        "created_at": "2026-03-26T15:31:16.780100"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:16.780100",
+        "updated_at": "2026-03-26T15:31:16.780100"
       },
       {
         "id": 138,
         "order_id": 70,
         "user_id": 9,
-        "username": "demo_user_07",
         "product_id": 1073092257,
-        "product_name": "Bánh kem Choco ngọc trai",
         "rating": 5,
         "comment": "Sản phẩm tươi mới, vị vừa ăn, đáng tiền.",
-        "created_at": "2026-03-26T15:31:16.780100"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:16.780100",
+        "updated_at": "2026-03-26T15:31:16.780100"
       },
       {
         "id": 139,
         "order_id": 65,
         "user_id": 9,
-        "username": "demo_user_07",
         "product_id": 1073092257,
-        "product_name": "Bánh kem Choco ngọc trai",
         "rating": 5,
         "comment": "Hương vị ổn định, đóng gói cẩn thận, rất hài lòng.",
-        "created_at": "2026-03-26T15:31:16.826477"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:16.826477",
+        "updated_at": "2026-03-26T15:31:16.826477"
       },
       {
         "id": 140,
         "order_id": 64,
         "user_id": 9,
-        "username": "demo_user_07",
         "product_id": 1073183508,
-        "product_name": "Bánh kem Mai mơ",
         "rating": 5,
         "comment": "Bánh mềm và ngon, phần kem không bị ngọt gắt.",
-        "created_at": "2026-03-26T15:31:16.867618"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:16.867618",
+        "updated_at": "2026-03-26T15:31:16.867618"
       },
       {
         "id": 141,
         "order_id": 72,
         "user_id": 10,
-        "username": "demo_user_08",
         "product_id": 1050145697,
-        "product_name": "Bánh macaron 90g",
         "rating": 5,
         "comment": "Mình đánh giá cao độ ổn định chất lượng của shop.",
-        "created_at": "2026-03-26T15:31:16.914506"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:16.914506",
+        "updated_at": "2026-03-26T15:31:16.914506"
       },
       {
         "id": 142,
         "order_id": 72,
         "user_id": 10,
-        "username": "demo_user_08",
         "product_id": 1073092257,
-        "product_name": "Bánh kem Choco ngọc trai",
         "rating": 5,
         "comment": "Mình đánh giá cao độ ổn định chất lượng của shop.",
-        "created_at": "2026-03-26T15:31:16.914506"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:16.914506",
+        "updated_at": "2026-03-26T15:31:16.914506"
       },
       {
         "id": 143,
         "order_id": 72,
         "user_id": 10,
-        "username": "demo_user_08",
         "product_id": 1035918009,
-        "product_name": "Bánh opera",
         "rating": 5,
         "comment": "Mình đánh giá cao độ ổn định chất lượng của shop.",
-        "created_at": "2026-03-26T15:31:16.914506"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:16.914506",
+        "updated_at": "2026-03-26T15:31:16.914506"
       },
       {
         "id": 144,
         "order_id": 80,
         "user_id": 10,
-        "username": "demo_user_08",
         "product_id": 1038165740,
-        "product_name": "Bánh cuộn vani 110G",
         "rating": 4,
         "comment": "Bánh mềm và ngon, phần kem không bị ngọt gắt.",
-        "created_at": "2026-03-26T15:31:16.963983"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:16.963983",
+        "updated_at": "2026-03-26T15:31:16.963983"
       },
       {
         "id": 145,
         "order_id": 80,
         "user_id": 10,
-        "username": "demo_user_08",
         "product_id": 1073435393,
-        "product_name": "Bánh mousse Quả mọng",
         "rating": 4,
         "comment": "Bánh mềm và ngon, phần kem không bị ngọt gắt.",
-        "created_at": "2026-03-26T15:31:16.963983"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:16.963983",
+        "updated_at": "2026-03-26T15:31:16.963983"
       },
       {
         "id": 146,
         "order_id": 78,
         "user_id": 10,
-        "username": "demo_user_08",
         "product_id": 1039736395,
-        "product_name": "Bánh donut sô cô la trà xanh",
         "rating": 4,
         "comment": "Chất lượng tốt, gia đình mình ai cũng thích.",
-        "created_at": "2026-03-26T15:31:17.014291"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:17.014291",
+        "updated_at": "2026-03-26T15:31:17.014291"
       },
       {
         "id": 147,
         "order_id": 78,
         "user_id": 10,
-        "username": "demo_user_08",
         "product_id": 1035917791,
-        "product_name": "Bánh tiramisu",
         "rating": 4,
         "comment": "Chất lượng tốt, gia đình mình ai cũng thích.",
-        "created_at": "2026-03-26T15:31:17.014291"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:17.014291",
+        "updated_at": "2026-03-26T15:31:17.014291"
       },
       {
         "id": 148,
         "order_id": 81,
         "user_id": 10,
-        "username": "demo_user_08",
         "product_id": 1065285436,
-        "product_name": "Bánh cuộn ổi hồng",
         "rating": 4,
         "comment": "Tổng thể rất tốt, phù hợp để đặt cho gia đình.",
-        "created_at": "2026-03-26T15:31:17.060889"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:17.060889",
+        "updated_at": "2026-03-26T15:31:17.060889"
       },
       {
         "id": 149,
         "order_id": 81,
         "user_id": 10,
-        "username": "demo_user_08",
         "product_id": 1065284725,
-        "product_name": "Bánh chuối hạt óc chó",
         "rating": 4,
         "comment": "Tổng thể rất tốt, phù hợp để đặt cho gia đình.",
-        "created_at": "2026-03-26T15:31:17.060889"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:17.060889",
+        "updated_at": "2026-03-26T15:31:17.060889"
       },
       {
         "id": 150,
         "order_id": 73,
         "user_id": 10,
-        "username": "demo_user_08",
         "product_id": 1073370413,
-        "product_name": "Bánh kem Vàng anh",
         "rating": 4,
         "comment": "Mình đánh giá cao độ ổn định chất lượng của shop.",
-        "created_at": "2026-03-26T15:31:17.099756"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:17.099756",
+        "updated_at": "2026-03-26T15:31:17.099756"
       },
       {
         "id": 151,
         "order_id": 73,
         "user_id": 10,
-        "username": "demo_user_08",
         "product_id": 1063502432,
-        "product_name": "Bánh kem Mây hồng",
         "rating": 4,
         "comment": "Mình đánh giá cao độ ổn định chất lượng của shop.",
-        "created_at": "2026-03-26T15:31:17.099756"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:17.099756",
+        "updated_at": "2026-03-26T15:31:17.099756"
       },
       {
         "id": 152,
         "order_id": 73,
         "user_id": 10,
-        "username": "demo_user_08",
         "product_id": 1073435393,
-        "product_name": "Bánh mousse Quả mọng",
         "rating": 4,
         "comment": "Mình đánh giá cao độ ổn định chất lượng của shop.",
-        "created_at": "2026-03-26T15:31:17.099756"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:17.099756",
+        "updated_at": "2026-03-26T15:31:17.099756"
       },
       {
         "id": 153,
         "order_id": 77,
         "user_id": 10,
-        "username": "demo_user_08",
         "product_id": 1035918468,
-        "product_name": "Bánh donut sô cô la hương dâu",
         "rating": 5,
         "comment": "Tổng thể rất tốt, phù hợp để đặt cho gia đình.",
-        "created_at": "2026-03-26T15:31:17.140384"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:17.140384",
+        "updated_at": "2026-03-26T15:31:17.140384"
       },
       {
         "id": 154,
         "order_id": 77,
         "user_id": 10,
-        "username": "demo_user_08",
         "product_id": 1035917350,
-        "product_name": "Bánh su kem",
         "rating": 5,
         "comment": "Tổng thể rất tốt, phù hợp để đặt cho gia đình.",
-        "created_at": "2026-03-26T15:31:17.140384"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:17.140384",
+        "updated_at": "2026-03-26T15:31:17.140384"
       },
       {
         "id": 155,
         "order_id": 79,
         "user_id": 10,
-        "username": "demo_user_08",
         "product_id": 1046930513,
-        "product_name": "Bánh kem Hoa viên",
         "rating": 4,
         "comment": "Mình đánh giá cao độ ổn định chất lượng của shop.",
-        "created_at": "2026-03-26T15:31:17.177938"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:17.177938",
+        "updated_at": "2026-03-26T15:31:17.177938"
       },
       {
         "id": 156,
         "order_id": 79,
         "user_id": 10,
-        "username": "demo_user_08",
         "product_id": 1065285306,
-        "product_name": "Bánh cuộn đào",
         "rating": 4,
         "comment": "Mình đánh giá cao độ ổn định chất lượng của shop.",
-        "created_at": "2026-03-26T15:31:17.177938"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:17.177938",
+        "updated_at": "2026-03-26T15:31:17.177938"
       },
       {
         "id": 157,
         "order_id": 75,
         "user_id": 10,
-        "username": "demo_user_08",
         "product_id": 1035917528,
-        "product_name": "Tiramisu",
         "rating": 5,
         "comment": "Tổng thể rất tốt, phù hợp để đặt cho gia đình.",
-        "created_at": "2026-03-26T15:31:17.223461"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:17.223461",
+        "updated_at": "2026-03-26T15:31:17.223461"
       },
       {
         "id": 158,
         "order_id": 76,
         "user_id": 10,
-        "username": "demo_user_08",
         "product_id": 1057466727,
-        "product_name": "Bánh kem Hổ phách",
         "rating": 5,
         "comment": "Bánh thơm ngon, phục vụ nhanh, trải nghiệm tốt.",
-        "created_at": "2026-03-26T15:31:17.266230"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:17.266230",
+        "updated_at": "2026-03-26T15:31:17.266230"
       },
       {
         "id": 159,
         "order_id": 76,
         "user_id": 10,
-        "username": "demo_user_08",
         "product_id": 1039545543,
-        "product_name": "Bánh kem Choco trân châu",
         "rating": 5,
         "comment": "Bánh thơm ngon, phục vụ nhanh, trải nghiệm tốt.",
-        "created_at": "2026-03-26T15:31:17.266230"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:17.266230",
+        "updated_at": "2026-03-26T15:31:17.266230"
       },
       {
         "id": 160,
         "order_id": 74,
         "user_id": 10,
-        "username": "demo_user_08",
         "product_id": 1035917350,
-        "product_name": "Bánh su kem",
         "rating": 4,
         "comment": "Tổng thể rất tốt, phù hợp để đặt cho gia đình.",
-        "created_at": "2026-03-26T15:31:17.310363"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:17.310363",
+        "updated_at": "2026-03-26T15:31:17.310363"
       },
       {
         "id": 161,
         "order_id": 74,
         "user_id": 10,
-        "username": "demo_user_08",
         "product_id": 1038165740,
-        "product_name": "Bánh cuộn vani 110G",
         "rating": 4,
         "comment": "Tổng thể rất tốt, phù hợp để đặt cho gia đình.",
-        "created_at": "2026-03-26T15:31:17.310363"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:17.310363",
+        "updated_at": "2026-03-26T15:31:17.310363"
       },
       {
         "id": 162,
         "order_id": 74,
         "user_id": 10,
-        "username": "demo_user_08",
         "product_id": 1046930513,
-        "product_name": "Bánh kem Hoa viên",
         "rating": 4,
         "comment": "Tổng thể rất tốt, phù hợp để đặt cho gia đình.",
-        "created_at": "2026-03-26T15:31:17.310363"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:17.310363",
+        "updated_at": "2026-03-26T15:31:17.310363"
       },
       {
         "id": 163,
         "order_id": 91,
         "user_id": 11,
-        "username": "demo_user_09",
         "product_id": 1035917261,
-        "product_name": "Bánh su kem sô cô la",
         "rating": 4,
         "comment": "Chất lượng tốt, gia đình mình ai cũng thích.",
-        "created_at": "2026-03-26T15:31:17.418788"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:17.418788",
+        "updated_at": "2026-03-26T15:31:17.418788"
       },
       {
         "id": 164,
         "order_id": 91,
         "user_id": 11,
-        "username": "demo_user_09",
         "product_id": 1035917528,
-        "product_name": "Tiramisu",
         "rating": 4,
         "comment": "Chất lượng tốt, gia đình mình ai cũng thích.",
-        "created_at": "2026-03-26T15:31:17.418788"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:17.418788",
+        "updated_at": "2026-03-26T15:31:17.418788"
       },
       {
         "id": 165,
         "order_id": 82,
         "user_id": 11,
-        "username": "demo_user_09",
         "product_id": 1073092257,
-        "product_name": "Bánh kem Choco ngọc trai",
         "rating": 4,
         "comment": "Bánh rất ngon, giao hàng đúng hẹn, sẽ ủng hộ tiếp.",
-        "created_at": "2026-03-26T15:31:17.465049"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:17.465049",
+        "updated_at": "2026-03-26T15:31:17.465049"
       },
       {
         "id": 166,
         "order_id": 82,
         "user_id": 11,
-        "username": "demo_user_09",
         "product_id": 1035918484,
-        "product_name": "Bánh donut sô cô la",
         "rating": 4,
         "comment": "Bánh rất ngon, giao hàng đúng hẹn, sẽ ủng hộ tiếp.",
-        "created_at": "2026-03-26T15:31:17.465049"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:17.465049",
+        "updated_at": "2026-03-26T15:31:17.465049"
       },
       {
         "id": 167,
         "order_id": 84,
         "user_id": 11,
-        "username": "demo_user_09",
         "product_id": 1073370413,
-        "product_name": "Bánh kem Vàng anh",
         "rating": 4,
         "comment": "Bánh rất ngon, giao hàng đúng hẹn, sẽ ủng hộ tiếp.",
-        "created_at": "2026-03-26T15:31:17.513469"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:17.513469",
+        "updated_at": "2026-03-26T15:31:17.513469"
       },
       {
         "id": 168,
         "order_id": 83,
         "user_id": 11,
-        "username": "demo_user_09",
         "product_id": 1035918009,
-        "product_name": "Bánh opera",
         "rating": 5,
         "comment": "Hương vị ổn định, đóng gói cẩn thận, rất hài lòng.",
-        "created_at": "2026-03-26T15:31:17.550524"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:17.550524",
+        "updated_at": "2026-03-26T15:31:17.550524"
       },
       {
         "id": 169,
         "order_id": 89,
         "user_id": 11,
-        "username": "demo_user_09",
         "product_id": 1073183496,
-        "product_name": "Bánh kem Vườn trăng",
         "rating": 5,
         "comment": "Hương vị ổn định, đóng gói cẩn thận, rất hài lòng.",
-        "created_at": "2026-03-26T15:31:17.587907"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:17.587907",
+        "updated_at": "2026-03-26T15:31:17.587907"
       },
       {
         "id": 170,
         "order_id": 86,
         "user_id": 11,
-        "username": "demo_user_09",
         "product_id": 1065285306,
-        "product_name": "Bánh cuộn đào",
         "rating": 4,
         "comment": "Hương vị ổn định, đóng gói cẩn thận, rất hài lòng.",
-        "created_at": "2026-03-26T15:31:17.625587"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:17.625587",
+        "updated_at": "2026-03-26T15:31:17.625587"
       },
       {
         "id": 171,
         "order_id": 85,
         "user_id": 11,
-        "username": "demo_user_09",
         "product_id": 1035917554,
-        "product_name": "Bánh sô cô la sữa",
         "rating": 5,
         "comment": "Sản phẩm tươi mới, vị vừa ăn, đáng tiền.",
-        "created_at": "2026-03-26T15:31:17.669150"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:17.669150",
+        "updated_at": "2026-03-26T15:31:17.669150"
       },
       {
         "id": 172,
         "order_id": 87,
         "user_id": 11,
-        "username": "demo_user_09",
         "product_id": 1035917791,
-        "product_name": "Bánh tiramisu",
         "rating": 4,
         "comment": "Mình đánh giá cao độ ổn định chất lượng của shop.",
-        "created_at": "2026-03-26T15:31:17.709385"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:17.709385",
+        "updated_at": "2026-03-26T15:31:17.709385"
       },
       {
         "id": 173,
         "order_id": 87,
         "user_id": 11,
-        "username": "demo_user_09",
         "product_id": 1073092224,
-        "product_name": "Bánh kem Sương mai",
         "rating": 4,
         "comment": "Mình đánh giá cao độ ổn định chất lượng của shop.",
-        "created_at": "2026-03-26T15:31:17.709385"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:17.709385",
+        "updated_at": "2026-03-26T15:31:17.709385"
       },
       {
         "id": 174,
         "order_id": 87,
         "user_id": 11,
-        "username": "demo_user_09",
         "product_id": 1065285108,
-        "product_name": "Bánh cuộn chuối",
         "rating": 4,
         "comment": "Mình đánh giá cao độ ổn định chất lượng của shop.",
-        "created_at": "2026-03-26T15:31:17.709385"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:17.709385",
+        "updated_at": "2026-03-26T15:31:17.709385"
       },
       {
         "id": 175,
         "order_id": 90,
         "user_id": 11,
-        "username": "demo_user_09",
         "product_id": 1035917528,
-        "product_name": "Tiramisu",
         "rating": 5,
         "comment": "Chất lượng tốt, gia đình mình ai cũng thích.",
-        "created_at": "2026-03-26T15:31:17.754104"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:17.754104",
+        "updated_at": "2026-03-26T15:31:17.754104"
       },
       {
         "id": 176,
         "order_id": 90,
         "user_id": 11,
-        "username": "demo_user_09",
         "product_id": 1035917554,
-        "product_name": "Bánh sô cô la sữa",
         "rating": 5,
         "comment": "Chất lượng tốt, gia đình mình ai cũng thích.",
-        "created_at": "2026-03-26T15:31:17.754104"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:17.754104",
+        "updated_at": "2026-03-26T15:31:17.754104"
       },
       {
         "id": 177,
         "order_id": 88,
         "user_id": 11,
-        "username": "demo_user_09",
         "product_id": 1073435393,
-        "product_name": "Bánh mousse Quả mọng",
         "rating": 4,
         "comment": "Bánh thơm ngon, phục vụ nhanh, trải nghiệm tốt.",
-        "created_at": "2026-03-26T15:31:17.796280"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:17.796280",
+        "updated_at": "2026-03-26T15:31:17.796280"
       },
       {
         "id": 178,
         "order_id": 94,
         "user_id": 12,
-        "username": "demo_user_10",
         "product_id": 1073092224,
-        "product_name": "Bánh kem Sương mai",
         "rating": 4,
         "comment": "Hương vị ổn định, đóng gói cẩn thận, rất hài lòng.",
-        "created_at": "2026-03-26T15:31:17.840478"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:17.840478",
+        "updated_at": "2026-03-26T15:31:17.840478"
       },
       {
         "id": 179,
         "order_id": 94,
         "user_id": 12,
-        "username": "demo_user_10",
         "product_id": 1035917554,
-        "product_name": "Bánh sô cô la sữa",
         "rating": 4,
         "comment": "Hương vị ổn định, đóng gói cẩn thận, rất hài lòng.",
-        "created_at": "2026-03-26T15:31:17.840478"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:17.840478",
+        "updated_at": "2026-03-26T15:31:17.840478"
       },
       {
         "id": 180,
         "order_id": 95,
         "user_id": 12,
-        "username": "demo_user_10",
         "product_id": 1073183508,
-        "product_name": "Bánh kem Mai mơ",
         "rating": 5,
         "comment": "Chất lượng tốt, gia đình mình ai cũng thích.",
-        "created_at": "2026-03-26T15:31:17.887149"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:17.887149",
+        "updated_at": "2026-03-26T15:31:17.887149"
       },
       {
         "id": 181,
         "order_id": 92,
         "user_id": 12,
-        "username": "demo_user_10",
         "product_id": 1073435393,
-        "product_name": "Bánh mousse Quả mọng",
         "rating": 4,
         "comment": "Chất lượng tốt, gia đình mình ai cũng thích.",
-        "created_at": "2026-03-26T15:31:17.939866"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:17.939866",
+        "updated_at": "2026-03-26T15:31:17.939866"
       },
       {
         "id": 182,
         "order_id": 96,
         "user_id": 12,
-        "username": "demo_user_10",
         "product_id": 1073183508,
-        "product_name": "Bánh kem Mai mơ",
         "rating": 5,
         "comment": "Chất lượng tốt, gia đình mình ai cũng thích.",
-        "created_at": "2026-03-26T15:31:17.985377"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:17.985377",
+        "updated_at": "2026-03-26T15:31:17.985377"
       },
       {
         "id": 183,
         "order_id": 96,
         "user_id": 12,
-        "username": "demo_user_10",
         "product_id": 1035918009,
-        "product_name": "Bánh opera",
         "rating": 5,
         "comment": "Chất lượng tốt, gia đình mình ai cũng thích.",
-        "created_at": "2026-03-26T15:31:17.985377"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:17.985377",
+        "updated_at": "2026-03-26T15:31:17.985377"
       },
       {
         "id": 184,
         "order_id": 96,
         "user_id": 12,
-        "username": "demo_user_10",
         "product_id": 1037847369,
-        "product_name": "Bánh mousse xoài mịn",
         "rating": 5,
         "comment": "Chất lượng tốt, gia đình mình ai cũng thích.",
-        "created_at": "2026-03-26T15:31:17.985377"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:17.985377",
+        "updated_at": "2026-03-26T15:31:17.985377"
       },
       {
         "id": 185,
         "order_id": 100,
         "user_id": 12,
-        "username": "demo_user_10",
         "product_id": 1035917338,
-        "product_name": "Bánh madeleine",
         "rating": 5,
         "comment": "Tổng thể rất tốt, phù hợp để đặt cho gia đình.",
-        "created_at": "2026-03-26T15:31:18.029372"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:18.029372",
+        "updated_at": "2026-03-26T15:31:18.029372"
       },
       {
         "id": 186,
         "order_id": 100,
         "user_id": 12,
-        "username": "demo_user_10",
         "product_id": 1035917772,
-        "product_name": "Bánh trứng vàng baby",
         "rating": 5,
         "comment": "Tổng thể rất tốt, phù hợp để đặt cho gia đình.",
-        "created_at": "2026-03-26T15:31:18.029372"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:18.029372",
+        "updated_at": "2026-03-26T15:31:18.029372"
       },
       {
         "id": 187,
         "order_id": 100,
         "user_id": 12,
-        "username": "demo_user_10",
         "product_id": 1046930513,
-        "product_name": "Bánh kem Hoa viên",
         "rating": 5,
         "comment": "Tổng thể rất tốt, phù hợp để đặt cho gia đình.",
-        "created_at": "2026-03-26T15:31:18.029372"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:18.029372",
+        "updated_at": "2026-03-26T15:31:18.029372"
       },
       {
         "id": 188,
         "order_id": 97,
         "user_id": 12,
-        "username": "demo_user_10",
         "product_id": 1070454919,
-        "product_name": "Bánh mousse Dừa tuyết",
         "rating": 4,
         "comment": "Sản phẩm tươi mới, vị vừa ăn, đáng tiền.",
-        "created_at": "2026-03-26T15:31:18.076821"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:18.076821",
+        "updated_at": "2026-03-26T15:31:18.076821"
       },
       {
         "id": 189,
         "order_id": 101,
         "user_id": 12,
-        "username": "demo_user_10",
         "product_id": 1063502432,
-        "product_name": "Bánh kem Mây hồng",
         "rating": 4,
         "comment": "Sản phẩm tươi mới, vị vừa ăn, đáng tiền.",
-        "created_at": "2026-03-26T15:31:18.121793"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:18.121793",
+        "updated_at": "2026-03-26T15:31:18.121793"
       },
       {
         "id": 190,
         "order_id": 101,
         "user_id": 12,
-        "username": "demo_user_10",
         "product_id": 1073373566,
-        "product_name": "Bánh kem Ngọc bích",
         "rating": 4,
         "comment": "Sản phẩm tươi mới, vị vừa ăn, đáng tiền.",
-        "created_at": "2026-03-26T15:31:18.121793"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:18.121793",
+        "updated_at": "2026-03-26T15:31:18.121793"
       },
       {
         "id": 191,
         "order_id": 101,
         "user_id": 12,
-        "username": "demo_user_10",
         "product_id": 1073092257,
-        "product_name": "Bánh kem Choco ngọc trai",
         "rating": 4,
         "comment": "Sản phẩm tươi mới, vị vừa ăn, đáng tiền.",
-        "created_at": "2026-03-26T15:31:18.121793"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:18.121793",
+        "updated_at": "2026-03-26T15:31:18.121793"
       },
       {
         "id": 192,
         "order_id": 98,
         "user_id": 12,
-        "username": "demo_user_10",
         "product_id": 1065567578,
-        "product_name": "Bánh kem Cara-men-say",
         "rating": 5,
         "comment": "Sản phẩm tươi mới, vị vừa ăn, đáng tiền.",
-        "created_at": "2026-03-26T15:31:18.166600"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:18.166600",
+        "updated_at": "2026-03-26T15:31:18.166600"
       },
       {
         "id": 193,
         "order_id": 98,
         "user_id": 12,
-        "username": "demo_user_10",
         "product_id": 1046930513,
-        "product_name": "Bánh kem Hoa viên",
         "rating": 5,
         "comment": "Sản phẩm tươi mới, vị vừa ăn, đáng tiền.",
-        "created_at": "2026-03-26T15:31:18.166600"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:18.166600",
+        "updated_at": "2026-03-26T15:31:18.166600"
       },
       {
         "id": 194,
         "order_id": 98,
         "user_id": 12,
-        "username": "demo_user_10",
         "product_id": 1073435393,
-        "product_name": "Bánh mousse Quả mọng",
         "rating": 5,
         "comment": "Sản phẩm tươi mới, vị vừa ăn, đáng tiền.",
-        "created_at": "2026-03-26T15:31:18.166600"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:18.166600",
+        "updated_at": "2026-03-26T15:31:18.166600"
       },
       {
         "id": 195,
         "order_id": 99,
         "user_id": 12,
-        "username": "demo_user_10",
         "product_id": 1073373566,
-        "product_name": "Bánh kem Ngọc bích",
         "rating": 4,
         "comment": "Đơn giao đầy đủ, chất lượng vượt mong đợi.",
-        "created_at": "2026-03-26T15:31:18.209407"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:18.209407",
+        "updated_at": "2026-03-26T15:31:18.209407"
       },
       {
         "id": 196,
         "order_id": 99,
         "user_id": 12,
-        "username": "demo_user_10",
         "product_id": 1065287121,
-        "product_name": "Bánh madeleine sô cô la",
         "rating": 4,
         "comment": "Đơn giao đầy đủ, chất lượng vượt mong đợi.",
-        "created_at": "2026-03-26T15:31:18.209407"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:18.209407",
+        "updated_at": "2026-03-26T15:31:18.209407"
       },
       {
         "id": 197,
         "order_id": 93,
         "user_id": 12,
-        "username": "demo_user_10",
         "product_id": 1035917261,
-        "product_name": "Bánh su kem sô cô la",
         "rating": 4,
         "comment": "Bánh mềm và ngon, phần kem không bị ngọt gắt.",
-        "created_at": "2026-03-26T15:31:18.248552"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:18.248552",
+        "updated_at": "2026-03-26T15:31:18.248552"
       },
       {
         "id": 198,
         "order_id": 93,
         "user_id": 12,
-        "username": "demo_user_10",
         "product_id": 1035918484,
-        "product_name": "Bánh donut sô cô la",
         "rating": 4,
         "comment": "Bánh mềm và ngon, phần kem không bị ngọt gắt.",
-        "created_at": "2026-03-26T15:31:18.248552"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:18.248552",
+        "updated_at": "2026-03-26T15:31:18.248552"
       },
       {
         "id": 199,
         "order_id": 93,
         "user_id": 12,
-        "username": "demo_user_10",
         "product_id": 1065285306,
-        "product_name": "Bánh cuộn đào",
         "rating": 4,
         "comment": "Bánh mềm và ngon, phần kem không bị ngọt gắt.",
-        "created_at": "2026-03-26T15:31:18.248552"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:31:18.248552",
+        "updated_at": "2026-03-26T15:31:18.248552"
       },
       {
         "id": 200,
         "order_id": 102,
         "user_id": 3,
-        "username": "demo_user_01",
         "product_id": 1035918484,
-        "product_name": "Bánh donut sô cô la",
         "rating": 4,
         "comment": "Mình sẽ tiếp tục ủng hộ vì chất lượng tốt.",
-        "created_at": "2026-03-26T15:35:12.462535"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:35:12.462535",
+        "updated_at": "2026-03-26T15:35:12.462535"
       },
       {
         "id": 201,
         "order_id": 103,
         "user_id": 3,
-        "username": "demo_user_01",
         "product_id": 1065284725,
-        "product_name": "Bánh chuối hạt óc chó",
         "rating": 5,
         "comment": "Vị ngon vừa phải, gia đình mình rất thích.",
-        "created_at": "2026-03-26T15:35:12.553119"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:35:12.553119",
+        "updated_at": "2026-03-26T15:35:12.553119"
       },
       {
         "id": 202,
         "order_id": 103,
         "user_id": 3,
-        "username": "demo_user_01",
         "product_id": 1065287121,
-        "product_name": "Bánh madeleine sô cô la",
         "rating": 5,
         "comment": "Vị ngon vừa phải, gia đình mình rất thích.",
-        "created_at": "2026-03-26T15:35:12.553119"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:35:12.553119",
+        "updated_at": "2026-03-26T15:35:12.553119"
       },
       {
         "id": 203,
         "order_id": 103,
         "user_id": 3,
-        "username": "demo_user_01",
         "product_id": 1037847369,
-        "product_name": "Bánh mousse xoài mịn",
         "rating": 5,
         "comment": "Vị ngon vừa phải, gia đình mình rất thích.",
-        "created_at": "2026-03-26T15:35:12.553119"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:35:12.553119",
+        "updated_at": "2026-03-26T15:35:12.553119"
       },
       {
         "id": 204,
         "order_id": 104,
         "user_id": 4,
-        "username": "demo_user_02",
         "product_id": 1035918468,
-        "product_name": "Bánh donut sô cô la hương dâu",
         "rating": 5,
         "comment": "Vị ngon vừa phải, gia đình mình rất thích.",
-        "created_at": "2026-03-26T15:35:12.635590"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:35:12.635590",
+        "updated_at": "2026-03-26T15:35:12.635590"
       },
       {
         "id": 205,
         "order_id": 104,
         "user_id": 4,
-        "username": "demo_user_02",
         "product_id": 1050145697,
-        "product_name": "Bánh macaron 90g",
         "rating": 5,
         "comment": "Vị ngon vừa phải, gia đình mình rất thích.",
-        "created_at": "2026-03-26T15:35:12.635590"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:35:12.635590",
+        "updated_at": "2026-03-26T15:35:12.635590"
       },
       {
         "id": 206,
         "order_id": 104,
         "user_id": 4,
-        "username": "demo_user_02",
         "product_id": 1035917772,
-        "product_name": "Bánh trứng vàng baby",
         "rating": 5,
         "comment": "Vị ngon vừa phải, gia đình mình rất thích.",
-        "created_at": "2026-03-26T15:35:12.635590"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:35:12.635590",
+        "updated_at": "2026-03-26T15:35:12.635590"
       },
       {
         "id": 207,
         "order_id": 105,
         "user_id": 4,
-        "username": "demo_user_02",
         "product_id": 1046930513,
-        "product_name": "Bánh kem Hoa viên",
         "rating": 4,
         "comment": "Rất hài lòng, bánh tươi ngon và giao nhanh.",
-        "created_at": "2026-03-26T15:35:12.707056"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:35:12.707056",
+        "updated_at": "2026-03-26T15:35:12.707056"
       },
       {
         "id": 208,
         "order_id": 105,
         "user_id": 4,
-        "username": "demo_user_02",
         "product_id": 1035918468,
-        "product_name": "Bánh donut sô cô la hương dâu",
         "rating": 4,
         "comment": "Rất hài lòng, bánh tươi ngon và giao nhanh.",
-        "created_at": "2026-03-26T15:35:12.707056"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:35:12.707056",
+        "updated_at": "2026-03-26T15:35:12.707056"
       },
       {
         "id": 209,
         "order_id": 105,
         "user_id": 4,
-        "username": "demo_user_02",
         "product_id": 1065287121,
-        "product_name": "Bánh madeleine sô cô la",
         "rating": 4,
         "comment": "Rất hài lòng, bánh tươi ngon và giao nhanh.",
-        "created_at": "2026-03-26T15:35:12.707056"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:35:12.707056",
+        "updated_at": "2026-03-26T15:35:12.707056"
       },
       {
         "id": 210,
         "order_id": 106,
         "user_id": 5,
-        "username": "demo_user_03",
         "product_id": 1039736395,
-        "product_name": "Bánh donut sô cô la trà xanh",
         "rating": 4,
         "comment": "Sản phẩm đúng mô tả, đáng để mua lại.",
-        "created_at": "2026-03-26T15:35:12.781155"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:35:12.781155",
+        "updated_at": "2026-03-26T15:35:12.781155"
       },
       {
         "id": 211,
         "order_id": 106,
         "user_id": 5,
-        "username": "demo_user_03",
         "product_id": 1039545543,
-        "product_name": "Bánh kem Choco trân châu",
         "rating": 4,
         "comment": "Sản phẩm đúng mô tả, đáng để mua lại.",
-        "created_at": "2026-03-26T15:35:12.781155"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:35:12.781155",
+        "updated_at": "2026-03-26T15:35:12.781155"
       },
       {
         "id": 212,
         "order_id": 107,
         "user_id": 5,
-        "username": "demo_user_03",
         "product_id": 1038165740,
-        "product_name": "Bánh cuộn vani 110G",
         "rating": 5,
         "comment": "Vị ngon vừa phải, gia đình mình rất thích.",
-        "created_at": "2026-03-26T15:35:12.854310"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:35:12.854310",
+        "updated_at": "2026-03-26T15:35:12.854310"
       },
       {
         "id": 213,
         "order_id": 108,
         "user_id": 6,
-        "username": "demo_user_04",
         "product_id": 1073373566,
-        "product_name": "Bánh kem Ngọc bích",
         "rating": 4,
         "comment": "Chất lượng ổn định, đóng gói đẹp và cẩn thận.",
-        "created_at": "2026-03-26T15:35:12.927951"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:35:12.927951",
+        "updated_at": "2026-03-26T15:35:12.927951"
       },
       {
         "id": 214,
         "order_id": 108,
         "user_id": 6,
-        "username": "demo_user_04",
         "product_id": 1070454919,
-        "product_name": "Bánh mousse Dừa tuyết",
         "rating": 4,
         "comment": "Chất lượng ổn định, đóng gói đẹp và cẩn thận.",
-        "created_at": "2026-03-26T15:35:12.927951"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:35:12.927951",
+        "updated_at": "2026-03-26T15:35:12.927951"
       },
       {
         "id": 215,
         "order_id": 108,
         "user_id": 6,
-        "username": "demo_user_04",
         "product_id": 1035917338,
-        "product_name": "Bánh madeleine",
         "rating": 4,
         "comment": "Chất lượng ổn định, đóng gói đẹp và cẩn thận.",
-        "created_at": "2026-03-26T15:35:12.927951"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:35:12.927951",
+        "updated_at": "2026-03-26T15:35:12.927951"
       },
       {
         "id": 216,
         "order_id": 109,
         "user_id": 6,
-        "username": "demo_user_04",
         "product_id": 1035918484,
-        "product_name": "Bánh donut sô cô la",
         "rating": 5,
         "comment": "Rất hài lòng, bánh tươi ngon và giao nhanh.",
-        "created_at": "2026-03-26T15:35:12.999386"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:35:12.999386",
+        "updated_at": "2026-03-26T15:35:12.999386"
       },
       {
         "id": 217,
         "order_id": 110,
         "user_id": 7,
-        "username": "demo_user_05",
         "product_id": 1073370413,
-        "product_name": "Bánh kem Vàng anh",
         "rating": 4,
         "comment": "Vị ngon vừa phải, gia đình mình rất thích.",
-        "created_at": "2026-03-26T15:35:13.066575"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:35:13.066575",
+        "updated_at": "2026-03-26T15:35:13.066575"
       },
       {
         "id": 218,
         "order_id": 110,
         "user_id": 7,
-        "username": "demo_user_05",
         "product_id": 1035837470,
-        "product_name": "Bánh kem Mật ngọt",
         "rating": 4,
         "comment": "Vị ngon vừa phải, gia đình mình rất thích.",
-        "created_at": "2026-03-26T15:35:13.066575"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:35:13.066575",
+        "updated_at": "2026-03-26T15:35:13.066575"
       },
       {
         "id": 219,
         "order_id": 111,
         "user_id": 7,
-        "username": "demo_user_05",
         "product_id": 1063502432,
-        "product_name": "Bánh kem Mây hồng",
         "rating": 4,
         "comment": "Sản phẩm đúng mô tả, đáng để mua lại.",
-        "created_at": "2026-03-26T15:35:13.136403"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:35:13.136403",
+        "updated_at": "2026-03-26T15:35:13.136403"
       },
       {
         "id": 220,
         "order_id": 111,
         "user_id": 7,
-        "username": "demo_user_05",
         "product_id": 1035917326,
-        "product_name": "Bánh chiffon ba vị",
         "rating": 4,
         "comment": "Sản phẩm đúng mô tả, đáng để mua lại.",
-        "created_at": "2026-03-26T15:35:13.136403"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:35:13.136403",
+        "updated_at": "2026-03-26T15:35:13.136403"
       },
       {
         "id": 221,
         "order_id": 112,
         "user_id": 8,
-        "username": "demo_user_06",
         "product_id": 1065284725,
-        "product_name": "Bánh chuối hạt óc chó",
         "rating": 4,
         "comment": "Rất hài lòng, bánh tươi ngon và giao nhanh.",
-        "created_at": "2026-03-26T15:35:13.213040"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:35:13.213040",
+        "updated_at": "2026-03-26T15:35:13.213040"
       },
       {
         "id": 222,
         "order_id": 113,
         "user_id": 8,
-        "username": "demo_user_06",
         "product_id": 1035837467,
-        "product_name": "Bánh mousse Chanh leo",
         "rating": 4,
         "comment": "Vị ngon vừa phải, gia đình mình rất thích.",
-        "created_at": "2026-03-26T15:35:13.283719"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:35:13.283719",
+        "updated_at": "2026-03-26T15:35:13.283719"
       },
       {
         "id": 223,
         "order_id": 114,
         "user_id": 9,
-        "username": "demo_user_07",
         "product_id": 1070454919,
-        "product_name": "Bánh mousse Dừa tuyết",
         "rating": 4,
         "comment": "Vị ngon vừa phải, gia đình mình rất thích.",
-        "created_at": "2026-03-26T15:35:13.354244"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:35:13.354244",
+        "updated_at": "2026-03-26T15:35:13.354244"
       },
       {
         "id": 224,
         "order_id": 114,
         "user_id": 9,
-        "username": "demo_user_07",
         "product_id": 1073183496,
-        "product_name": "Bánh kem Vườn trăng",
         "rating": 4,
         "comment": "Vị ngon vừa phải, gia đình mình rất thích.",
-        "created_at": "2026-03-26T15:35:13.354244"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:35:13.354244",
+        "updated_at": "2026-03-26T15:35:13.354244"
       },
       {
         "id": 225,
         "order_id": 115,
         "user_id": 9,
-        "username": "demo_user_07",
         "product_id": 1035837470,
-        "product_name": "Bánh kem Mật ngọt",
         "rating": 4,
         "comment": "Rất hài lòng, bánh tươi ngon và giao nhanh.",
-        "created_at": "2026-03-26T15:35:13.426785"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:35:13.426785",
+        "updated_at": "2026-03-26T15:35:13.426785"
       },
       {
         "id": 226,
         "order_id": 116,
         "user_id": 10,
-        "username": "demo_user_08",
         "product_id": 1057466727,
-        "product_name": "Bánh kem Hổ phách",
         "rating": 5,
         "comment": "Chất lượng ổn định, đóng gói đẹp và cẩn thận.",
-        "created_at": "2026-03-26T15:35:13.496588"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:35:13.496588",
+        "updated_at": "2026-03-26T15:35:13.496588"
       },
       {
         "id": 227,
         "order_id": 116,
         "user_id": 10,
-        "username": "demo_user_08",
         "product_id": 1073370413,
-        "product_name": "Bánh kem Vàng anh",
         "rating": 5,
         "comment": "Chất lượng ổn định, đóng gói đẹp và cẩn thận.",
-        "created_at": "2026-03-26T15:35:13.496588"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:35:13.496588",
+        "updated_at": "2026-03-26T15:35:13.496588"
       },
       {
         "id": 228,
         "order_id": 117,
         "user_id": 10,
-        "username": "demo_user_08",
         "product_id": 1073373566,
-        "product_name": "Bánh kem Ngọc bích",
         "rating": 5,
         "comment": "Chất lượng ổn định, đóng gói đẹp và cẩn thận.",
-        "created_at": "2026-03-26T15:35:13.569445"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:35:13.569445",
+        "updated_at": "2026-03-26T15:35:13.569445"
       },
       {
         "id": 229,
         "order_id": 118,
         "user_id": 11,
-        "username": "demo_user_09",
         "product_id": 1065284910,
-        "product_name": "Bánh cuộn ba vị",
         "rating": 4,
         "comment": "Rất hài lòng, bánh tươi ngon và giao nhanh.",
-        "created_at": "2026-03-26T15:35:13.644792"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:35:13.644792",
+        "updated_at": "2026-03-26T15:35:13.644792"
       },
       {
         "id": 230,
         "order_id": 118,
         "user_id": 11,
-        "username": "demo_user_09",
         "product_id": 1039736395,
-        "product_name": "Bánh donut sô cô la trà xanh",
         "rating": 4,
         "comment": "Rất hài lòng, bánh tươi ngon và giao nhanh.",
-        "created_at": "2026-03-26T15:35:13.644792"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:35:13.644792",
+        "updated_at": "2026-03-26T15:35:13.644792"
       },
       {
         "id": 231,
         "order_id": 119,
         "user_id": 11,
-        "username": "demo_user_09",
         "product_id": 1065287121,
-        "product_name": "Bánh madeleine sô cô la",
         "rating": 4,
         "comment": "Rất hài lòng, bánh tươi ngon và giao nhanh.",
-        "created_at": "2026-03-26T15:35:13.733999"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:35:13.733999",
+        "updated_at": "2026-03-26T15:35:13.733999"
       },
       {
         "id": 232,
         "order_id": 120,
         "user_id": 12,
-        "username": "demo_user_10",
         "product_id": 1073435410,
-        "product_name": "Bánh mousse Vải hoa hồng",
         "rating": 5,
         "comment": "Chất lượng ổn định, đóng gói đẹp và cẩn thận.",
-        "created_at": "2026-03-26T15:35:13.818255"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:35:13.818255",
+        "updated_at": "2026-03-26T15:35:13.818255"
       },
       {
         "id": 233,
         "order_id": 120,
         "user_id": 12,
-        "username": "demo_user_10",
         "product_id": 1065284910,
-        "product_name": "Bánh cuộn ba vị",
         "rating": 5,
         "comment": "Chất lượng ổn định, đóng gói đẹp và cẩn thận.",
-        "created_at": "2026-03-26T15:35:13.818255"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:35:13.818255",
+        "updated_at": "2026-03-26T15:35:13.818255"
       },
       {
         "id": 234,
         "order_id": 121,
         "user_id": 12,
-        "username": "demo_user_10",
         "product_id": 1073183508,
-        "product_name": "Bánh kem Mai mơ",
         "rating": 5,
         "comment": "Sản phẩm đúng mô tả, đáng để mua lại.",
-        "created_at": "2026-03-26T15:35:13.893658"
+        "admin_reply": "ừ",
+        "admin_reply_at": "2026-04-07T10:39:20.919616",
+        "created_at": "2026-03-26T15:35:13.893658",
+        "updated_at": "2026-04-07T10:39:20.921128"
       },
       {
         "id": 235,
         "order_id": 121,
         "user_id": 12,
-        "username": "demo_user_10",
         "product_id": 1073183496,
-        "product_name": "Bánh kem Vườn trăng",
         "rating": 5,
         "comment": "Sản phẩm đúng mô tả, đáng để mua lại.",
-        "created_at": "2026-03-26T15:35:13.893658"
+        "admin_reply": "biết vậy",
+        "admin_reply_at": "2026-04-08T15:46:55.358297",
+        "created_at": "2026-03-26T15:35:13.893658",
+        "updated_at": "2026-04-08T15:46:55.359293"
       },
       {
         "id": 236,
         "order_id": 121,
         "user_id": 12,
-        "username": "demo_user_10",
         "product_id": 1035917330,
-        "product_name": "Bánh cuộn sô cô la",
         "rating": 5,
         "comment": "Sản phẩm đúng mô tả, đáng để mua lại.",
-        "created_at": "2026-03-26T15:35:13.893658"
+        "admin_reply": null,
+        "admin_reply_at": null,
+        "created_at": "2026-03-26T15:35:13.893658",
+        "updated_at": "2026-03-26T15:35:13.893658"
       }
-    ],
+    ]
+  },
+  "local_files": {
     "admin_settings": {
       "store_name": "BubbleBakery",
       "contact_email": "contact@bubblebakery.vn",

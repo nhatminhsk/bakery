@@ -1,17 +1,18 @@
 from pathlib import Path
 from uuid import uuid4
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date, timezone
 import json
 
 from app.extensions import db
-from app.models.product import Product, Category
-from app.models.order import Order
+from app.models.product import Product, Category, ProductBatch
+from app.models.order import Order, OrderItem
 from app.models.payment import Payment
 from app.models.user import User
 from app.models.admin import AdminTodo
 from app.utils.cloudinary_helper import delete_image, upload_image
 from app.utils.review_store import list_reviews
-from sqlalchemy import func
+from sqlalchemy import func, case
+from sqlalchemy.orm import joinedload
 from werkzeug.utils import secure_filename
 
 
@@ -35,6 +36,41 @@ DEFAULT_ADMIN_SETTINGS = {
     'payment_bank_transfer': True,
     'payment_ewallet': False,
 }
+
+LOCAL_TIMEZONE = timezone(timedelta(hours=7))
+LOW_STOCK_THRESHOLD = 10
+EXPIRY_WARNING_DAYS = 3
+
+
+def _local_day_bounds_to_utc(target_date):
+    """Convert local-day boundaries (UTC+7) to naive UTC datetimes for DB filters."""
+    local_start = datetime(target_date.year, target_date.month, target_date.day, tzinfo=LOCAL_TIMEZONE)
+    local_end = local_start + timedelta(days=1)
+    utc_start = local_start.astimezone(timezone.utc).replace(tzinfo=None)
+    utc_end = local_end.astimezone(timezone.utc).replace(tzinfo=None)
+    return utc_start, utc_end
+
+
+def _local_week_bounds_to_utc(target_date):
+    """Week starts on Monday in local time."""
+    week_start_date = target_date - timedelta(days=target_date.weekday())
+    local_start = datetime(week_start_date.year, week_start_date.month, week_start_date.day, tzinfo=LOCAL_TIMEZONE)
+    local_end = local_start + timedelta(days=7)
+    utc_start = local_start.astimezone(timezone.utc).replace(tzinfo=None)
+    utc_end = local_end.astimezone(timezone.utc).replace(tzinfo=None)
+    return utc_start, utc_end
+
+
+def _local_month_bounds_to_utc(target_date):
+    local_start = datetime(target_date.year, target_date.month, 1, tzinfo=LOCAL_TIMEZONE)
+    if target_date.month == 12:
+        next_month_start = datetime(target_date.year + 1, 1, 1, tzinfo=LOCAL_TIMEZONE)
+    else:
+        next_month_start = datetime(target_date.year, target_date.month + 1, 1, tzinfo=LOCAL_TIMEZONE)
+
+    utc_start = local_start.astimezone(timezone.utc).replace(tzinfo=None)
+    utc_end = next_month_start.astimezone(timezone.utc).replace(tzinfo=None)
+    return utc_start, utc_end
 
 
 def _write_admin_settings(settings_data):
@@ -170,6 +206,11 @@ def _upload_image_to_cloudinary(image_file):
 def get_dashboard_stats():
     weekly_series = get_revenue_by_week(limit_weeks=8)
     monthly_series = get_revenue_by_month(limit_months=12)
+    weekly_periods = [item['period'] for item in weekly_series]
+    monthly_periods = [item['period'] for item in monthly_series]
+
+    weekly_top_products = get_top_products_by_period('%Y-W%W', weekly_periods, top_n=5)
+    monthly_top_products = get_top_products_by_period('%Y-%m', monthly_periods, top_n=5)
 
     current_week_key = datetime.utcnow().strftime('%Y-W%W')
     current_month_key = datetime.utcnow().strftime('%Y-%m')
@@ -188,6 +229,8 @@ def get_dashboard_stats():
         'monthly_revenue': this_month_revenue,
         'weekly_revenue_series': weekly_series,
         'monthly_revenue_series': monthly_series,
+        'weekly_top_products': weekly_top_products,
+        'monthly_top_products': monthly_top_products,
     }
 
 
@@ -227,8 +270,134 @@ def get_revenue_by_month(limit_months=12):
     return series[-limit_months:] if limit_months else series
 
 
+def get_top_products_by_period(period_pattern, target_periods, top_n=5):
+    if not target_periods:
+        return []
+
+    period_expr = func.strftime(period_pattern, Order.paid_at)
+    rows = (
+        db.session.query(
+            period_expr.label('period'),
+            OrderItem.product_id.label('product_id'),
+            OrderItem.name.label('product_name'),
+            func.sum(OrderItem.quantity).label('sold_qty'),
+            func.sum(OrderItem.price * OrderItem.quantity).label('revenue'),
+        )
+        .join(Order, Order.id == OrderItem.order_id)
+        .filter(
+            Order.status == 'delivered',
+            Order.paid_at.isnot(None),
+            OrderItem.quantity.isnot(None),
+            OrderItem.quantity > 0,
+            period_expr.in_(target_periods),
+        )
+        .group_by(period_expr, OrderItem.product_id, OrderItem.name)
+        .all()
+    )
+
+    period_map = {period: [] for period in target_periods}
+    for row in rows:
+        period_map.setdefault(row.period, []).append(
+            {
+                'product_id': row.product_id,
+                'product_name': row.product_name or 'Không rõ tên sản phẩm',
+                'sold_qty': int(row.sold_qty or 0),
+                'revenue': int(row.revenue or 0),
+            }
+        )
+
+    result = []
+    for period in target_periods:
+        ranked = sorted(
+            period_map.get(period, []),
+            key=lambda item: (item['sold_qty'], item['revenue']),
+            reverse=True,
+        )[:top_n]
+
+        result.append(
+            {
+                'period': period,
+                'items': ranked,
+            }
+        )
+
+    return result
+
+
 def get_all_orders():
     return Order.query.order_by(Order.created_at.desc()).all()
+
+
+def get_orders_management_data(filter_mode='latest', date_value=None):
+    mode = (filter_mode or 'latest').strip().lower()
+    query = Order.query
+    local_today = datetime.now(LOCAL_TIMEZONE).date()
+    selected_date = None
+    period_note = ''
+
+    if mode == 'all':
+        label = 'Tất cả đơn hàng'
+        period_note = 'Phạm vi: toàn thời gian'
+    elif mode == 'latest':
+        start, end = _local_day_bounds_to_utc(local_today)
+        query = query.filter(Order.created_at >= start, Order.created_at < end)
+        label = 'Đơn hàng trong ngày'
+        period_note = f'Phạm vi: ngày {local_today.strftime("%d/%m/%Y")}'
+    elif mode == 'yesterday':
+        target_date = local_today - timedelta(days=1)
+        start, end = _local_day_bounds_to_utc(target_date)
+        query = query.filter(Order.created_at >= start, Order.created_at < end)
+        label = 'Đơn hàng hôm qua'
+        period_note = f'Phạm vi: ngày {target_date.strftime("%d/%m/%Y")}'
+    elif mode == 'week':
+        start, end = _local_week_bounds_to_utc(local_today)
+        query = query.filter(Order.created_at >= start, Order.created_at < end)
+        label = 'Đơn hàng tuần này'
+        week_start = local_today - timedelta(days=local_today.weekday())
+        period_note = f'Phạm vi: từ {week_start.strftime("%d/%m/%Y")} đến {local_today.strftime("%d/%m/%Y")}'
+    elif mode == 'month':
+        start, end = _local_month_bounds_to_utc(local_today)
+        query = query.filter(Order.created_at >= start, Order.created_at < end)
+        label = 'Đơn hàng tháng này'
+        month_start = local_today.replace(day=1)
+        period_note = f'Phạm vi: từ {month_start.strftime("%d/%m/%Y")} đến {local_today.strftime("%d/%m/%Y")}'
+    elif mode == 'date':
+        try:
+            selected_date = datetime.strptime((date_value or '').strip(), '%Y-%m-%d').date()
+        except ValueError:
+            selected_date = None
+
+        if selected_date:
+            start, end = _local_day_bounds_to_utc(selected_date)
+            query = query.filter(Order.created_at >= start, Order.created_at < end)
+            label = f'Đơn hàng ngày {selected_date.strftime("%d/%m/%Y")}'
+            period_note = f'Phạm vi: ngày {selected_date.strftime("%d/%m/%Y")}'
+        else:
+            mode = 'latest'
+            start, end = _local_day_bounds_to_utc(local_today)
+            query = query.filter(Order.created_at >= start, Order.created_at < end)
+            label = 'Đơn hàng trong ngày'
+            period_note = f'Phạm vi: ngày {local_today.strftime("%d/%m/%Y")}'
+    else:
+        mode = 'latest'
+        start, end = _local_day_bounds_to_utc(local_today)
+        query = query.filter(Order.created_at >= start, Order.created_at < end)
+        label = 'Đơn hàng trong ngày'
+        period_note = f'Phạm vi: ngày {local_today.strftime("%d/%m/%Y")}'
+
+    query = query.order_by(Order.created_at.desc())
+
+    orders = query.all()
+    total_all_time = Order.query.count()
+    return {
+        'items': orders,
+        'filter_mode': mode,
+        'selected_date': selected_date.strftime('%Y-%m-%d') if selected_date else '',
+        'label': label,
+        'period_note': period_note,
+        'count': len(orders),
+        'total_all_time': total_all_time,
+    }
 
 
 def _resolve_overview_period(period):
@@ -281,34 +450,66 @@ def get_overview_orders(period='today', limit=100):
 
 
 def get_all_products_admin():
-    return Product.query.order_by(Product.created_at.desc()).all()
+    products = (
+        Product.query
+        .options(joinedload(Product.batches))
+        .order_by(Product.created_at.desc())
+        .all()
+    )
 
+    today_local = datetime.now(LOCAL_TIMEZONE).date()
 
-def _seed_default_admin_todos():
-    """Seed default todos if the table is empty."""
-    if AdminTodo.query.first() is not None:
-        return  # Table already has data
+    needs_stock_sync = False
 
-    defaults = [
-        AdminTodo(
-            title='Kiểm tra tồn kho nguyên liệu đầu ca',
-            priority='high',
-            is_done=False,
-        ),
-        AdminTodo(
-            title='Xác nhận lịch giao hàng đơn quan trọng',
-            priority='medium',
-            is_done=False,
-        ),
-        AdminTodo(
-            title='Tổng vệ sinh khu vực đóng gói',
-            priority='low',
-            is_done=True,
-            completed_at=datetime.utcnow(),
-        ),
-    ]
-    db.session.add_all(defaults)
-    db.session.commit()
+    for product in products:
+        available_batch_qty = sum(
+            int(batch.quantity or 0)
+            for batch in (product.batches or [])
+            if int(batch.quantity or 0) > 0
+        )
+
+        # Keep product.in_stock synchronized with batch quantities to avoid drift.
+        if int(product.in_stock or 0) != available_batch_qty:
+            product.in_stock = available_batch_qty
+            needs_stock_sync = True
+
+        stock_qty = int(product.in_stock or 0)
+        product.display_in_stock = stock_qty
+        if stock_qty <= 0:
+            product.stock_alert = 'out'
+        elif stock_qty < LOW_STOCK_THRESHOLD:
+            product.stock_alert = 'low'
+        else:
+            product.stock_alert = 'ok'
+
+        active_batches = [
+            batch for batch in (product.batches or [])
+            if int(batch.quantity or 0) > 0 and batch.expiry_date
+        ]
+
+        if not active_batches:
+            product.nearest_expiry_date = None
+            product.expiry_days_left = None
+            product.expiry_alert = 'missing'
+            continue
+
+        nearest_batch = min(active_batches, key=lambda item: item.expiry_date)
+        nearest_expiry = nearest_batch.expiry_date
+        days_left = (nearest_expiry - today_local).days
+
+        product.nearest_expiry_date = nearest_expiry
+        product.expiry_days_left = days_left
+        if days_left < 0:
+            product.expiry_alert = 'expired'
+        elif days_left <= EXPIRY_WARNING_DAYS:
+            product.expiry_alert = 'soon'
+        else:
+            product.expiry_alert = 'ok'
+
+    if needs_stock_sync:
+        db.session.commit()
+
+    return products
 
 
 def _todo_priority_weight(priority):
@@ -317,10 +518,7 @@ def _todo_priority_weight(priority):
 
 
 def get_admin_todos(status='all', priority='all'):
-    # Seed default todos if table is empty
-    _seed_default_admin_todos()
-
-    query = AdminTodo.query
+    query = AdminTodo.query.options(joinedload(AdminTodo.assigned_user))
 
     normalized_status = (status or 'all').strip().lower()
     normalized_priority = (priority or 'all').strip().lower()
@@ -337,16 +535,18 @@ def get_admin_todos(status='all', priority='all'):
     else:
         normalized_priority = 'all'
 
-    todos = query.all()
-
-    # Sort: incomplete first, then by priority, then by creation date
-    todos.sort(
-        key=lambda item: (
-            item.is_done,
-            -_todo_priority_weight(item.priority),
-            item.created_at or '',
-        )
+    # Database-level sorting: incomplete first, then by priority, then by creation date
+    priority_order = case(
+        (AdminTodo.priority == 'high', 3),
+        (AdminTodo.priority == 'medium', 2),
+        (AdminTodo.priority == 'low', 1),
+        else_=0,
     )
+    todos = query.order_by(
+        AdminTodo.is_done.asc(),
+        priority_order.desc(),
+        AdminTodo.created_at.desc(),
+    ).all()
 
     todos_dicts = [todo.to_dict() for todo in todos]
     done_count = sum(1 for todo in todos_dicts if todo.get('is_done'))
@@ -361,7 +561,99 @@ def get_admin_todos(status='all', priority='all'):
     }
 
 
-def create_admin_todo(title, priority='medium'):
+def get_assignable_staff_users():
+    return (
+        User.query
+        .filter(User.role == 'staff')
+        .order_by(User.username.asc())
+        .all()
+    )
+
+
+def get_staff_candidate_users():
+    return (
+        User.query
+        .filter(User.role != 'admin')
+        .order_by(User.username.asc())
+        .all()
+    )
+
+
+def add_users_to_staff(user_ids):
+    raw_ids = user_ids or []
+    normalized_ids = []
+
+    for value in raw_ids:
+        try:
+            normalized_ids.append(int(value))
+        except (TypeError, ValueError):
+            continue
+
+    normalized_ids = sorted(set(normalized_ids))
+    if not normalized_ids:
+        return False, 0, 'Vui lòng chọn ít nhất 1 tài khoản để thêm vào nhân viên.'
+
+    users = User.query.filter(User.id.in_(normalized_ids)).all()
+    if not users:
+        return False, 0, 'Không tìm thấy tài khoản hợp lệ.'
+
+    updated_count = 0
+    for user in users:
+        if user.role == 'admin':
+            continue
+        if user.role != 'staff':
+            user.role = 'staff'
+            updated_count += 1
+
+    db.session.commit()
+    return True, updated_count, None
+
+
+def get_staff_todos(user_id, status='all', priority='all'):
+    query = AdminTodo.query.options(joinedload(AdminTodo.assigned_user)).filter(AdminTodo.assigned_user_id == user_id)
+
+    normalized_status = (status or 'all').strip().lower()
+    normalized_priority = (priority or 'all').strip().lower()
+
+    if normalized_status == 'open':
+        query = query.filter_by(is_done=False)
+    elif normalized_status == 'done':
+        query = query.filter_by(is_done=True)
+    else:
+        normalized_status = 'all'
+
+    if normalized_priority in {'high', 'medium', 'low'}:
+        query = query.filter_by(priority=normalized_priority)
+    else:
+        normalized_priority = 'all'
+
+    # Database-level sorting: incomplete first, then by priority, then by creation date
+    priority_order = case(
+        (AdminTodo.priority == 'high', 3),
+        (AdminTodo.priority == 'medium', 2),
+        (AdminTodo.priority == 'low', 1),
+        else_=0,
+    )
+    todos = query.order_by(
+        AdminTodo.is_done.asc(),
+        priority_order.desc(),
+        AdminTodo.created_at.desc(),
+    ).all()
+
+    todos_dicts = [todo.to_dict() for todo in todos]
+    done_count = sum(1 for todo in todos_dicts if todo.get('is_done'))
+
+    return {
+        'items': todos_dicts,
+        'status_filter': normalized_status,
+        'priority_filter': normalized_priority,
+        'total': len(todos_dicts),
+        'done': done_count,
+        'open': len(todos_dicts) - done_count,
+    }
+
+
+def create_admin_todo(title, priority='medium', assigned_user_id=None):
     title = (title or '').strip()
     if not title:
         return False, 'Nội dung công việc không được để trống.'
@@ -370,7 +662,23 @@ def create_admin_todo(title, priority='medium'):
     if priority not in {'high', 'medium', 'low'}:
         priority = 'medium'
 
-    todo = AdminTodo(title=title, priority=priority, is_done=False)
+    assigned_user = None
+    if assigned_user_id not in (None, ''):
+        try:
+            assigned_user_id = int(assigned_user_id)
+        except (TypeError, ValueError):
+            return False, 'Mã nhân viên không hợp lệ.'
+
+        assigned_user = User.query.get(assigned_user_id)
+        if not assigned_user or assigned_user.role != 'staff':
+            return False, 'Chỉ có thể giao việc cho tài khoản nhân viên.'
+
+    todo = AdminTodo(title=title, priority=priority, assigned_user_id=assigned_user.id if assigned_user else None, is_done=False)
+    
+    # Also add to many-to-many relationship for new assignment system
+    if assigned_user:
+        todo.assigned_staff.append(assigned_user)
+    
     db.session.add(todo)
     db.session.commit()
     return True, None
@@ -399,14 +707,165 @@ def delete_admin_todo(todo_id):
     return True, None
 
 
-def get_feedback_reviews(search='', rating='all'):
+def assign_staff_to_todo(todo_id, staff_user_ids):
+    """
+    Assign multiple staff members to a todo.
+    
+    Args:
+        todo_id: AdminTodo.id
+        staff_user_ids: List of User.id to assign (replaces existing assignments)
+    
+    Returns:
+        (success, count, error_message)
+    """
+    todo = AdminTodo.query.get(todo_id)
+    if not todo:
+        return False, 0, 'Không tìm thấy công việc.'
+    
+    raw_ids = staff_user_ids or []
+    normalized_ids = []
+    
+    for value in raw_ids:
+        try:
+            normalized_ids.append(int(value))
+        except (TypeError, ValueError):
+            continue
+    
+    normalized_ids = sorted(set(normalized_ids))
+    
+    # Get all staff users with these IDs
+    staff_users = User.query.filter(
+        User.id.in_(normalized_ids),
+        User.role == 'staff'
+    ).all()
+    
+    if not staff_users and normalized_ids:
+        return False, 0, 'Không tìm thấy nhân viên hợp lệ để giao cho công việc.'
+    
+    # Clear existing assignments and set new ones
+    todo.assigned_staff = staff_users
+    db.session.commit()
+    
+    return True, len(staff_users), None
+
+
+def add_staff_to_todo(todo_id, staff_user_ids):
+    """
+    Add additional staff members to a todo (keeps existing assignments).
+    
+    Args:
+        todo_id: AdminTodo.id
+        staff_user_ids: List of User.id to add
+    
+    Returns:
+        (success, count_added, error_message)
+    """
+    todo = AdminTodo.query.get(todo_id)
+    if not todo:
+        return False, 0, 'Không tìm thấy công việc.'
+    
+    raw_ids = staff_user_ids or []
+    normalized_ids = []
+    
+    for value in raw_ids:
+        try:
+            normalized_ids.append(int(value))
+        except (TypeError, ValueError):
+            continue
+    
+    normalized_ids = sorted(set(normalized_ids))
+    
+    # Get existing staff IDs
+    existing_ids = {user.id for user in (todo.assigned_staff or [])}
+    
+    # Get new staff to add
+    staff_to_add = User.query.filter(
+        User.id.in_(normalized_ids),
+        User.role == 'staff',
+        ~User.id.in_(existing_ids),  # Not already assigned
+    ).all()
+    
+    if not staff_to_add:
+        return True, 0, None  # No new staff to add is not an error
+    
+    # Add to existing assignments
+    for user in staff_to_add:
+        todo.assigned_staff.append(user)
+    
+    db.session.commit()
+    return True, len(staff_to_add), None
+
+
+def remove_staff_from_todo(todo_id, staff_user_id):
+    """
+    Remove a staff member from a todo.
+    
+    Args:
+        todo_id: AdminTodo.id
+        staff_user_id: User.id to remove
+    
+    Returns:
+        (success, error_message)
+    """
+    todo = AdminTodo.query.get(todo_id)
+    if not todo:
+        return False, 'Không tìm thấy công việc.'
+    
+    try:
+        staff_user_id = int(staff_user_id)
+    except (TypeError, ValueError):
+        return False, 'Mã nhân viên không hợp lệ.'
+    
+    staff_user = User.query.get(staff_user_id)
+    if not staff_user or staff_user.role != 'staff':
+        return False, 'Không tìm thấy nhân viên để xóa.'
+    
+    if staff_user in todo.assigned_staff:
+        todo.assigned_staff.remove(staff_user)
+        db.session.commit()
+        return True, None
+    
+    return False, 'Nhân viên này không được giao công việc này.'
+
+
+def get_todo_assigned_staff(todo_id):
+    """Get list of staff assigned to a todo."""
+    todo = AdminTodo.query.get(todo_id)
+    if not todo:
+        return None
+    
+    return [
+        {
+            'id': user.id,
+            'username': user.username,
+            'email': user.email,
+        }
+        for user in (todo.assigned_staff or [])
+    ]
+
+
+def get_feedback_reviews(search='', rating='all', reply_status='all'):
     reviews = list_reviews(search=search, rating_filter=rating)
+    normalized_reply_status = (reply_status or 'all').strip().lower()
+
+    if normalized_reply_status == 'unreplied':
+        reviews = [item for item in reviews if not (item.get('admin_reply') or '').strip()]
+    elif normalized_reply_status == 'replied':
+        reviews = [item for item in reviews if (item.get('admin_reply') or '').strip()]
+    else:
+        normalized_reply_status = 'all'
+
+    replied_count = sum(1 for item in reviews if (item.get('admin_reply') or '').strip())
+    unreplied_count = len(reviews) - replied_count
 
     return {
         'items': reviews,
         'search': (search or '').strip(),
         'rating_filter': (rating or 'all').strip().lower(),
+        'reply_status_filter': normalized_reply_status,
         'total': len(reviews),
+        'replied_count': replied_count,
+        'unreplied_count': unreplied_count,
     }
 
 
@@ -434,6 +893,24 @@ def create_product(data, image_file=None):
         if in_stock < 0:
             return None, 'Số lượng tồn kho không được âm.'
 
+        try:
+            cost_price = int(data.get('cost_price', 0))
+        except (TypeError, ValueError):
+            return None, 'Giá vốn phải là số nguyên hợp lệ.'
+        if cost_price < 0:
+            return None, 'Giá vốn không được âm.'
+
+        expiry_date_raw = (data.get('expiry_date') or '').strip()
+        expiry_date = None
+        if expiry_date_raw:
+            try:
+                expiry_date = date.fromisoformat(expiry_date_raw)
+            except ValueError:
+                return None, 'Hạn sử dụng không hợp lệ. Vui lòng chọn đúng định dạng ngày.'
+
+        if in_stock > 0 and not expiry_date:
+            return None, 'Khi nhập tồn kho ban đầu, vui lòng cung cấp hạn sử dụng cho lô hàng.'
+
         # Upload ảnh lên Cloudinary thay vì lưu local
         image_url, image_id, image_error = _upload_image_to_cloudinary(image_file)
         if image_error:
@@ -445,10 +922,24 @@ def create_product(data, image_file=None):
             price       = price,
             category    = category,
             in_stock    = in_stock,
+            cost_price  = cost_price,
             image_url   = image_url,
             image_id    = image_id,
         )
         db.session.add(product)
+        db.session.flush()
+
+        if in_stock > 0 and expiry_date:
+            db.session.add(
+                ProductBatch(
+                    product_id=product.id,
+                    quantity=in_stock,
+                    cost_price=cost_price,
+                    expiry_date=expiry_date,
+                    imported_at=datetime.utcnow(),
+                )
+            )
+
         db.session.commit()
         return product, None
     except Exception as e:

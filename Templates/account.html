@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Tài khoản của tôi | BubbleBakery{% endblock %}
+{% block title %}Tài khoản của tôi | Fresh Garden{% endblock %}
 
 {% block styles %}
 <style>
@@ -207,6 +207,8 @@
         <div class="quick-links">
             {% if user.is_admin() %}
             <a href="{{ url_for('admin.dashboard') }}">Đi tới trang quản trị</a>
+            {% elif user.can_access_staff() %}
+            <a href="{{ url_for('staff.dashboard') }}">Đi tới trang nhân viên</a>
             {% endif %}
             <a href="{{ url_for('auth.logout') }}">Đăng xuất</a>
         </div>

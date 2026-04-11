@@ -140,25 +140,190 @@
         background-color: #ea580c;
     }
 
-    .btn-wishlist {
-        background-color: #374151;
-        color: #fb923c;
-    }
-
-    .btn-wishlist:hover {
-        background-color: #4b5563;
-    }
-
     .related-products {
         margin-top: 4rem;
         padding-top: 3rem;
         border-top: 1px solid #374151;
     }
 
+    .review-count-link {
+        color: #c57729;
+        text-decoration: underline;
+        text-underline-offset: 3px;
+        cursor: pointer;
+    }
+
+    .review-count-link:hover {
+        color: #a56624;
+    }
+
+    .reviews-section {
+        margin-top: 4rem;
+        padding-top: 2rem;
+        border-top: 1px solid #d6ccb7;
+    }
+
+    .reviews-list {
+        display: grid;
+        gap: 1rem;
+    }
+
+    .review-card {
+        border: 1px solid #d8ceb7;
+        background: #fffdf7;
+        border-radius: 10px;
+        padding: 1rem;
+        box-shadow: 0 6px 18px rgba(140, 111, 72, 0.08);
+    }
+
+    .review-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .review-user {
+        color: #c57729;
+        font-weight: 600;
+    }
+
+    .review-meta {
+        color: #6f7b6a;
+        font-size: 0.9rem;
+    }
+
+    .review-comment {
+        color: #2f3a2f;
+        line-height: 1.7;
+    }
+
+    .review-actions {
+        margin-top: 0.75rem;
+        display: flex;
+        justify-content: flex-end;
+    }
+
+    .reply-review-btn {
+        border: none;
+        background: #d1b868;
+        color: #2f3a2f;
+        padding: 6px 12px;
+        border-radius: 6px;
+        font-weight: 600;
+        cursor: pointer;
+    }
+
+    .reply-review-btn:hover {
+        background: #c2a856;
+    }
+
+    .review-admin-reply {
+        margin-top: 0.75rem;
+        padding: 0.75rem;
+        border-left: 3px solid #c57729;
+        background: #f5efdf;
+        border-radius: 6px;
+        color: #2f3a2f;
+    }
+
     .section-title {
         font-size: 2rem;
-        color: #fb923c;
+        color: #4f7f65;
         margin-bottom: 2rem;
+    }
+
+    .reply-modal-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(40, 33, 21, 0.5);
+        z-index: 1200;
+        padding: 2rem 1rem;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .reply-modal-card {
+        background: #f6f3ea;
+        border: 1px solid #d6ccb7;
+        border-radius: 10px;
+        width: 100%;
+        max-width: 640px;
+        margin: 0 auto;
+        padding: 2rem;
+        max-height: 80vh;
+        overflow-y: auto;
+        box-shadow: 0 20px 40px rgba(70, 56, 37, 0.18);
+    }
+
+    .reply-modal-title {
+        margin-top: 0;
+        color: #2f3a2f;
+    }
+
+    .reply-modal-info {
+        margin-bottom: 1rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid #d6ccb7;
+        color: #3f4b3f;
+    }
+
+    .reply-modal-label {
+        display: block;
+        margin-bottom: 0.5rem;
+        color: #2f3a2f;
+        font-weight: 600;
+    }
+
+    .reply-modal-textarea {
+        width: 100%;
+        padding: 10px;
+        background: #fff;
+        border: 1px solid #cfc4ab;
+        border-radius: 6px;
+        color: #2f3a2f;
+        box-sizing: border-box;
+    }
+
+    .reply-current-box {
+        display: none;
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+        padding: 1rem;
+        background: #ece4d0;
+        border: 1px solid #d6ccb7;
+        border-radius: 6px;
+        color: #4b5563;
+    }
+
+    .reply-current-text {
+        margin: 0;
+        color: #2f3a2f;
+        font-style: italic;
+    }
+
+    .reply-current-time {
+        margin: 0.5rem 0 0 0;
+        font-size: 0.85rem;
+        color: #6b7280;
+    }
+
+    .reply-modal-actions {
+        display: flex;
+        gap: 1rem;
+        margin-top: 1rem;
+    }
+
+    .reply-close-btn {
+        flex: 1;
+        background: #7a8579;
+        color: #fff;
+    }
+
+    .reply-close-btn:hover {
+        background: #647063;
     }
 
     .related-grid {
@@ -236,7 +401,7 @@
         
         <div class="product-rating">
             <span class="stars">⭐ {{ product.rating or 0 }} / 5.0</span>
-            <span style="color: #9ca3af;">({{ product.reviewCount or 0 }} đánh giá)</span>
+            <a href="#product-reviews" class="review-count-link">({{ product.reviewCount or 0 }} đánh giá)</a>
         </div>
 
         <div class="product-price">₫{{ "{:,}".format(product.price) }}</div>
@@ -252,7 +417,11 @@
             </div>
             <div class="spec-item">
                 <span class="spec-label">Tình Trạng</span>
-                <span class="spec-value">{% if product.inStock is not defined or product.inStock %}Còn Hàng{% else %}Hết Hàng{% endif %}</span>
+                <span class="spec-value">{% if product.in_stock and product.in_stock > 0 %}Còn Hàng{% else %}Hết Hàng{% endif %}</span>
+            </div>
+            <div class="spec-item">
+                <span class="spec-label">Số lượng còn</span>
+                <span class="spec-value">{{ product.in_stock or 0 }} sản phẩm</span>
             </div>
             <div class="spec-item">
                 <span class="spec-label">Giao Hàng</span>
@@ -270,9 +439,6 @@
             <button class="btn-large btn-buy" data-product-id="{{ product.id }}" id="btn-add-to-cart" type="button">
                 🛒 Thêm Vào Giỏ
             </button>
-            <button class="btn-large btn-wishlist" data-product-id="{{ product.id }}" id="btn-add-to-wishlist" type="button">
-                ❤️ Thêm Vào Yêu Thích
-            </button>
         </div>
 
         <div style="background-color: #1f2937; padding: 1.5rem; border-radius: 8px;">
@@ -286,6 +452,65 @@
         </div>
     </div>
 </div>
+
+<div id="product-reviews" class="reviews-section">
+    <h2 class="section-title">Đánh Giá Khách Hàng ({{ product.reviewCount or 0 }})</h2>
+    {% if product_reviews %}
+        <div class="reviews-list">
+            {% for review in product_reviews %}
+            <article class="review-card">
+                <div class="review-head">
+                    <div class="review-user">{{ review.username }}</div>
+                    <div class="review-meta">{{ review.created_at }}</div>
+                </div>
+                <div class="review-meta">{{ '⭐' * (review.rating or 0) }} ({{ review.rating }}/5)</div>
+                <p class="review-comment">{{ review.comment if review.comment else 'Khách hàng không để lại nội dung.' }}</p>
+                {% if current_user.is_authenticated and current_user.is_admin() %}
+                <div class="review-actions">
+                    <button type="button" class="reply-review-btn" onclick="openProductReplyModal({{ review.id }})">Phản hồi</button>
+                </div>
+                {% endif %}
+                {% if review.admin_reply %}
+                <div class="review-admin-reply">
+                    <strong>Phản hồi từ shop:</strong> {{ review.admin_reply }}
+                </div>
+                {% endif %}
+            </article>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="product-description">Sản phẩm này chưa có đánh giá nào.</p>
+    {% endif %}
+</div>
+
+{% if current_user.is_authenticated and current_user.is_admin() %}
+<div id="productReplyModal" class="reply-modal-overlay">
+    <div class="reply-modal-card">
+        <h3 class="reply-modal-title">Phản Hồi Đánh Giá</h3>
+        <div class="reply-modal-info">
+            <p style="margin: 0.5rem 0;"><strong>Khách hàng:</strong> <span id="productReplyUsername"></span></p>
+            <p style="margin: 0.5rem 0;"><strong>Sản phẩm:</strong> <span id="productReplyProductName"></span></p>
+            <p style="margin: 0.5rem 0;"><strong>Nhận xét:</strong> <span id="productReplyComment"></span></p>
+        </div>
+
+        <form id="productReplyForm" onsubmit="submitProductReply(event)">
+            <label for="productReplyText" class="reply-modal-label">Nội dung phản hồi:</label>
+            <textarea id="productReplyText" name="reply" rows="5" class="reply-modal-textarea" required></textarea>
+
+            <div id="productReplyCurrentBox" class="reply-current-box">
+                <p style="margin:0 0 0.5rem 0;"><strong>Phản hồi hiện tại:</strong></p>
+                <p id="productReplyCurrentText" class="reply-current-text"></p>
+                <p id="productReplyCurrentTime" class="reply-current-time"></p>
+            </div>
+
+            <div class="reply-modal-actions">
+                <button type="submit" class="reply-review-btn" style="flex:1;">Gửi phản hồi</button>
+                <button type="button" class="reply-review-btn reply-close-btn" onclick="closeProductReplyModal()">Đóng</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endif %}
 
 <!-- Related Products -->
 {% if related_products %}
@@ -314,6 +539,8 @@
 
 {% block scripts %}
 <script>
+    let currentProductReviewId = null;
+
     // Event bindings
     document.addEventListener('DOMContentLoaded', function() {
         // Main product add to cart
@@ -322,15 +549,6 @@
             btnAddCart.addEventListener('click', function() {
                 const productId = this.getAttribute('data-product-id');
                 addToCart(parseInt(productId));
-            });
-        }
-        
-        // Main product add to wishlist
-        const btnWishlist = document.getElementById('btn-add-to-wishlist');
-        if (btnWishlist) {
-            btnWishlist.addEventListener('click', function() {
-                const productId = this.getAttribute('data-product-id');
-                addToWishlist(parseInt(productId));
             });
         }
         
@@ -354,7 +572,91 @@
                 addToCart(parseInt(productId), 1);
             });
         });
+
+        const productReplyModal = document.getElementById('productReplyModal');
+        if (productReplyModal) {
+            productReplyModal.addEventListener('click', function(event) {
+                if (event.target === productReplyModal) {
+                    closeProductReplyModal();
+                }
+            });
+        }
     });
+
+    function openProductReplyModal(reviewId) {
+        currentProductReviewId = reviewId;
+
+        fetch(`{{ url_for('admin.review_reply_form', review_id=0) }}`.replace('0', reviewId))
+            .then(res => res.json())
+            .then(data => {
+                if (data.error) {
+                    alert(data.error);
+                    return;
+                }
+
+                document.getElementById('productReplyUsername').textContent = data.username || '';
+                document.getElementById('productReplyProductName').textContent = data.product_name || '';
+                document.getElementById('productReplyComment').textContent = data.comment || '(Không có bình luận)';
+
+                const replyInput = document.getElementById('productReplyText');
+                replyInput.value = data.admin_reply || '';
+
+                const currentBox = document.getElementById('productReplyCurrentBox');
+                if (data.admin_reply) {
+                    currentBox.style.display = 'block';
+                    document.getElementById('productReplyCurrentText').textContent = data.admin_reply;
+                    document.getElementById('productReplyCurrentTime').textContent = 'Cập nhật lần cuối: ' + (data.admin_reply_at ? data.admin_reply_at.slice(0, 10) : '');
+                } else {
+                    currentBox.style.display = 'none';
+                    document.getElementById('productReplyCurrentText').textContent = '';
+                    document.getElementById('productReplyCurrentTime').textContent = '';
+                }
+
+                document.getElementById('productReplyModal').style.display = 'flex';
+            })
+            .catch(err => {
+                alert('Lỗi khi tải thông tin đánh giá: ' + err);
+            });
+    }
+
+    function closeProductReplyModal() {
+        const modal = document.getElementById('productReplyModal');
+        if (modal) {
+            modal.style.display = 'none';
+        }
+        currentProductReviewId = null;
+    }
+
+    function submitProductReply(event) {
+        event.preventDefault();
+
+        const replyText = (document.getElementById('productReplyText').value || '').trim();
+        if (!replyText) {
+            alert('Vui lòng nhập nội dung phản hồi');
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('reply', replyText);
+
+        fetch(`{{ url_for('admin.review_reply_submit', review_id=0) }}`.replace('0', currentProductReviewId), {
+            method: 'POST',
+            body: formData,
+        })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Đã phản hồi thành công');
+                    closeProductReplyModal();
+                    window.location.reload();
+                } else {
+                    alert(data.error || 'Không thể phản hồi');
+                }
+            })
+            .catch(err => {
+                alert('Lỗi hệ thống: ' + err);
+            });
+    }
 
     function increaseQuantity() {
         const input = document.getElementById('quantity');
@@ -421,28 +723,5 @@
         }
     }
 
-    function addToWishlist(productId) {
-        fetch('/api/wishlist/add', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                product_id: productId
-            })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                alert('Đã thêm sản phẩm vào yêu thích!');
-            } else {
-                alert('Có lỗi xảy ra. Vui lòng thử lại.');
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Có lỗi xảy ra. Vui lòng thử lại.');
-        });
-    }
 </script>
 {% endblock %}

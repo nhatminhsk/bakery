@@ -31,6 +31,7 @@ def create_app(config_name='development'):
     from app.cart.routes import cart_bp
     from app.orders.routes import orders_bp
     from app.admin.routes import admin_bp
+    from app.staff.routes import staff_bp
     from app.chat.routes import chat_bp
 
     app.register_blueprint(chat_bp)
@@ -39,6 +40,7 @@ def create_app(config_name='development'):
     app.register_blueprint(cart_bp)
     app.register_blueprint(orders_bp)
     app.register_blueprint(admin_bp, url_prefix='/admin')
+    app.register_blueprint(staff_bp, url_prefix='/staff')
 
     # Inject cart_count vào mọi template
     from app.cart.services import get_cart_count

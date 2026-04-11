@@ -7,9 +7,7 @@ from sqlalchemy import Date, DateTime
 from app.extensions import db
 
 
-# NOTE: admin_todos are now stored in the database (admin_todos table),
-# so we no longer export/import them from JSON files.
-PRODUCT_REVIEWS_PATH = Path('data/product_reviews.json')
+# NOTE: admin_todos and product_reviews are now stored in the database tables.
 ADMIN_SETTINGS_PATH = Path('data/admin_settings.json')
 
 
@@ -70,14 +68,6 @@ def export_database_snapshot(snapshot_path):
         'local_files': {},
     }
 
-    # Keep product_reviews local storage in sync with DB snapshot lifecycle.
-    if PRODUCT_REVIEWS_PATH.exists():
-        try:
-            reviews_payload = json.loads(PRODUCT_REVIEWS_PATH.read_text(encoding='utf-8'))
-            payload['local_files']['product_reviews'] = reviews_payload
-        except Exception:
-            payload['local_files']['product_reviews'] = []
-
     if ADMIN_SETTINGS_PATH.exists():
         try:
             settings_payload = json.loads(ADMIN_SETTINGS_PATH.read_text(encoding='utf-8'))
@@ -125,15 +115,6 @@ def import_database_snapshot(snapshot_path):
 
         if is_sqlite:
             conn.exec_driver_sql('PRAGMA foreign_keys = ON')
-
-    # Restore product_reviews from local files only
-    # (admin_todos are now part of the database tables)
-    if 'product_reviews' in local_files_payload:
-        PRODUCT_REVIEWS_PATH.parent.mkdir(parents=True, exist_ok=True)
-        PRODUCT_REVIEWS_PATH.write_text(
-            json.dumps(local_files_payload.get('product_reviews') or [], ensure_ascii=False, indent=2),
-            encoding='utf-8',
-        )
 
     if 'admin_settings' in local_files_payload:
         ADMIN_SETTINGS_PATH.parent.mkdir(parents=True, exist_ok=True)

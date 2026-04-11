@@ -1,0 +1,188 @@
+{% extends "staff/base.html" %}
+
+{% block page_title %}Phản Hồi Khách Hàng{% endblock %}
+
+{% block content %}
+<h1 class="page-title">Phản Hồi Khách Hàng</h1>
+
+<form method="GET" action="{{ url_for('staff.feedbacks') }}" style="margin-bottom: 1.5rem; display: flex; gap: 1rem; flex-wrap: wrap;">
+    <input type="text" name="q" value="{{ feedback.search }}" placeholder="Tìm kiếm phản hồi..." style="flex: 1; min-width: 260px; padding: 10px; background-color: #fff; border: 1px solid #dbe8d5; border-radius: 6px; color: #1f2937;">
+    <select name="rating" style="padding: 10px; background-color: #fff; border: 1px solid #dbe8d5; border-radius: 6px; color: #1f2937;">
+        <option value="all" {% if feedback.rating_filter == 'all' %}selected{% endif %}>Tất cả</option>
+        <option value="5" {% if feedback.rating_filter == '5' %}selected{% endif %}>⭐⭐⭐⭐⭐ 5 sao</option>
+        <option value="4" {% if feedback.rating_filter == '4' %}selected{% endif %}>⭐⭐⭐⭐ 4 sao</option>
+        <option value="3" {% if feedback.rating_filter == '3' %}selected{% endif %}>⭐⭐⭐ 3 sao</option>
+        <option value="2" {% if feedback.rating_filter == '2' %}selected{% endif %}>⭐⭐ 2 sao</option>
+        <option value="1" {% if feedback.rating_filter == '1' %}selected{% endif %}>⭐ 1 sao</option>
+    </select>
+    <select name="reply_status" style="padding: 10px; background-color: #fff; border: 1px solid #dbe8d5; border-radius: 6px; color: #1f2937;">
+        <option value="all" {% if feedback.reply_status_filter == 'all' %}selected{% endif %}>Tất cả trạng thái phản hồi</option>
+        <option value="unreplied" {% if feedback.reply_status_filter == 'unreplied' %}selected{% endif %}>Chưa phản hồi</option>
+        <option value="replied" {% if feedback.reply_status_filter == 'replied' %}selected{% endif %}>Đã phản hồi</option>
+    </select>
+    <button type="submit" class="panel-btn">Lọc</button>
+</form>
+
+<div style="margin-bottom: 1rem; color: #6b7a68;">Tổng phản hồi: {{ feedback.total }} | Chưa phản hồi: {{ feedback.unreplied_count }} | Đã phản hồi: {{ feedback.replied_count }}</div>
+
+<div class="admin-table">
+    <table>
+        <thead>
+            <tr>
+                <th>Khách Hàng</th>
+                <th>Sản Phẩm</th>
+                <th>Đánh Giá</th>
+                <th>Nhận Xét</th>
+                <th>Phản Hồi</th>
+                <th>Ngày</th>
+                <th>Hành Động</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if feedback['items'] %}
+                {% for item in feedback['items'] %}
+                <tr>
+                    <td>{{ item.username }}</td>
+                    <td>{{ item.product_name }}</td>
+                    <td>{{ '⭐' * (item.rating or 0) }} ({{ item.rating }}/5)</td>
+                    <td style="max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 0.9rem;">{{ item.comment or '-' }}</td>
+                    <td style="max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 0.9rem; color: #6b7a68;">
+                        {% if item.admin_reply %}
+                            <span style="color: #16a34a; font-weight: 600;">✓ Đã phản hồi</span>
+                        {% else %}
+                            <span style="color: #dc2626; font-weight: 600;">● Chưa phản hồi</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ item.created_at[:10] if item.created_at else '-' }}</td>
+                    <td>
+                        <button
+                            type="button"
+                            class="panel-btn staff-reply-btn"
+                            style="padding: 6px 12px; font-size: 0.9rem;"
+                            data-review-id="{{ item.id }}"
+                            data-username="{{ item.username|e }}"
+                            data-product-name="{{ item.product_name|e }}"
+                            data-comment="{{ item.comment|e }}"
+                            data-admin-reply="{{ item.admin_reply|e }}"
+                            data-admin-reply-at="{{ item.admin_reply_at|e }}"
+                        >Phản Hồi</button>
+                    </td>
+                </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td colspan="7" style="text-align:center; color:#6b7a68;">Chưa có phản hồi nào.</td>
+                </tr>
+            {% endif %}
+        </tbody>
+    </table>
+</div>
+
+<div id="replyModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:1000; padding-top:2rem;">
+    <div style="background:#fff; border:1px solid #dbe8d5; border-radius:8px; max-width:600px; margin:0 auto; padding:2rem; max-height:80vh; overflow-y:auto;">
+        <h2 style="margin-top:0; color:#3f7d4a;">Phản Hồi Đánh Giá</h2>
+        <div style="margin-bottom:1rem; padding-bottom:1rem; border-bottom:1px solid #dbe8d5;">
+            <p style="margin:0.5rem 0; color:#415142;"><strong>Khách hàng:</strong> <span id="modalUsername"></span></p>
+            <p style="margin:0.5rem 0; color:#415142;"><strong>Sản phẩm:</strong> <span id="modalProductName"></span></p>
+            <p style="margin:0.5rem 0; color:#415142;"><strong>Nhận xét:</strong> <span id="modalComment" style="display:block; margin-top:0.5rem; font-style:italic;"></span></p>
+        </div>
+
+        <form id="replyForm" onsubmit="submitReply(event)">
+            <div style="margin-bottom:1rem;">
+                <label for="replyText" style="display:block; margin-bottom:0.5rem; color:#1f2937;">Nội dung phản hồi:</label>
+                <textarea id="replyText" name="reply" rows="5" placeholder="Nhập nội dung phản hồi..." style="width:100%; padding:10px; background-color:#fff; border:1px solid #dbe8d5; border-radius:6px; color:#1f2937; box-sizing:border-box; font-family:inherit;" required></textarea>
+            </div>
+
+            <div style="margin-bottom:1rem; padding:1rem; background:#f3f8f1; border-radius:6px; display:none;" id="existingReplyBox">
+                <p style="margin:0 0 0.5rem 0; color:#6b7a68;"><strong>Phản hồi hiện tại:</strong></p>
+                <p id="existingReplyText" style="margin:0; color:#1f2937; font-style:italic;"></p>
+                <p id="existingReplyTime" style="margin:0.5rem 0 0 0; font-size:0.85rem; color:#6b7280;"></p>
+            </div>
+
+            <div style="display:flex; gap:1rem;">
+                <button type="submit" class="panel-btn" style="flex:1;">Gửi Phản Hồi</button>
+                <button type="button" class="panel-btn" style="flex:1; background:#6b7280;" onclick="closeReplyModal()">Đóng</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+let currentReviewId = null;
+
+function openReplyModal(reviewId) {
+    currentReviewId = reviewId;
+    fetch(`{{ url_for('staff.review_reply_form', review_id=0) }}`.replace('0', reviewId))
+        .then(res => res.json())
+        .then(data => {
+            document.getElementById('modalUsername').textContent = data.username;
+            document.getElementById('modalProductName').textContent = data.product_name;
+            document.getElementById('modalComment').textContent = data.comment || '(Không có bình luận)';
+            const replyText = document.getElementById('replyText');
+            replyText.value = '';
+
+            if (data.admin_reply) {
+                document.getElementById('replyText').value = data.admin_reply;
+                document.getElementById('existingReplyBox').style.display = 'block';
+                document.getElementById('existingReplyText').textContent = data.admin_reply;
+                document.getElementById('existingReplyTime').textContent = 'Cập nhật lần cuối: ' + (data.admin_reply_at ? data.admin_reply_at.slice(0, 10) : '');
+            } else {
+                document.getElementById('existingReplyBox').style.display = 'none';
+            }
+
+            document.getElementById('replyModal').style.display = 'block';
+        })
+        .catch(err => alert('Lỗi khi tải thông tin: ' + err));
+}
+
+document.querySelectorAll('.staff-reply-btn').forEach(button => {
+    button.addEventListener('click', function() {
+        const reviewId = this.getAttribute('data-review-id');
+        openReplyModal(reviewId);
+    });
+});
+
+function closeReplyModal() {
+    document.getElementById('replyModal').style.display = 'none';
+    currentReviewId = null;
+}
+
+function submitReply(event) {
+    event.preventDefault();
+    const replyText = document.getElementById('replyText').value.trim();
+    if (!replyText) {
+        alert('Vui lòng nhập nội dung phản hồi');
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append('reply', replyText);
+
+    fetch(`{{ url_for('staff.review_reply_submit', review_id=0) }}`.replace('0', currentReviewId), {
+        method: 'POST',
+        body: formData
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            alert('Phản hồi đã được gửi thành công');
+            closeReplyModal();
+            location.reload();
+        } else {
+            alert('Lỗi: ' + (data.error || 'Không thể gửi phản hồi'));
+        }
+    })
+    .catch(err => alert('Lỗi hệ thống: ' + err));
+}
+
+document.addEventListener('click', function(event) {
+    const modal = document.getElementById('replyModal');
+    if (event.target === modal) {
+        closeReplyModal();
+    }
+});
+</script>
+{% endblock %}

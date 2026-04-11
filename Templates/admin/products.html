@@ -82,6 +82,69 @@
         gap: 8px;
         margin-top: 8px;
     }
+
+    .inventory-cell,
+    .expiry-cell {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    .stock-value {
+        color: #1f7a42;
+        font-weight: 700;
+    }
+
+    .stock-warning-icon {
+        color: #b45309;
+        font-size: 0.95rem;
+        line-height: 1;
+    }
+
+    .expiry-date {
+        color: #334155;
+        font-weight: 600;
+    }
+
+    .muted-text {
+        color: #8a948a;
+        font-style: italic;
+    }
+
+    .warn-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 3px 8px;
+        border-radius: 999px;
+        font-size: 0.78rem;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    .warn-badge.low-stock {
+        background: #fff3c9;
+        color: #8a5a00;
+        border: 1px solid #f3d37b;
+    }
+
+    .warn-badge.out-stock {
+        background: #ffe7e7;
+        color: #a12222;
+        border: 1px solid #f1b3b3;
+    }
+
+    .warn-badge.expiry-soon {
+        background: #fff5d6;
+        color: #9a6400;
+        border: 1px solid #f4daa0;
+    }
+
+    .warn-badge.expiry-expired {
+        background: #ffe5e5;
+        color: #9b1c1c;
+        border: 1px solid #efb3b3;
+    }
 </style>
 
 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
@@ -103,7 +166,8 @@
                 <th>Tên Sản Phẩm</th>
                 <th>Danh Mục</th>
                 <th>Giá</th>
-                <th>Kho</th>
+                <th>Tồn kho</th>
+                <th>Hạn sử dụng</th>
                 <th>Đánh Giá</th>
                 <th>Hành Động</th>
             </tr>
@@ -114,7 +178,33 @@
                 <td>{{ product.name }}</td>
                 <td>{{ product.category }}</td>
                 <td>₫{{ "{:,}".format(product.price) }}</td>
-                <td><span style="color: #22c55e;">{{ 50 + product.id }}</span></td>
+                <td>
+                    <div class="inventory-cell">
+                        <span class="stock-value">{{ product.display_in_stock if product.display_in_stock is defined else (product.in_stock or 0) }}</span>
+                        {% if product.stock_alert == 'low' %}
+                            <span class="stock-warning-icon" title="Sắp hết hàng" aria-label="Sắp hết hàng">&#9888;</span>
+                        {% endif %}
+                        {% if product.stock_alert == 'low' %}
+                            <span class="warn-badge low-stock">Sắp hết</span>
+                        {% elif product.stock_alert == 'out' %}
+                            <span class="warn-badge out-stock">Hết hàng</span>
+                        {% endif %}
+                    </div>
+                </td>
+                <td>
+                    <div class="expiry-cell">
+                        {% if product.nearest_expiry_date %}
+                            <span class="expiry-date">{{ product.nearest_expiry_date.strftime('%d/%m/%Y') }}</span>
+                            {% if product.expiry_alert == 'soon' %}
+                                <span class="warn-badge expiry-soon">Sắp hết hạn</span>
+                            {% elif product.expiry_alert == 'expired' %}
+                                <span class="warn-badge expiry-expired">Đã hết hạn</span>
+                            {% endif %}
+                        {% else %}
+                            <span class="muted-text">Chưa có lô tồn</span>
+                        {% endif %}
+                    </div>
+                </td>
                 <td>⭐ {{ product.rating }}</td>
                 <td>
                     <div class="action-group">
@@ -196,6 +286,16 @@
             </div>
 
             <div class="modal-field">
+                <label for="add-product-cost-price">Giá vốn (theo lô ban đầu)</label>
+                <input id="add-product-cost-price" name="cost_price" type="number" min="0" step="1000" value="0" required>
+            </div>
+
+            <div class="modal-field">
+                <label for="add-product-expiry-date">Hạn sử dụng lô ban đầu</label>
+                <input id="add-product-expiry-date" name="expiry_date" type="date">
+            </div>
+
+            <div class="modal-field">
                 <label for="add-product-description">Mô tả</label>
                 <input id="add-product-description" name="description" type="text" placeholder="Mô tả ngắn (tùy chọn)">
             </div>
@@ -227,6 +327,8 @@ document.addEventListener('DOMContentLoaded', function () {
     const addForm = document.getElementById('add-product-form');
     const closeAddModalBtn = document.getElementById('close-add-modal');
     const addNameInput = document.getElementById('add-product-name');
+    const addStockInput = document.getElementById('add-product-stock');
+    const addExpiryInput = document.getElementById('add-product-expiry-date');
     const addCategorySelect = document.getElementById('add-product-category');
     const editModal = document.getElementById('edit-product-modal');
     const editForm = document.getElementById('edit-product-form');
@@ -235,7 +337,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const editPriceInput = document.getElementById('edit-product-price');
     const editCategorySelect = document.getElementById('edit-product-category');
 
-    if (!searchInput || !categorySelect || !tableBody || !openAddModalBtn || !addModal || !addForm || !closeAddModalBtn || !addNameInput || !addCategorySelect || !editModal || !editForm || !closeEditModalBtn || !editNameInput || !editPriceInput || !editCategorySelect) {
+    if (!searchInput || !categorySelect || !tableBody || !openAddModalBtn || !addModal || !addForm || !closeAddModalBtn || !addNameInput || !addCategorySelect || !addStockInput || !addExpiryInput || !editModal || !editForm || !closeEditModalBtn || !editNameInput || !editPriceInput || !editCategorySelect) {
         return;
     }
 
@@ -319,6 +421,16 @@ document.addEventListener('DOMContentLoaded', function () {
     addModal.addEventListener('click', function (event) {
         if (event.target === addModal) {
             closeAddModal();
+        }
+    });
+
+    addForm.addEventListener('submit', function (event) {
+        const stockValue = parseInt(addStockInput.value || '0', 10);
+        const expiryValue = (addExpiryInput.value || '').trim();
+
+        if (stockValue > 0 && !expiryValue) {
+            event.preventDefault();
+            window.alert('Vui lòng nhập hạn sử dụng cho lô ban đầu khi tồn kho lớn hơn 0.');
         }
     });
 

@@ -2,7 +2,9 @@ from app.extensions import db
 from app.models.order import Order, OrderItem
 from app.models.payment import Payment
 from app.models.payment import Promotion
+from app.models.product import Product, ProductBatch
 from datetime import datetime
+from sqlalchemy import func
 
 
 DEFAULT_VOUCHERS = [
@@ -159,53 +161,172 @@ def validate_promotion_for_user(user_id, voucher_code, subtotal):
     return promotion, discount, None
 
 
+def validate_cart_stock(cart_items):
+    """Validate that all cart items still have enough stock.
+
+    Returns:
+        (is_valid: bool, error_message: str | None)
+    """
+    required_by_product = {}
+    for item in cart_items:
+        product_id = item.get('id')
+        quantity = int(item.get('quantity') or 0)
+        if not product_id or quantity <= 0:
+            continue
+        required_by_product[product_id] = required_by_product.get(product_id, 0) + quantity
+
+    if not required_by_product:
+        return False, 'Giỏ hàng không có sản phẩm hợp lệ để thanh toán.'
+
+    products = Product.query.filter(Product.id.in_(required_by_product.keys())).all()
+    product_map = {p.id: p for p in products}
+
+    for product_id, required_qty in required_by_product.items():
+        product = product_map.get(product_id)
+        if not product:
+            return False, 'Có sản phẩm không còn tồn tại trong hệ thống.'
+
+        if int(product.in_stock or 0) < required_qty:
+            return False, (
+                f'Sản phẩm "{product.name}" chỉ còn {int(product.in_stock or 0)} '
+                f'nhưng bạn đang chọn {required_qty}. Vui lòng cập nhật giỏ hàng trước khi thanh toán.'
+            )
+
+    return True, None
+
+
 def create_order(user_id, cart_items, checkout_data=None, promotion=None, discount_amount=0):
     if checkout_data is None:
         checkout_data = {}
     elif isinstance(checkout_data, str):
         checkout_data = {'note': checkout_data}
+    try:
+        subtotal = sum(i['price'] * i['quantity'] for i in cart_items)
+        discount_amount = max(0, min(int(discount_amount or 0), subtotal))
+        discounted_subtotal = subtotal - discount_amount
+        shipping_fee = 0 if discounted_subtotal >= 50000 else 20000
+        grand_total = discounted_subtotal + shipping_fee
+        payment_method = _normalize_payment_method(checkout_data.get('payment'))
+        order_note = _build_order_note(checkout_data)
 
-    subtotal = sum(i['price'] * i['quantity'] for i in cart_items)
-    discount_amount = max(0, min(int(discount_amount or 0), subtotal))
-    discounted_subtotal = subtotal - discount_amount
-    shipping_fee = 0 if discounted_subtotal >= 50000 else 20000
-    grand_total = discounted_subtotal + shipping_fee
-    payment_method = _normalize_payment_method(checkout_data.get('payment'))
-    order_note = _build_order_note(checkout_data)
-
-    order = Order(
-        user_id      = user_id,
-        promotion_id = promotion.id if promotion else None,
-        total        = discounted_subtotal,
-        shipping_fee = shipping_fee,
-        payment_method = payment_method,
-        note         = order_note,
-        status       = 'pending',
-    )
-    db.session.add(order)
-    db.session.flush()  # lấy order.id trước khi commit
-
-    for item in cart_items:
-        order_item = OrderItem(
-            order_id   = order.id,
-            product_id = item['id'],
-            name       = item['name'],
-            price      = item['price'],
-            quantity   = item['quantity'],
-            image_url  = item.get('image'),
+        order = Order(
+            user_id      = user_id,
+            promotion_id = promotion.id if promotion else None,
+            total        = discounted_subtotal,
+            shipping_fee = shipping_fee,
+            payment_method = payment_method,
+            note         = order_note,
+            status       = 'pending',
         )
-        db.session.add(order_item)
+        db.session.add(order)
+        db.session.flush()  # lấy order.id trước khi commit
 
-    payment = Payment(
-        order_id = order.id,
-        method = payment_method,
-        amount = grand_total,
-        status = 'pending',
+        # Deduct inventory by batch (FEFO: earliest expiry first).
+        _consume_inventory_batches(cart_items)
+
+        for item in cart_items:
+            order_item = OrderItem(
+                order_id   = order.id,
+                product_id = item['id'],
+                name       = item['name'],
+                price      = item['price'],
+                quantity   = item['quantity'],
+                image_url  = item.get('image'),
+            )
+            db.session.add(order_item)
+
+        payment = Payment(
+            order_id = order.id,
+            method = payment_method,
+            amount = grand_total,
+            status = 'pending',
+        )
+        db.session.add(payment)
+
+        db.session.commit()
+        return order
+    except Exception:
+        db.session.rollback()
+        raise
+
+
+def _consume_inventory_batches(cart_items):
+    required_by_product = {}
+    for item in cart_items:
+        product_id = item.get('id')
+        quantity = int(item.get('quantity') or 0)
+        if not product_id or quantity <= 0:
+            continue
+        required_by_product[product_id] = required_by_product.get(product_id, 0) + quantity
+
+    if not required_by_product:
+        return
+
+    product_ids = list(required_by_product.keys())
+    products = Product.query.filter(Product.id.in_(product_ids)).all()
+    product_map = {p.id: p for p in products}
+
+    for product_id, required_qty in required_by_product.items():
+        product = product_map.get(product_id)
+        if not product:
+            raise ValueError('Có sản phẩm không còn tồn tại trong hệ thống.')
+        if int(product.in_stock or 0) < required_qty:
+            raise ValueError(f'Sản phẩm "{product.name}" không đủ tồn kho.')
+
+        remaining_to_consume = required_qty
+        batches = (
+            ProductBatch.query
+            .filter(
+                ProductBatch.product_id == product_id,
+                ProductBatch.quantity > 0,
+            )
+            .order_by(ProductBatch.expiry_date.asc(), ProductBatch.imported_at.asc(), ProductBatch.id.asc())
+            .all()
+        )
+
+        if not batches:
+            raise ValueError(f'Sản phẩm "{product.name}" chưa có dữ liệu lô hàng.')
+
+        for batch in batches:
+            if remaining_to_consume <= 0:
+                break
+
+            deduct_qty = min(batch.quantity, remaining_to_consume)
+            batch.quantity -= deduct_qty
+            remaining_to_consume -= deduct_qty
+
+        if remaining_to_consume > 0:
+            raise ValueError(f'Sản phẩm "{product.name}" không đủ số lượng theo các lô còn lại.')
+
+        product.in_stock = int(product.in_stock or 0) - required_qty
+        _sync_product_cost_price_from_batches(product_id)
+
+
+def _sync_product_cost_price_from_batches(product_id):
+    product = Product.query.get(product_id)
+    if not product:
+        return
+
+    qty_sum, cost_sum = (
+        db.session.query(
+            func.coalesce(func.sum(ProductBatch.quantity), 0),
+            func.coalesce(func.sum(ProductBatch.quantity * ProductBatch.cost_price), 0),
+        )
+        .filter(
+            ProductBatch.product_id == product_id,
+            ProductBatch.quantity > 0,
+        )
+        .first()
     )
-    db.session.add(payment)
 
-    db.session.commit()
-    return order
+    total_qty = int(qty_sum or 0)
+    total_cost = int(cost_sum or 0)
+
+    if total_qty <= 0:
+        product.cost_price = 0
+        return
+
+    product.cost_price = int(round(total_cost / total_qty))
 
 
 def get_user_orders(user_id):

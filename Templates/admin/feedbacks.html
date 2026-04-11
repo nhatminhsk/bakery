@@ -21,10 +21,15 @@
         <option value="2" {% if feedback.rating_filter == '2' %}selected{% endif %}>⭐⭐ 2 sao</option>
         <option value="1" {% if feedback.rating_filter == '1' %}selected{% endif %}>⭐ 1 sao</option>
     </select>
+    <select name="reply_status" style="padding: 10px; background-color: #1f2937; border: 1px solid #374151; border-radius: 6px; color: #fff;">
+        <option value="all" {% if feedback.reply_status_filter == 'all' %}selected{% endif %}>Tất cả trạng thái</option>
+        <option value="unreplied" {% if feedback.reply_status_filter == 'unreplied' %}selected{% endif %}>Chưa phản hồi</option>
+        <option value="replied" {% if feedback.reply_status_filter == 'replied' %}selected{% endif %}>Đã phản hồi</option>
+    </select>
     <button type="submit" class="admin-btn">Lọc</button>
 </form>
 
-<div style="margin-bottom: 1rem; color: #9ca3af;">Tổng phản hồi: {{ feedback.total }}</div>
+<div style="margin-bottom: 1rem; color: #9ca3af;">Tổng phản hồi: {{ feedback.total }} | Chưa phản hồi: {{ feedback.unreplied_count }} | Đã phản hồi: {{ feedback.replied_count }}</div>
 
 <div class="admin-table">
     <table>
@@ -49,9 +54,9 @@
                     <td style="max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 0.9rem;">{{ item.comment or '-' }}</td>
                     <td style="max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 0.9rem; color: #9ca3af;">
                         {% if item.admin_reply %}
-                            <span style="color: #10b981;">✓ Đã phản hồi</span>
+                            <span style="color: #10b981; font-weight: 600;">✓ Đã phản hồi</span>
                         {% else %}
-                            <span style="color: #ef4444;">-</span>
+                            <span style="color: #ef4444; font-weight: 600;">● Chưa phản hồi</span>
                         {% endif %}
                     </td>
                     <td>{{ item.created_at[:10] if item.created_at else '-' }}</td>

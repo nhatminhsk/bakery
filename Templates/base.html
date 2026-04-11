@@ -7,10 +7,10 @@
       name="viewport"
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0"
     />
-    <meta name="theme-color" content="#000" />
-    <meta name="msapplication-navbutton-color" content="#000" />
+    <meta name="theme-color" content="#fffdf6" />
+    <meta name="msapplication-navbutton-color" content="#fffdf6" />
     <meta content="yes" name="apple-mobile-web-app-capable" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="#000" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="#fffdf6" />
     <meta
       name="description"
       content="Discover fresh, handcrafted breads at Fresh Garden. Enjoy a variety of delicious options baked daily."
@@ -45,6 +45,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}" />
     <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}" />
     {% block styles %}{% endblock %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/theme-light.css') }}" />
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
     <script src="{{ url_for('static', filename='js/cart.js') }}"></script>
   </head>
@@ -55,7 +56,7 @@
           <h3>
             <i class="fa-solid fa-burger fa-bounce" style="color: #c7a17a"></i
             >
-            <a href="{{ url_for('products.index') }}" style="color: white; text-decoration: none;">
+            <a href="{{ url_for('products.index') }}" style="text-decoration: none;">
               &nbsp;Fresh Garden
             </a>
           </h3>

@@ -6,7 +6,7 @@ font-family: 'Poppins', sans-serif;
 font-family: 'Pushster', cursive;
 */
 :root {
-  --main-color: #c7a17a;
+  --main-color: #e2c976;
 }
 * {
   padding: 0;
@@ -38,7 +38,8 @@ html {
   scroll-behavior: smooth;
 }
 body {
-  background: #000;
+  background: #fffdf6;
+  color: #2f3a2f;
 }
 .info {
   background: #000;

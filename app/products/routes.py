@@ -3,6 +3,7 @@ from app.products.services import (
     get_all_products,
     get_categories,
     get_product_by_id,
+    get_product_reviews,
     search_products,
 )
 
@@ -33,7 +34,13 @@ def product_detail(product_id):
         return render_template('404.html'), 404
 
     related = get_all_products(category=product.category, exclude_id=product_id, limit=4)
-    return render_template('product_detail.html', product=product, related_products=related)
+    product_reviews = get_product_reviews(product_id)
+    return render_template(
+        'product_detail.html',
+        product=product,
+        related_products=related,
+        product_reviews=product_reviews,
+    )
 
 
 @products_bp.route('/search')

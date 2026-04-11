@@ -1,134 +1,177 @@
-import json
 from datetime import datetime
-from pathlib import Path
+
+from sqlalchemy import func
 
 from app.extensions import db
-from app.models.product import Product
+from app.models.product import Product, ProductReview
+from app.models.user import User
 
 
-REVIEW_STORAGE_PATH = Path('data/product_reviews.json')
+def _iso_or_none(value):
+    if not value:
+        return None
+    if isinstance(value, datetime):
+        return value.isoformat()
+    return str(value)
 
 
-def _load_reviews():
-    if not REVIEW_STORAGE_PATH.exists():
-        return []
-
-    try:
-        data = json.loads(REVIEW_STORAGE_PATH.read_text(encoding='utf-8'))
-        return data if isinstance(data, list) else []
-    except Exception:
-        return []
-
-
-def _save_reviews(reviews):
-    REVIEW_STORAGE_PATH.parent.mkdir(parents=True, exist_ok=True)
-    REVIEW_STORAGE_PATH.write_text(
-        json.dumps(reviews, ensure_ascii=False, indent=2),
-        encoding='utf-8',
+def _recalculate_product_ratings(product_ids=None):
+    query = (
+        db.session.query(
+            ProductReview.product_id,
+            func.count(ProductReview.id).label('review_count'),
+            func.avg(ProductReview.rating).label('avg_rating'),
+        )
+        .group_by(ProductReview.product_id)
     )
+
+    if product_ids:
+        query = query.filter(ProductReview.product_id.in_(product_ids))
+
+    aggregates = query.all()
+    aggregated_map = {
+        row.product_id: round(float(row.avg_rating or 0), 1)
+        for row in aggregates
+    }
+
+    target_products = Product.query
+    if product_ids:
+        target_products = target_products.filter(Product.id.in_(product_ids))
+
+    for product in target_products.all():
+        product.rating = aggregated_map.get(product.id, 0)
+
+    db.session.commit()
 
 
 def has_review_for_order(user_id, order_id):
-    reviews = _load_reviews()
-    return any(r.get('user_id') == user_id and r.get('order_id') == order_id for r in reviews)
+    return (
+        ProductReview.query
+        .filter_by(user_id=user_id, order_id=order_id)
+        .first()
+        is not None
+    )
 
 
 def list_reviews(search='', rating_filter='all'):
-    reviews = _load_reviews()
     keyword = (search or '').strip().lower()
     rf = (rating_filter or 'all').strip().lower()
 
+    query = (
+        db.session.query(
+            ProductReview,
+            User.username,
+            Product.name.label('product_name'),
+        )
+        .join(User, User.id == ProductReview.user_id)
+        .join(Product, Product.id == ProductReview.product_id)
+    )
+
     if rf.isdigit():
-        rating_value = int(rf)
-        reviews = [r for r in reviews if int(r.get('rating', 0)) == rating_value]
+        query = query.filter(ProductReview.rating == int(rf))
 
     if keyword:
-        reviews = [
-            r for r in reviews
-            if keyword in (r.get('username') or '').lower()
-            or keyword in (r.get('product_name') or '').lower()
-            or keyword in (r.get('comment') or '').lower()
-        ]
+        pattern = f'%{keyword}%'
+        query = query.filter(
+            User.username.ilike(pattern)
+            | Product.name.ilike(pattern)
+            | ProductReview.comment.ilike(pattern)
+        )
 
-    reviews.sort(key=lambda x: x.get('created_at', ''), reverse=True)
-    return reviews
+    rows = query.order_by(ProductReview.created_at.desc()).all()
+    output = []
 
+    for review, username, product_name in rows:
+        output.append(
+            {
+                'id': review.id,
+                'order_id': review.order_id,
+                'user_id': review.user_id,
+                'username': username,
+                'product_id': review.product_id,
+                'product_name': product_name,
+                'rating': review.rating,
+                'comment': review.comment or '',
+                'created_at': _iso_or_none(review.created_at),
+                'admin_reply': review.admin_reply,
+                'admin_reply_at': _iso_or_none(review.admin_reply_at),
+            }
+        )
 
-def _recalculate_product_ratings(reviews):
-    grouped = {}
-    for review in reviews:
-        product_id = review.get('product_id')
-        rating = review.get('rating')
-        if not product_id or not isinstance(rating, (int, float)):
-            continue
-        grouped.setdefault(product_id, []).append(float(rating))
-
-    for product_id, ratings in grouped.items():
-        product = Product.query.get(product_id)
-        if product and ratings:
-            product.rating = round(sum(ratings) / len(ratings), 1)
-
-    db.session.commit()
+    return output
 
 
 def create_order_review(order, user, rating, comment):
     if has_review_for_order(user.id, order.id):
         return False, 'Bạn đã đánh giá đơn hàng này rồi.'
 
-    reviews = _load_reviews()
-    next_id = max((r.get('id', 0) for r in reviews), default=0) + 1
-    created_at = datetime.utcnow().isoformat()
-
     seen_product_ids = set()
+    now = datetime.utcnow()
+    comment_text = (comment or '').strip()
+
     for item in order.items:
         if not item.product_id or item.product_id in seen_product_ids:
             continue
 
         seen_product_ids.add(item.product_id)
-        reviews.append(
-            {
-                'id': next_id,
-                'order_id': order.id,
-                'user_id': user.id,
-                'username': user.username,
-                'product_id': item.product_id,
-                'product_name': item.name,
-                'rating': int(rating),
-                'comment': (comment or '').strip(),
-                'created_at': created_at,
-                'admin_reply': None,
-                'admin_reply_at': None,
-            }
+        review = ProductReview(
+            order_id=order.id,
+            user_id=user.id,
+            product_id=item.product_id,
+            rating=int(rating),
+            comment=comment_text,
+            created_at=now,
+            updated_at=now,
         )
-        next_id += 1
+        db.session.add(review)
 
     if not seen_product_ids:
+        db.session.rollback()
         return False, 'Không có sản phẩm hợp lệ để đánh giá.'
 
-    _save_reviews(reviews)
-    _recalculate_product_ratings(reviews)
+    try:
+        db.session.commit()
+        _recalculate_product_ratings(product_ids=list(seen_product_ids))
+    except Exception:
+        db.session.rollback()
+        return False, 'Không thể lưu đánh giá vào cơ sở dữ liệu.'
+
     return True, None
 
 
 def get_review_by_id(review_id):
-    """Get a single review by ID."""
-    reviews = _load_reviews()
-    return next((r for r in reviews if r.get('id') == review_id), None)
+    review = ProductReview.query.get(review_id)
+    if not review:
+        return None
+
+    user = User.query.get(review.user_id)
+    product = Product.query.get(review.product_id)
+
+    return {
+        'id': review.id,
+        'order_id': review.order_id,
+        'user_id': review.user_id,
+        'username': user.username if user else '',
+        'product_id': review.product_id,
+        'product_name': product.name if product else '',
+        'rating': review.rating,
+        'comment': review.comment or '',
+        'created_at': _iso_or_none(review.created_at),
+        'admin_reply': review.admin_reply,
+        'admin_reply_at': _iso_or_none(review.admin_reply_at),
+    }
 
 
 def add_admin_reply(review_id, reply_text):
-    """Add or update admin reply to a review."""
     reply_text = (reply_text or '').strip()
     if not reply_text:
         return False, 'Nội dung phản hồi không được để trống.'
 
-    reviews = _load_reviews()
-    review = next((r for r in reviews if r.get('id') == review_id), None)
-
+    review = ProductReview.query.get(review_id)
     if not review:
         return False, 'Không tìm thấy đánh giá.'
 
-    review['admin_reply'] = reply_text
-    review['admin_reply_at'] = datetime.utcnow().isoformat()
-    _save_reviews(reviews)
+    review.admin_reply = reply_text
+    review.admin_reply_at = datetime.utcnow()
+    db.session.commit()
     return True, None

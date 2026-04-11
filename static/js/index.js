@@ -54,6 +54,56 @@ document.addEventListener('DOMContentLoaded', function () {
     let currentPage = 1;
     let totalPages = 1;
 
+    function shouldSkipCardNavigation(target) {
+        return Boolean(target.closest('button, a, input, select, textarea, label, form'));
+    }
+
+    function resolveProductDetailUrl(card) {
+        if (card.dataset.productUrl) {
+            return card.dataset.productUrl;
+        }
+
+        const addToCartButton = card.querySelector('[data-product-id]');
+        if (addToCartButton && addToCartButton.dataset.productId) {
+            return '/product/' + addToCartButton.dataset.productId;
+        }
+
+        return '';
+    }
+
+    grid.addEventListener('click', function (event) {
+        const card = event.target.closest('.product-card');
+        if (!card || !grid.contains(card)) {
+            return;
+        }
+
+        if (shouldSkipCardNavigation(event.target)) {
+            return;
+        }
+
+        const detailUrl = resolveProductDetailUrl(card);
+        if (detailUrl) {
+            window.location.href = detailUrl;
+        }
+    });
+
+    grid.addEventListener('keydown', function (event) {
+        if (event.key !== 'Enter' && event.key !== ' ') {
+            return;
+        }
+
+        const card = event.target.closest('.product-card');
+        if (!card || !grid.contains(card)) {
+            return;
+        }
+
+        event.preventDefault();
+        const detailUrl = resolveProductDetailUrl(card);
+        if (detailUrl) {
+            window.location.href = detailUrl;
+        }
+    });
+
     function normalizeText(value) {
         if (!value) {
             return '';

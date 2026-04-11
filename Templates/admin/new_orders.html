@@ -1,12 +1,36 @@
 {% extends "admin/base.html" %}
 
-{% block page_title %}Đơn Hàng Mới{% endblock %}
+{% block page_title %}Quản Lý Đơn Hàng{% endblock %}
 
 {% block content %}
-<h1 class="page-title">Đơn Hàng Mới</h1>
+<h1 class="page-title">Quản Lý Đơn Hàng</h1>
+
+<form method="GET" action="{{ url_for('admin.orders') }}" style="display: flex; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 1.25rem; align-items: center;">
+    <label for="filter-mode" style="color: #6e8f6b; font-weight: 600;">Bộ lọc:</label>
+    <select id="filter-mode" name="filter" style="padding: 10px; min-width: 220px; background-color: #fff; border: 1px solid #dbe8d5; border-radius: 6px; color: #2f3a2f;">
+        <option value="latest" {% if orders_data['filter_mode'] == 'latest' %}selected{% endif %}>Mới nhất (trong ngày)</option>
+        <option value="all" {% if orders_data['filter_mode'] == 'all' %}selected{% endif %}>Tất cả</option>
+        <option value="yesterday" {% if orders_data['filter_mode'] == 'yesterday' %}selected{% endif %}>Đơn hàng hôm qua</option>
+        <option value="week" {% if orders_data['filter_mode'] == 'week' %}selected{% endif %}>Tuần này</option>
+        <option value="month" {% if orders_data['filter_mode'] == 'month' %}selected{% endif %}>Tháng này</option>
+        <option value="date" {% if orders_data['filter_mode'] == 'date' %}selected{% endif %}>Lọc theo ngày</option>
+    </select>
+    <input
+        type="date"
+        id="filter-date"
+        name="date"
+        value="{{ orders_data['selected_date'] }}"
+        style="padding: 10px; background-color: #fff; border: 1px solid #dbe8d5; border-radius: 6px; color: #2f3a2f;"
+    >
+    <button type="submit" class="admin-btn" style="padding: 10px 14px;">Áp dụng</button>
+</form>
+
+<div style="margin-bottom: 1.5rem; color: #6e7d6f;">
+    {{ orders_data['label'] }} - {{ orders_data['count'] }} đơn hàng
+</div>
 
 <div style="margin-bottom: 1.5rem;">
-    <input type="text" id="search-order" placeholder="Tìm kiếm đơn hàng..." style="width: 100%; max-width: 400px; padding: 10px; background-color: #1f2937; border: 1px solid #374151; border-radius: 6px; color: #fff;">
+    <input type="text" id="search-order" placeholder="Tìm kiếm trong danh sách hiện tại..." style="width: 100%; max-width: 460px; padding: 10px; background-color: #fff; border: 1px solid #dbe8d5; border-radius: 6px; color: #2f3a2f;">
 </div>
 
 <div class="admin-table">
@@ -23,8 +47,8 @@
             </tr>
         </thead>
         <tbody>
-            {% if orders %}
-                {% for order in orders %}
+            {% if orders_data['items'] %}
+                {% for order in orders_data['items'] %}
                 <tr data-order-id="{{ order.id }}">
                     <td>#{{ order.id }}</td>
                     <td>{{ order.customer.username if order.customer else 'N/A' }}</td>
@@ -37,7 +61,7 @@
                         {% endif %}
                     </td>
                     <td>₫{{ '{:,}'.format((order.total or 0) + (order.shipping_fee or 0)) }}</td>
-                    <td>{{ order.created_at.strftime('%H:%M') if order.created_at else '-' }}</td>
+                    <td>{{ order.created_at.strftime('%d/%m/%Y %H:%M') if order.created_at else '-' }}</td>
                     <td>
                         {% if order.status == 'pending' %}
                             <span class="status-badge status-pending">Chờ</span>
@@ -56,13 +80,13 @@
                     <td>
                         <form method="POST" action="{{ url_for('admin.order_status', order_id=order.id) }}" style="display: inline;">
                             {% if order.status == 'pending' %}
-                                <button type="submit" name="status" value="confirmed" style="padding: 6px 12px; background-color: #fb923c; color: white; border: none; border-radius: 4px; cursor: pointer;">Duyệt</button>
+                                <button type="submit" name="status" value="confirmed" class="order-action-btn action-confirm">Duyệt</button>
                             {% elif order.status == 'confirmed' %}
-                                <button type="submit" name="status" value="processing" style="padding: 6px 12px; background-color: #3b82f6; color: white; border: none; border-radius: 4px; cursor: pointer;">Xử lý</button>
+                                <button type="submit" name="status" value="processing" class="order-action-btn action-process">Xử lý</button>
                             {% elif order.status == 'processing' %}
-                                <button type="submit" name="status" value="delivered" style="padding: 6px 12px; background-color: #10b981; color: white; border: none; border-radius: 4px; cursor: pointer;">Giao</button>
+                                <button type="submit" name="status" value="delivered" class="order-action-btn action-deliver">Giao</button>
                             {% else %}
-                                <button type="submit" name="status" value="{{ order.status }}" style="padding: 6px 12px; background-color: #374151; color: #9ca3af; border: none; border-radius: 4px; cursor: pointer;" disabled>Hoàn tất</button>
+                                <button type="submit" name="status" value="{{ order.status }}" class="order-action-btn action-disabled" disabled>Hoàn tất</button>
                             {% endif %}
                         </form>
                     </td>
@@ -70,7 +94,7 @@
                 {% endfor %}
             {% else %}
             <tr>
-                <td colspan="7" style="text-align: center; color: #9ca3af; padding: 2rem;">Không có đơn hàng nào.</td>
+                <td colspan="7" style="text-align: center; color: #9ca3af; padding: 2rem;">Không có đơn hàng phù hợp bộ lọc.</td>
             </tr>
             {% endif %}
         </tbody>
@@ -110,9 +134,63 @@
         background-color: #ef4444;
         color: #fff;
     }
+
+    .order-action-btn {
+        min-width: 94px;
+        padding: 7px 12px;
+        border: 1px solid transparent;
+        border-radius: 8px;
+        font-weight: 700;
+        font-size: 0.92rem;
+        line-height: 1.1;
+        cursor: pointer;
+        transition: transform 0.12s ease, filter 0.12s ease;
+    }
+
+    .order-action-btn:hover:not(:disabled) {
+        filter: brightness(0.98);
+        transform: translateY(-1px);
+    }
+
+    .action-confirm {
+        background-color: #fff2df;
+        border-color: #f2c98d;
+        color: #8f4b00;
+    }
+
+    .action-process {
+        background-color: #eaf3ff;
+        border-color: #b8d4ff;
+        color: #0f4ea8;
+    }
+
+    .action-deliver {
+        background-color: #e8f9ee;
+        border-color: #b0e5c0;
+        color: #156b3d;
+    }
+
+    .action-disabled {
+        background-color: #f1f4f7;
+        border-color: #d4dbe4;
+        color: #677282;
+        cursor: not-allowed;
+    }
 </style>
 
 <script>
+    const filterModeSelect = document.getElementById('filter-mode');
+    const filterDateInput = document.getElementById('filter-date');
+    if (filterModeSelect && filterDateInput) {
+        function syncDateInputState() {
+            const isDateMode = filterModeSelect.value === 'date';
+            filterDateInput.disabled = !isDateMode;
+            filterDateInput.style.opacity = isDateMode ? '1' : '0.65';
+        }
+        filterModeSelect.addEventListener('change', syncDateInputState);
+        syncDateInputState();
+    }
+
     document.getElementById('search-order').addEventListener('input', function(e) {
         const searchValue = e.target.value.toLowerCase();
         const rows = document.querySelectorAll('#orders-table tbody tr');

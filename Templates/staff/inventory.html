@@ -1,0 +1,64 @@
+{% extends "staff/base.html" %}
+
+{% block page_title %}Tồn Kho{% endblock %}
+
+{% block content %}
+<h1 class="page-title">Tồn Kho</h1>
+
+<div style="margin-bottom:1.25rem; display:flex; gap:1rem; flex-wrap:wrap;">
+    <input id="inventory-search" type="text" placeholder="Tìm kiếm sản phẩm..." style="flex:1; min-width:260px; padding:10px; background-color:#fff; border:1px solid #dbe8d5; border-radius:6px; color:#1f2937;">
+</div>
+
+<div class="admin-table">
+    <table id="inventory-table">
+        <thead>
+            <tr>
+                <th>Tên Sản Phẩm</th>
+                <th>Danh Mục</th>
+                <th>Tồn Kho</th>
+                <th>Hạn Sử Dụng</th>
+                <th>Đánh Giá</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for product in products %}
+            <tr>
+                <td>{{ product.name }}</td>
+                <td>{{ product.category }}</td>
+                <td>
+                    {% set stock_qty = product.display_in_stock if product.display_in_stock is defined else (product.in_stock or 0) %}
+                    <strong>{{ stock_qty }}</strong>
+                    {% if product.stock_alert == 'low' %}
+                        <span class="status-badge status-pending" style="margin-left:8px;">Sắp hết</span>
+                    {% elif product.stock_alert == 'out' %}
+                        <span class="status-badge status-error" style="margin-left:8px;">Hết hàng</span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if product.nearest_expiry_date %}
+                        {{ product.nearest_expiry_date.strftime('%d/%m/%Y') }}
+                        {% if product.expiry_alert == 'soon' %}
+                            <span class="status-badge status-pending" style="margin-left:8px;">Sắp hết hạn</span>
+                        {% elif product.expiry_alert == 'expired' %}
+                            <span class="status-badge status-error" style="margin-left:8px;">Đã hết hạn</span>
+                        {% endif %}
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+                <td>⭐ {{ product.rating or 0 }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script>
+document.getElementById('inventory-search').addEventListener('input', function(e) {
+    const value = e.target.value.toLowerCase();
+    document.querySelectorAll('#inventory-table tbody tr').forEach(row => {
+        row.style.display = row.textContent.toLowerCase().includes(value) ? '' : 'none';
+    });
+});
+</script>
+{% endblock %}

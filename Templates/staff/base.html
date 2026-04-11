@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>{% block title %}Staff Panel - Fresh Garden{% endblock %}</title>
+        <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
+        />
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f7faf5;
+            color: #1f2937;
+        }
+        .panel-container {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            min-height: 100vh;
+        }
+        .sidebar {
+            background-color: #fff;
+            border-right: 1px solid #dbe8d5;
+            padding: 2rem 0;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+        }
+        .sidebar-logo {
+            padding: 0 1.5rem;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: #1f2937;
+        }
+        .sidebar-logo-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #c7a17a;
+            font-size: 22px;
+        }
+        .sidebar-logo-text { font-weight: 700; color: #c7a17a; }
+        .sidebar-section-title {
+            padding: 1rem 1.5rem;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #7a8b78;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .sidebar-nav { list-style: none; }
+        .sidebar-nav a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 1.5rem;
+            color: #415142;
+            text-decoration: none;
+            transition: all 0.2s;
+            border-left: 3px solid transparent;
+        }
+        .sidebar-nav a:hover,
+        .sidebar-nav a.active {
+            background-color: rgba(122, 185, 122, 0.12);
+            color: #3f7d4a;
+            border-left-color: #7ab97a;
+        }
+        .main-content { display: flex; flex-direction: column; }
+        .panel-header {
+            background-color: #fff;
+            border-bottom: 1px solid #dbe8d5;
+            padding: 1.5rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 40;
+        }
+        .panel-header-title { font-size: 1.5rem; color: #3f7d4a; }
+        .panel-header-actions { display: flex; gap: 1rem; }
+        .panel-btn {
+            padding: 10px 20px;
+            background-color: #7ab97a;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            text-decoration: none;
+        }
+        .panel-btn:hover { background-color: #5e9a5e; }
+        .content { padding: 2rem; flex: 1; overflow-y: auto; }
+        .page-title { font-size: 2rem; color: #3f7d4a; margin-bottom: 2rem; }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        .stat-card {
+            background-color: #fff;
+            border-radius: 8px;
+            border: 1px solid #dbe8d5;
+            padding: 1.25rem;
+        }
+        .stat-label { color: #7a8b78; font-size: 0.875rem; margin-bottom: 0.5rem; }
+        .stat-value { font-size: 1.8rem; color: #3f7d4a; font-weight: 700; }
+        .admin-table {
+            width: 100%;
+            background-color: #fff;
+            border-radius: 8px;
+            border: 1px solid #dbe8d5;
+            overflow: hidden;
+        }
+        .admin-table table { width: 100%; border-collapse: collapse; }
+        .admin-table th {
+            background-color: #f2f8ef;
+            color: #3f7d4a;
+            padding: 1rem;
+            text-align: left;
+            font-weight: 700;
+            border-bottom: 1px solid #dbe8d5;
+        }
+        .admin-table td {
+            padding: 1rem;
+            border-bottom: 1px solid #eef3ea;
+            color: #324135;
+            vertical-align: top;
+        }
+        .admin-table tr:hover { background-color: rgba(122, 185, 122, 0.05); }
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+        .status-success { background-color: rgba(34, 197, 94, 0.16); color: #15803d; }
+        .status-pending { background-color: rgba(245, 158, 11, 0.16); color: #b45309; }
+        .status-error { background-color: rgba(220, 38, 38, 0.16); color: #b91c1c; }
+        .admin-flash-wrap { margin-bottom: 1rem; display: grid; gap: 8px; }
+        .admin-flash {
+            padding: 10px 12px;
+            border-radius: 6px;
+            border: 1px solid transparent;
+            font-size: 0.92rem;
+        }
+        .admin-flash-success { background: rgba(34, 197, 94, 0.12); border-color: rgba(34, 197, 94, 0.35); color: #15803d; }
+        .admin-flash-error { background: rgba(239, 68, 68, 0.12); border-color: rgba(239, 68, 68, 0.35); color: #b91c1c; }
+        .admin-flash-info { background: rgba(122, 185, 122, 0.12); border-color: rgba(122, 185, 122, 0.35); color: #3f7d4a; }
+        @media (max-width: 768px) {
+            .panel-container { grid-template-columns: 1fr; }
+            .sidebar { position: fixed; left: 0; top: 0; height: auto; width: 100%; border-right: none; border-bottom: 1px solid #dbe8d5; padding: 1rem; display: none; }
+            .sidebar.active { display: block; }
+            .stats-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <div class="panel-container">
+        <aside class="sidebar">
+            <a href="{{ url_for('products.index') }}" class="sidebar-logo">
+                <div class="sidebar-logo-icon"><i class="fa-solid fa-burger"></i></div>
+                <span class="sidebar-logo-text">Fresh Garden</span>
+            </a>
+
+            <div class="sidebar-section-title">Nghiệp Vụ</div>
+            <nav class="sidebar-nav">
+                <a href="{{ url_for('staff.dashboard') }}" {% if request.endpoint in ['staff.dashboard', 'staff.dashboard_alias'] %}class="active"{% endif %}>Tổng Quan</a>
+                <a href="{{ url_for('staff.orders') }}" {% if request.endpoint in ['staff.orders', 'staff.order_status'] %}class="active"{% endif %}>Đơn Hàng</a>
+                <a href="{{ url_for('staff.todos') }}" {% if request.endpoint == 'staff.todos' %}class="active"{% endif %}>Công Việc Của Tôi</a>
+                <a href="{{ url_for('staff.inventory') }}" {% if request.endpoint == 'staff.inventory' %}class="active"{% endif %}>Tồn Kho</a>
+                <a href="{{ url_for('staff.feedbacks') }}" {% if request.endpoint in ['staff.feedbacks', 'staff.review_reply_form', 'staff.review_reply_submit'] %}class="active"{% endif %}>Phản Hồi</a>
+            </nav>
+
+            {% if current_user.is_admin() %}
+            <div class="sidebar-section-title">Điều Hướng</div>
+            <nav class="sidebar-nav">
+                <a href="{{ url_for('admin.dashboard') }}">Trang Quản Trị</a>
+            </nav>
+            {% endif %}
+
+            <div style="padding: 1.5rem; margin-top: auto; border-top: 1px solid #dbe8d5;">
+                <a href="{{ url_for('products.index') }}" style="color: #3f7d4a; text-decoration: none; display: flex; align-items: center; gap: 8px;">Quay về trang chính</a>
+            </div>
+        </aside>
+
+        <div class="main-content">
+            <header class="panel-header">
+                <h1 class="panel-header-title">{% block page_title %}Staff Panel{% endblock %}</h1>
+                <div class="panel-header-actions">
+                    <a class="panel-btn" href="{{ url_for('auth.account') }}">👤 Tài Khoản</a>
+                    <a class="panel-btn" href="{{ url_for('auth.logout') }}">🚪 Đăng Xuất</a>
+                </div>
+            </header>
+
+            <div class="content">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        <div class="admin-flash-wrap">
+                            {% for category, message in messages %}
+                                <div class="admin-flash {% if category == 'success' %}admin-flash-success{% elif category == 'error' %}admin-flash-error{% else %}admin-flash-info{% endif %}">
+                                    {{ message }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                {% endwith %}
+
+                {% block content %}{% endblock %}
+            </div>
+        </div>
+    </div>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

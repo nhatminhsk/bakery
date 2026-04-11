@@ -59,9 +59,13 @@
       <div class="products-slider-track" id="products-grid">
     {% for product in products %}
     <div class="shop1 product-card mix {{ product.category | replace(' ', '-') }}"
+     data-product-url="{{ url_for('products.product_detail', product_id=product.id) }}"
      data-price="{{ product.price }}"
      data-rating="{{ product.rating }}"
-     data-date="{{ product.created_at.isoformat() if product.created_at else '' }}">
+     data-date="{{ product.created_at.isoformat() if product.created_at else '' }}"
+     tabindex="0"
+     role="link"
+     aria-label="Xem chi tiết {{ product.name }}">
 
     <div class="shop-image">
         <img src="{{ product.image_url }}" alt="{{ product.name }}" />
