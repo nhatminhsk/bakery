@@ -394,7 +394,7 @@
 <!-- Product Detail -->
 <div class="product-detail-container">
     <div>
-        <img src="{{ product.image_url }}" alt="{{ product.name }}" class="product-image-large">
+        <img src="{{ product.image_url }}" alt="{{ product.name }}" class="product-image-large" onerror="this.onerror=null;this.src='{{ url_for('static', filename='images/logo/logo.svg') }}';">
     </div>
     <div class="product-info">
         <h1 class="product-title">{{ product.name }}</h1>

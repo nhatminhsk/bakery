@@ -1,4 +1,5 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify
+from flask_login import current_user
 from app.admin.services import (
     get_dashboard_stats, get_all_products_admin,
     create_product, update_product, delete_product, update_order_status,
@@ -13,6 +14,9 @@ from app.admin.services import (
     remove_staff_from_todo,
     get_todo_assigned_staff,
     get_feedback_reviews,
+    get_accounts_management_data,
+    update_user_role,
+    toggle_user_active,
     get_admin_settings, update_admin_settings,
 )
 from app.utils.review_store import add_admin_reply, get_review_by_id
@@ -293,6 +297,39 @@ def settings():
 
     settings_data = get_admin_settings()
     return render_template('admin/settings.html', settings=settings_data)
+
+
+@admin_bp.route('/accounts')
+@admin_required
+def accounts():
+    search = request.args.get('q', '')
+    role = request.args.get('role', 'all')
+    status = request.args.get('status', 'all')
+    accounts_data = get_accounts_management_data(search=search, role=role, status=status)
+    return render_template('admin/accounts.html', accounts=accounts_data)
+
+
+@admin_bp.route('/accounts/<int:user_id>/role', methods=['POST'])
+@admin_required
+def account_update_role(user_id):
+    new_role = request.form.get('role', '')
+    success, error = update_user_role(user_id, new_role, current_user.id)
+    if success:
+        flash('Đã cập nhật vai trò tài khoản.', 'success')
+    else:
+        flash(error or 'Không thể cập nhật vai trò.', 'error')
+    return redirect(url_for('admin.accounts'))
+
+
+@admin_bp.route('/accounts/<int:user_id>/toggle-active', methods=['POST'])
+@admin_required
+def account_toggle_active(user_id):
+    success, error = toggle_user_active(user_id, current_user.id)
+    if success:
+        flash('Đã cập nhật trạng thái tài khoản.', 'success')
+    else:
+        flash(error or 'Không thể cập nhật trạng thái tài khoản.', 'error')
+    return redirect(url_for('admin.accounts'))
 
 
 @admin_bp.route('/orders/<int:order_id>/status', methods=['POST'])

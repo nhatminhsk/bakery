@@ -26,6 +26,73 @@ function myNav() {
 }
 myNav();
 
+function ensureToastContainer() {
+  let container = document.getElementById('toast-container');
+  if (!container) {
+    container = document.createElement('div');
+    container.id = 'toast-container';
+    container.setAttribute('aria-live', 'polite');
+    container.setAttribute('aria-atomic', 'true');
+    document.body.appendChild(container);
+  }
+  return container;
+}
+
+function showToast(message, type = 'info', title = '') {
+  const container = ensureToastContainer();
+  const toast = document.createElement('div');
+  toast.className = `toast-message toast-${type}`;
+
+  const iconMap = {
+    success: 'fa-circle-check',
+    error: 'fa-circle-xmark',
+    warning: 'fa-triangle-exclamation',
+    info: 'fa-circle-info'
+  };
+
+  const titleText = title || {
+    success: 'Thành công',
+    error: 'Có lỗi',
+    warning: 'Lưu ý',
+    info: 'Thông báo'
+  }[type] || 'Thông báo';
+
+  toast.innerHTML = `
+    <div class="toast-icon"><i class="fa-solid ${iconMap[type] || iconMap.info}"></i></div>
+    <div class="toast-body">
+      <div class="toast-title">${titleText}</div>
+      <div>${message}</div>
+    </div>
+  `;
+
+  container.appendChild(toast);
+
+  window.setTimeout(() => {
+    toast.classList.add('is-hiding');
+    window.setTimeout(() => toast.remove(), 180);
+  }, 2800);
+}
+
+window.showToast = showToast;
+
+if (!window.CartUtils) {
+  window.CartUtils = {
+    formatPrice(price) {
+      if (typeof price === 'string') {
+        price = parseFloat(price.replace(/[^\d]/g, ''));
+      }
+      return new Intl.NumberFormat('vi-VN', {
+        style: 'currency',
+        currency: 'VND'
+      }).format(price || 0);
+    },
+
+    showNotification(message, type = 'info') {
+      showToast(message, type);
+    }
+  };
+}
+
 document.addEventListener("contextmenu", function (e) {
   e.preventDefault();
 });

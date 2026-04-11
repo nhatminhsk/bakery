@@ -869,6 +869,135 @@ def get_feedback_reviews(search='', rating='all', reply_status='all'):
     }
 
 
+def get_accounts_management_data(search='', role='all', status='all'):
+    keyword = (search or '').strip()
+    normalized_role = (role or 'all').strip().lower()
+    normalized_status = (status or 'all').strip().lower()
+
+    query = User.query
+
+    if keyword:
+        pattern = f'%{keyword}%'
+        query = query.filter(
+            User.username.ilike(pattern)
+            | User.email.ilike(pattern)
+            | User.phone.ilike(pattern)
+        )
+
+    if normalized_role in {'customer', 'staff', 'admin'}:
+        query = query.filter(User.role == normalized_role)
+    else:
+        normalized_role = 'all'
+
+    if normalized_status == 'active':
+        query = query.filter(User.is_active.is_(True))
+    elif normalized_status == 'blocked':
+        query = query.filter(User.is_active.is_(False))
+    else:
+        normalized_status = 'all'
+
+    users = query.order_by(User.created_at.desc(), User.id.desc()).all()
+    user_ids = [user.id for user in users]
+
+    stats_map = {}
+    if user_ids:
+        rows = (
+            db.session.query(
+                Order.user_id.label('user_id'),
+                func.count(func.distinct(Order.id)).label('order_count'),
+                func.sum(OrderItem.quantity).label('cake_count'),
+                func.sum(case((Order.status == 'delivered', OrderItem.quantity), else_=0)).label('delivered_cake_count'),
+                func.sum(
+                    case(
+                        (Order.status == 'delivered', (Order.total + Order.shipping_fee)),
+                        else_=0,
+                    )
+                ).label('delivered_spend'),
+            )
+            .filter(Order.user_id.in_(user_ids))
+            .join(OrderItem, OrderItem.order_id == Order.id)
+            .group_by(Order.user_id)
+            .all()
+        )
+        stats_map = {
+            row.user_id: {
+                'order_count': int(row.order_count or 0),
+                'cake_count': int(row.cake_count or 0),
+                'delivered_cake_count': int(row.delivered_cake_count or 0),
+                'delivered_spend': int(row.delivered_spend or 0),
+            }
+            for row in rows
+        }
+
+    items = []
+    for user in users:
+        user_stats = stats_map.get(user.id, {'order_count': 0, 'cake_count': 0, 'delivered_cake_count': 0, 'delivered_spend': 0})
+        items.append(
+            {
+                'id': user.id,
+                'username': user.username,
+                'email': user.email,
+                'phone': user.phone or '',
+                'role': user.role,
+                'is_active': bool(user.is_active),
+                'points': int(user.points or 0),
+                'rank': (user.rank or 'bronze').lower(),
+                'created_at': user.created_at,
+                'last_login': user.last_login,
+                'order_count': user_stats['order_count'],
+                'cake_count': user_stats['cake_count'],
+                'delivered_cake_count': user_stats['delivered_cake_count'],
+                'delivered_spend': user_stats['delivered_spend'],
+            }
+        )
+
+    return {
+        'items': items,
+        'search': keyword,
+        'role_filter': normalized_role,
+        'status_filter': normalized_status,
+        'total': len(items),
+        'active_count': sum(1 for item in items if item['is_active']),
+        'blocked_count': sum(1 for item in items if not item['is_active']),
+    }
+
+
+def update_user_role(user_id, new_role, actor_user_id):
+    normalized_role = (new_role or '').strip().lower()
+    if normalized_role not in {'customer', 'staff', 'admin'}:
+        return False, 'Vai trò không hợp lệ.'
+
+    user = User.query.get(user_id)
+    if not user:
+        return False, 'Không tìm thấy tài khoản.'
+
+    if user.id == actor_user_id and normalized_role != 'admin':
+        return False, 'Không thể tự hạ quyền tài khoản admin đang đăng nhập.'
+
+    if user.role == 'admin' and normalized_role != 'admin':
+        return False, 'Không thể hạ quyền tài khoản admin trong màn hình này.'
+
+    user.role = normalized_role
+    db.session.commit()
+    return True, None
+
+
+def toggle_user_active(user_id, actor_user_id):
+    user = User.query.get(user_id)
+    if not user:
+        return False, 'Không tìm thấy tài khoản.'
+
+    if user.id == actor_user_id:
+        return False, 'Không thể tự khóa tài khoản đang đăng nhập.'
+
+    if user.role == 'admin' and user.is_active:
+        return False, 'Không thể khóa tài khoản admin trong màn hình này.'
+
+    user.is_active = not bool(user.is_active)
+    db.session.commit()
+    return True, None
+
+
 def create_product(data, image_file=None):
     try:
         name = (data.get('name') or '').strip()
@@ -1060,6 +1189,10 @@ def update_order_status(order_id, status):
 
         elif status == 'cancelled' and payment and payment.status != 'success':
             payment.status = 'failed'
+
+        # Recalculate loyalty whenever order status changes
+        from app.orders.services import recalculate_user_loyalty
+        recalculate_user_loyalty(order.user_id)
 
         db.session.commit()
         return True, None

@@ -18,6 +18,7 @@ class Promotion(db.Model):
     __tablename__ = 'promotions'
 
     id = db.Column(db.Integer, primary_key=True)
+    owner_user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     code = db.Column(db.String(80), unique=True, nullable=False)
     type = db.Column(db.String(20), nullable=False)  # percent | fixed
     value = db.Column(db.Integer, nullable=False)

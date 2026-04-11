@@ -3,8 +3,9 @@ from app.models.order import Order, OrderItem
 from app.models.payment import Payment
 from app.models.payment import Promotion
 from app.models.product import Product, ProductBatch
-from datetime import datetime
-from sqlalchemy import func
+from app.models.user import User
+from datetime import datetime, timedelta
+from sqlalchemy import func, or_
 
 
 DEFAULT_VOUCHERS = [
@@ -27,6 +28,101 @@ DEFAULT_VOUCHERS = [
         'min_order': 200000,
     },
 ]
+
+POINTS_PER_DELIVERED_CAKE = 10
+RANK_THRESHOLDS_BY_CAKE_COUNT = {
+    'diamond': 50,
+    'gold': 20,
+    'silver': 8,
+    'bronze': 0,
+}
+
+RANK_ORDER = ['bronze', 'silver', 'gold', 'diamond']
+RANK_UPGRADE_VOUCHERS = {
+    'silver': {'type': 'percent', 'value': 5, 'min_order': 100000, 'valid_days': 30},
+    'gold': {'type': 'percent', 'value': 10, 'min_order': 150000, 'valid_days': 30},
+    'diamond': {'type': 'percent', 'value': 15, 'min_order': 200000, 'valid_days': 30},
+}
+
+
+def _resolve_rank_by_cake_count(delivered_cake_count):
+    if delivered_cake_count >= RANK_THRESHOLDS_BY_CAKE_COUNT['diamond']:
+        return 'diamond'
+    if delivered_cake_count >= RANK_THRESHOLDS_BY_CAKE_COUNT['gold']:
+        return 'gold'
+    if delivered_cake_count >= RANK_THRESHOLDS_BY_CAKE_COUNT['silver']:
+        return 'silver'
+    return 'bronze'
+
+
+def _rank_index(rank_name):
+    normalized_rank = (rank_name or 'bronze').strip().lower()
+    try:
+        return RANK_ORDER.index(normalized_rank)
+    except ValueError:
+        return 0
+
+
+def _build_rank_upgrade_voucher_code(user_id, rank_name):
+    return f'RANK-{(rank_name or "bronze").strip().upper()}-USER-{user_id}'
+
+
+def grant_rank_upgrade_voucher(user_id, new_rank):
+    normalized_rank = (new_rank or 'bronze').strip().lower()
+    voucher_config = RANK_UPGRADE_VOUCHERS.get(normalized_rank)
+    if not voucher_config:
+        return None
+
+    code = _build_rank_upgrade_voucher_code(user_id, normalized_rank)
+    existing_promotion = Promotion.query.filter_by(code=code).first()
+    if existing_promotion:
+        return existing_promotion
+
+    expires_at = datetime.utcnow() + timedelta(days=voucher_config['valid_days']) if voucher_config.get('valid_days') else None
+    promotion = Promotion(
+        owner_user_id=user_id,
+        code=code,
+        type=voucher_config['type'],
+        value=voucher_config['value'],
+        min_order=voucher_config['min_order'],
+        start_date=datetime.utcnow(),
+        end_date=expires_at,
+        is_active=True,
+    )
+    db.session.add(promotion)
+    return promotion
+
+
+def recalculate_user_loyalty(user_id):
+    """Recalculate loyalty points/rank from delivered cake quantity.
+
+    Rules:
+    - Points = delivered_cake_count * POINTS_PER_DELIVERED_CAKE
+    - Rank thresholds are based on delivered cake quantity
+    """
+    user = User.query.get(user_id)
+    if not user:
+        return None
+
+    previous_rank = (user.rank or 'bronze').strip().lower()
+
+    delivered_cake_count = (
+        db.session.query(func.coalesce(func.sum(OrderItem.quantity), 0))
+        .join(Order, Order.id == OrderItem.order_id)
+        .filter(Order.user_id == user_id, Order.status == 'delivered')
+        .scalar()
+        or 0
+    )
+
+    user.points = delivered_cake_count * POINTS_PER_DELIVERED_CAKE
+
+    new_rank = _resolve_rank_by_cake_count(delivered_cake_count)
+    user.rank = new_rank
+
+    if _rank_index(new_rank) > _rank_index(previous_rank):
+        grant_rank_upgrade_voucher(user.id, new_rank)
+
+    return user
 
 
 def _normalize_payment_method(raw_method):
@@ -120,7 +216,13 @@ def get_available_promotions(user_id):
 
     promotions = (
         Promotion.query
-        .filter(Promotion.is_active.is_(True))
+        .filter(
+            Promotion.is_active.is_(True),
+            or_(
+                Promotion.owner_user_id.is_(None),
+                Promotion.owner_user_id == user_id,
+            ),
+        )
         .order_by(Promotion.created_at.desc())
         .all()
     )
@@ -146,6 +248,10 @@ def validate_promotion_for_user(user_id, voucher_code, subtotal):
     promotion = Promotion.query.filter(
         db.func.upper(Promotion.code) == code,
         Promotion.is_active.is_(True),
+        or_(
+            Promotion.owner_user_id.is_(None),
+            Promotion.owner_user_id == user_id,
+        ),
     ).first()
     if not promotion:
         return None, 0, 'Mã giảm giá không hợp lệ hoặc đã hết hạn.'
@@ -342,5 +448,6 @@ def update_order_status(order_id, status):
     order = Order.query.get(order_id)
     if order:
         order.status = status
+        recalculate_user_loyalty(order.user_id)
         db.session.commit()
     return order

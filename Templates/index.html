@@ -68,7 +68,7 @@
      aria-label="Xem chi tiết {{ product.name }}">
 
     <div class="shop-image">
-        <img src="{{ product.image_url }}" alt="{{ product.name }}" />
+        <img src="{{ product.image_url }}" alt="{{ product.name }}" onerror="this.onerror=null;this.src='{{ url_for('static', filename='images/logo/logo.svg') }}';" />
 
         <div class="stock-badge {% if product.in_stock == 0 %}out{% endif %}">
             {% if product.in_stock > 0 %}

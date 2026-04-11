@@ -20,7 +20,7 @@ class User(db.Model, UserMixin):
     last_login = db.Column(db.DateTime)
     phone      = db.Column(db.String(30))
     points     = db.Column(db.Integer, default=0)
-    rank       = db.Column(db.String(20), default='bronze')  # bronze | silver | gold
+    rank       = db.Column(db.String(20), default='bronze')  # bronze | silver | gold | diamond
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     orders = db.relationship('Order', backref='customer', lazy=True)

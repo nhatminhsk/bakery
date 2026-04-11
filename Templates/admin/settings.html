@@ -9,25 +9,25 @@
 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
     <!-- Store Settings -->
     <div style="background-color: #1f2937; border-radius: 8px; border: 1px solid #374151; padding: 1.5rem;">
-        <h3 style="color: #fb923c; margin-bottom: 1.5rem;">Cài Đặt Cửa Hàng</h3>
+        <h3 style="color: #c7a17a; margin-bottom: 1.5rem;">Cài Đặt Cửa Hàng</h3>
         
         <div style="margin-bottom: 1.5rem;">
-            <label style="display: block; color: #fb923c; margin-bottom: 0.5rem;">Tên Cửa Hàng</label>
+            <label style="display: block; color: #c7a17a; margin-bottom: 0.5rem;">Tên Cửa Hàng</label>
             <input type="text" name="store_name" value="{{ settings.store_name }}" required style="width: 100%; padding: 10px; background-color: #111827; border: 1px solid #374151; border-radius: 6px; color: #fff;">
         </div>
 
         <div style="margin-bottom: 1.5rem;">
-            <label style="display: block; color: #fb923c; margin-bottom: 0.5rem;">Email Liên Hệ</label>
+            <label style="display: block; color: #c7a17a; margin-bottom: 0.5rem;">Email Liên Hệ</label>
             <input type="email" name="contact_email" value="{{ settings.contact_email }}" required style="width: 100%; padding: 10px; background-color: #111827; border: 1px solid #374151; border-radius: 6px; color: #fff;">
         </div>
 
         <div style="margin-bottom: 1.5rem;">
-            <label style="display: block; color: #fb923c; margin-bottom: 0.5rem;">Số Điện Thoại</label>
+            <label style="display: block; color: #c7a17a; margin-bottom: 0.5rem;">Số Điện Thoại</label>
             <input type="tel" name="phone" value="{{ settings.phone }}" style="width: 100%; padding: 10px; background-color: #111827; border: 1px solid #374151; border-radius: 6px; color: #fff;">
         </div>
 
         <div style="margin-bottom: 1.5rem;">
-            <label style="display: block; color: #fb923c; margin-bottom: 0.5rem;">Địa Chỉ</label>
+            <label style="display: block; color: #c7a17a; margin-bottom: 0.5rem;">Địa Chỉ</label>
             <input type="text" name="address" value="{{ settings.address }}" style="width: 100%; padding: 10px; background-color: #111827; border: 1px solid #374151; border-radius: 6px; color: #fff;">
         </div>
 
@@ -36,10 +36,10 @@
 
     <!-- Delivery Settings -->
     <div style="background-color: #1f2937; border-radius: 8px; border: 1px solid #374151; padding: 1.5rem;">
-        <h3 style="color: #fb923c; margin-bottom: 1.5rem;">Cài Đặt Giao Hàng</h3>
+        <h3 style="color: #c7a17a; margin-bottom: 1.5rem;">Cài Đặt Giao Hàng</h3>
         
         <div style="margin-bottom: 1.5rem;">
-            <label style="display: block; color: #fb923c; margin-bottom: 0.5rem;">Phí Giao Hàng Cơ Bản</label>
+            <label style="display: block; color: #c7a17a; margin-bottom: 0.5rem;">Phí Giao Hàng Cơ Bản</label>
             <input type="number" name="delivery_base_fee" value="{{ settings.delivery_base_fee }}" min="0" style="width: 100%; padding: 10px; background-color: #111827; border: 1px solid #374151; border-radius: 6px; color: #fff;">
             <small style="color: #9ca3af;">VND</small>
         </div>

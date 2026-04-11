@@ -29,7 +29,9 @@ function addToCart(productId) {
             if (cartCountElement) {
                 cartCountElement.textContent = data.cart_count;
             }
-            alert('Đã thêm vào giỏ hàng thành công!');
+            if (typeof window.showToast === 'function') {
+                window.showToast('Đã thêm sản phẩm vào giỏ hàng.', 'success', 'Đã thêm vào giỏ hàng');
+            }
         }
     })
     .catch(err => console.error('Lỗi:', err));

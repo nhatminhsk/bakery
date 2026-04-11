@@ -127,7 +127,7 @@
 
         .admin-btn {
             padding: 10px 20px;
-            background-color: #fb923c;
+            background-color: #c7a17a;
             color: #fff;
             border: none;
             border-radius: 6px;
@@ -137,7 +137,7 @@
         }
 
         .admin-btn:hover {
-            background-color: #ea580c;
+            background-color: #b8905f;
         }
 
         /* Content Area */
@@ -337,6 +337,9 @@
                 </a>
                 <a href="{{ url_for('admin.feedbacks') }}" {% if request.endpoint == 'admin.feedbacks' %}class="active"{% endif %}>
                     Phản Hồi
+                </a>
+                <a href="/admin/accounts" {% if request.endpoint in ['admin.accounts', 'admin.account_update_role', 'admin.account_toggle_active'] %}class="active"{% endif %}>
+                    Quản Lý Tài Khoản
                 </a>
                 <a href="{{ url_for('admin.settings') }}" {% if request.endpoint == 'admin.settings' %}class="active"{% endif %}>
                     Cài Đặt

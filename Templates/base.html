@@ -103,6 +103,18 @@
             <li>
               <div class="user-dropdown-container">
                 <div class="user-trigger">
+                   {% set user_rank = (current_user.rank or 'bronze')|lower %}
+                   <span class="rank-indicator rank-{{ user_rank }}" title="{{ user_rank|capitalize }} rank">
+                     {% if user_rank == 'diamond' %}
+                       <i class="fa-solid fa-gem"></i>
+                     {% elif user_rank == 'gold' %}
+                       <i class="fa-solid fa-crown"></i>
+                     {% elif user_rank == 'silver' %}
+                       <i class="fa-solid fa-award"></i>
+                     {% else %}
+                       <i class="fa-solid fa-seedling"></i>
+                     {% endif %}
+                   </span>
                    <span class="username"><i class="fa-solid fa-user-gear"></i> {{ current_user.username }}</span>
                 </div>
 
@@ -146,6 +158,8 @@
 
         {% block content %}{% endblock %}
     </div>
+
+      <div id="toast-container" aria-live="polite" aria-atomic="true"></div>
 
 
     <footer>
@@ -231,6 +245,43 @@
     #chat-bubble:hover {
       transform: scale(1.08);
       box-shadow: 0 6px 28px rgba(45,106,79,0.55);
+    }
+
+    .rank-indicator {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      margin-right: 8px;
+      border-radius: 999px;
+      font-size: 0.9rem;
+      border: 1px solid transparent;
+      vertical-align: middle;
+    }
+
+    .rank-indicator.rank-bronze {
+      background: linear-gradient(135deg, #c97d2d, #8f5b1f);
+      color: #fff;
+      box-shadow: 0 0 10px rgba(201, 125, 45, 0.35);
+    }
+
+    .rank-indicator.rank-silver {
+      background: linear-gradient(135deg, #d8dde3, #b4bcc8);
+      color: #1f2937;
+      box-shadow: 0 0 10px rgba(180, 188, 200, 0.35);
+    }
+
+    .rank-indicator.rank-gold {
+      background: linear-gradient(135deg, #f7d25c, #d9a92b);
+      color: #1f2937;
+      box-shadow: 0 0 10px rgba(217, 169, 43, 0.35);
+    }
+
+    .rank-indicator.rank-diamond {
+      background: linear-gradient(135deg, #7fd9ff, #3aa4ff);
+      color: #fff;
+      box-shadow: 0 0 12px rgba(58, 164, 255, 0.35);
     }
 
     /* ── Chat Window ── */
