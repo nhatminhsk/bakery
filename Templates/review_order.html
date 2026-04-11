@@ -88,6 +88,12 @@
 {% endblock %}
 
 {% block content %}
+<div class="back-button-container">
+    <button class="back-button" onclick="window.history.back()">
+        <i class="fa-solid fa-arrow-left"></i> Quay Lại
+    </button>
+</div>
+
 <div class="review-wrapper">
     <div class="review-panel">
         <h2 class="review-title">Đánh giá đơn hàng #{{ order.id }}</h2>

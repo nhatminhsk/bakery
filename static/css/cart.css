@@ -203,6 +203,7 @@
     @media (max-width: 768px) {
         .cart-container {
             grid-template-columns: 1fr;
+            gap: 1.5rem;
         }
 
         .cart-summary {
@@ -210,11 +211,98 @@
         }
 
         .cart-item {
-            grid-template-columns: 80px 1fr;
+            grid-template-columns: 70px 1fr;
+            gap: 1rem;
+            padding: 1rem;
         }
 
         .cart-item-image {
-            width: 80px;
-            height: 80px;
+            width: 70px;
+            height: 70px;
+        }
+
+        .cart-item-name {
+            font-size: 1rem;
+        }
+
+        .cart-items {
+            padding: 1.5rem;
+        }
+
+        .cart-summary {
+            padding: 1.5rem;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .cart-items {
+            padding: 1rem;
+        }
+
+        .cart-items-title {
+            font-size: 1.25rem;
+        }
+
+        .cart-item {
+            grid-template-columns: 60px 1fr;
+            gap: 0.75rem;
+            padding: 0.75rem;
+        }
+
+        .cart-item-image {
+            width: 60px;
+            height: 60px;
+        }
+
+        .cart-item-name {
+            font-size: 0.95rem;
+        }
+
+        .cart-item-price {
+            font-size: 0.9rem;
+        }
+
+        .qty-btn {
+            width: 24px;
+            height: 24px;
+            font-size: 0.9rem;
+        }
+
+        .qty-display {
+            width: 30px;
+            font-size: 0.9rem;
+        }
+
+        .remove-btn {
+            padding: 4px 8px;
+            font-size: 0.8rem;
+        }
+
+        .cart-summary {
+            padding: 1rem;
+        }
+
+        .summary-title {
+            font-size: 1.1rem;
+        }
+
+        .checkout-btn,
+        .continue-btn {
+            font-size: 0.95rem;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .cart-item-actions {
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .remove-btn {
+            width: 100%;
+        }
+
+        .header-main {
+            flex-direction: column;
         }
     }

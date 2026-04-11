@@ -34,7 +34,7 @@
 }
 .form-box h2 {
     font-size: 2em;
-    color: #c7a17a;
+    color: #b8d94f;
     text-align: center;
 }
 
@@ -64,14 +64,14 @@
     position: relative;
     width: 100%;
     height: 50px;
-    border-bottom: 2px solid #c7a17a;
+    border-bottom: 2px solid #b8d94f;
     margin: 30px 0;
 }
 .input-box label {
     position: absolute;
     top: 50%;
     left: 5px;
-    color: #c7a17a;
+    color: #b8d94f;
     font-size: 1em;
     pointer-events: none;
     transform: translateY(-50%);
@@ -82,7 +82,7 @@
 .input-box input:valid ~ label {
     top: -5px;
     font-size: 0.75em;
-    color: #c7a17a;
+    color: #b8d94f;
 }
 input:-webkit-autofill,
 input:-webkit-autofill:hover, 
@@ -91,7 +91,7 @@ input:-webkit-autofill:active {
     /* Tạo hiệu ứng trong suốt cho nền */
     -webkit-box-shadow: 0 0 0px 1000px transparent inset !important;
     /* Giữ màu chữ cam theo thiết kế của bạn */
-    -webkit-text-fill-color: #c7a17a !important;
+    -webkit-text-fill-color: #b8d94f !important;
     /* Hiệu ứng chuyển cảnh để ngăn màu trắng hiện lên đột ngột */
     transition: background-color 5000s ease-in-out 0s;
 }
@@ -102,7 +102,7 @@ input:-webkit-autofill:active {
     border: none;
     outline: none;
     font-size: 1em;
-    color: #c7a17a;
+    color: #b8d94f;
     font-weight: 600;
     padding: 0 35px 0 5px;
     
@@ -111,12 +111,12 @@ input:-webkit-autofill:active {
     position: absolute;
     right: 8px;
     font-size: 1.2em;
-    color: #c7a17a;
+    color: #b8d94f;
     line-height: 57px;
 }
 .remember-forgot {
     font-size: .9em;
-    color: #c7a17a;
+    color: #b8d94f;
     font-weight: 500;
     margin: -15px 0 15px;
     display: flex;
@@ -124,10 +124,10 @@ input:-webkit-autofill:active {
 }
 .remember-forgot label input {
     margin-right: 3px;
-    color: #c7a17a;
+    color: #b8d94f;
 }
 .remember-forgot a {
-    color: #c7a17a;
+    color: #b8d94f;
     text-decoration: none;
 }
 .remember-forgot a:hover {
@@ -137,7 +137,7 @@ input:-webkit-autofill:active {
 .btn {
     width: 100%;
     height: 45px;
-    background: #c7a17a;
+    background: #b8d94f;
     border: none;
     outline: none;
     color: #fff;
@@ -147,19 +147,19 @@ input:-webkit-autofill:active {
     border-radius: 6px;
 }
 .btn:hover {
-    background: #c7a17a;
+    background: #b8d94f;
     opacity: 0.9;
 }
 .login-register {
     font-size: .9em;
-    color: #c7a17a;
+    color: #b8d94f;
     text-align: center;
     font-weight: 500;
     margin: 25px 0 10px;
 
 }
 .login-register p a {
-    color: #c7a17a;
+    color: #b8d94f;
     text-decoration: none;
     font-weight: 600;
 }

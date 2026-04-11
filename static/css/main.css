@@ -1,12 +1,15 @@
 @import url("https://fonts.googleapis.com/css2?family=Fenix&family=Poppins:wght@100;200;300;400;500&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Fenix&family=Poppins:wght@100;200;300;400;500&family=Pushster&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;700&display=swap");
+
 /* 
 font-family: 'Fenix', serif;
 font-family: 'Poppins', sans-serif; 
 font-family: 'Pushster', cursive;
 */
 :root {
-  --main-color: #e2c976;
+  --main-color: #b8d94f; 
+  --dark-green: #2d6a4f;
 }
 * {
   padding: 0;
@@ -15,7 +18,9 @@ font-family: 'Pushster', cursive;
   box-sizing: border-box;
   font-family: "Poppins", sans-serif;
 }
-
+h1, h2, h3, .navbar-brand, .brand {
+  font-family: 'Comfortaa', cursive !important;
+}
 ::-webkit-scrollbar {
   width: 8px;
   cursor: pointer;
@@ -59,7 +64,7 @@ body {
     font-weight: 500;
 }
 .alert-success {
-    background-color: var(--main-color) !important; /* #c7a17a */
+    background-color: var(--dark-green) !important; /* #c7a17a */
 }
 
 /* Thông báo lỗi - Màu đỏ sẫm để dễ phân biệt nhưng vẫn hài hòa */
@@ -87,12 +92,12 @@ body {
 
 .btn-custom:hover {
   color: #edf2f7;
-  background-color: #c57729 !important;
+  background-color: #4CAF50 !important;
 }
 
 .btn-custom:active {
   color: #edf2f7;
-  background-color: #945c24 !important;
+  background-color: #4CAF50 !important;
   border-color: transparent !important;
 }
 
@@ -155,13 +160,18 @@ header .header-content {
 }
 
 .header-content h3 {
-  font-family: "Pushster", cursive;
-  font-weight: 700;
-  letter-spacing: 2px;
-  color: #edf2f7;
+  font-family: "Comfortaa", cursive !important;
+  font-weight: 700 !important;
+  letter-spacing: 1px !important;
+  color: #b8d94f !important;
   cursor: pointer;
   margin-top: 7.5px;
   margin-bottom: 7.5px;
+}
+
+.header-content h3 a {
+  color: var(--main-color) !important;
+  text-transform: uppercase;
 }
 
 header .logo img {
@@ -228,7 +238,7 @@ header nav a.active {
   top: 0;
   height: 100%;
   padding: 0 1.25rem;
-  background: #c7a17a;
+  background: #4CAF50;
   border: none;
   color: white;
   cursor: pointer;
@@ -245,6 +255,60 @@ header nav a.active {
 .bars img {
   width: 1rem;
 }
+
+/* Back Button Styling */
+.back-button-container {
+  padding: 1rem 0;
+  width: 90%;
+  margin: 0 auto;
+}
+
+.back-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 8px 16px;
+  background-color: transparent;
+  border: 1px solid var(--dark-green);
+  color: var(--dark-green);
+  border-radius: 6px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  font-weight: 500;
+}
+
+.back-button:hover {
+  background-color: var(--dark-green);
+  color: #fff;
+}
+
+.back-button i {
+  font-size: 1rem;
+}
+
+@media (max-width: 768px) {
+  .back-button-container {
+    width: 90%;
+  }
+
+  .back-button {
+    padding: 10px 12px;
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .back-button-container {
+    padding: 0.75rem 0;
+  }
+
+  .back-button {
+    padding: 8px 10px;
+    font-size: 0.85rem;
+  }
+}
 @media (max-width: 768px) {
   .info {
     display: none;
@@ -254,6 +318,7 @@ header nav a.active {
   }
   .navigation .brand {
     display: block !important;
+    font-family: 'Comfortaa', sans-serif !important;
   }
 
   header .navigation {
@@ -283,6 +348,125 @@ header nav a.active {
 
   .home-content h1 {
     font-size: 3rem;
+  }
+
+  header .header-content {
+    width: 95%;
+  }
+
+  .header-content h3 {
+    font-size: 1.2rem;
+  }
+
+  .search-header {
+    display: none;
+  }
+
+  .user-dropdown-container {
+    margin-right: auto;
+  }
+
+  .search-btn {
+    display: inline-block;
+    background: transparent;
+    border: none;
+    color: #edf2f7;
+    font-size: 1.2rem;
+    cursor: pointer;
+    margin-right: 1rem;
+    padding: 0;
+  }
+
+  .search-btn:hover {
+    color: var(--main-color);
+  }
+}
+
+@media (max-width: 576px) {
+  .header-content h3 {
+    font-size: 1rem;
+  }
+
+  header .logo img {
+    width: 50px;
+  }
+
+  .bars img {
+    width: 1.25rem;
+  }
+
+  header {
+    padding: 6px 0;
+  }
+
+  header .header-content {
+    width: 90%;
+  }
+
+  .home-content h1 {
+    font-size: 1.75rem;
+  }
+
+  .home-content p {
+    font-size: 12px;
+  }
+
+  .home-content .home-links {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .home-links a {
+    padding: 9px 16px;
+    font-size: 0.9rem;
+    width: 100%;
+    text-align: center;
+  }
+
+  .home-links .first {
+    margin-right: 0;
+  }
+
+  header .navigation {
+    width: 80%;
+  }
+
+  .user-dropdown-container {
+    margin-right: 0.5rem;
+  }
+
+  .search-btn {
+    margin-right: 0.5rem;
+  }
+
+  .cart-wrapper {
+    margin-right: 0.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .header-content h3 {
+    margin: 0;
+  }
+
+  .header-content h3 i {
+    font-size: 0.9rem;
+  }
+
+  header {
+    padding: 4px 0;
+  }
+
+  header .navigation {
+    width: 100%;
+  }
+
+  .header-content h3 a {
+    font-size: 0.9rem;
+  }
+
+  .search-btn {
+    font-size: 1rem;
   }
 }
 /* ---cart--- */
@@ -353,8 +537,45 @@ header nav a.active {
 
 /* Đổi màu nền và chữ khi hover vào từng link */
 .dropdown-menu a:hover {
-    background-color: #fafafa;
-    color: #ee4d2d;
+    background-color: #f0faf4;
+    color: var(--dark-green);
+}
+
+/* Mobile: hiển thị user menu dạng list */
+@media (max-width: 768px) {
+  .user-dropdown-container {
+    padding: 0;
+    display: block;
+    width: 100%;
+  }
+
+  .user-trigger {
+    padding: 15px 1.5rem;
+  }
+
+  .dropdown-menu a {
+    padding: 15px 1.5rem;
+  }
+
+  .dropdown-menu {
+    position: static;
+    display: block;
+    background: transparent;
+    box-shadow: none;
+    min-width: auto;
+    border-radius: 0;
+    border: none;
+  }
+
+  .dropdown-menu a {
+    color: #edf2f7;
+    border-bottom: none;
+  }
+
+  .dropdown-menu a:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: var(--main-color);
+  }
 }
 
 /* TẠO HÌNH TAM GIÁC (MŨI TÊN) CHỈ LÊN TRÊN MENU */
