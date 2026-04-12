@@ -6,27 +6,57 @@ from app.admin.services import (
     update_order_status,
 )
 from app.models.admin import AdminTodo
+from app.models.user import User
+from sqlalchemy.orm import joinedload
+from sqlalchemy import case, or_, and_
 
 
 def get_staff_todos(user_id, status='all', priority='all'):
-    query = AdminTodo.query.filter(AdminTodo.assigned_user_id == user_id)
-
+    """Lấy các công việc được gán cho nhân viên từ many-to-many relationship (assigned_staff).
+    
+    Hỗ trợ cả cách giao việc cũ (assigned_user_id) và cách mới (assigned_staff many-to-many).
+    """
+    # Điều kiện 1: Từ assigned_user_id (cách cũ)
+    old_way_condition = AdminTodo.assigned_user_id == user_id
+    
+    # Điều kiện 2: Từ many-to-many relationship (cách mới)
+    # Phải join trước rồi mới filter
+    query = AdminTodo.query.outerjoin(AdminTodo.assigned_staff).filter(
+        or_(
+            old_way_condition,
+            User.id == user_id
+        )
+    )
+    
     normalized_status = (status or 'all').strip().lower()
     normalized_priority = (priority or 'all').strip().lower()
 
     if normalized_status == 'open':
-        query = query.filter_by(is_done=False)
+        query = query.filter(AdminTodo.is_done == False)
     elif normalized_status == 'done':
-        query = query.filter_by(is_done=True)
+        query = query.filter(AdminTodo.is_done == True)
     else:
         normalized_status = 'all'
 
     if normalized_priority in {'high', 'medium', 'low'}:
-        query = query.filter_by(priority=normalized_priority)
+        query = query.filter(AdminTodo.priority == normalized_priority)
     else:
         normalized_priority = 'all'
 
-    todos = query.order_by(AdminTodo.is_done.asc(), AdminTodo.created_at.desc()).all()
+    # Sắp xếp theo trạng thái, ưu tiên, và ngày tạo - dùng distinct để tránh duplicate từ join
+    priority_order = case(
+        (AdminTodo.priority == 'high', 3),
+        (AdminTodo.priority == 'medium', 2),
+        (AdminTodo.priority == 'low', 1),
+        else_=0,
+    )
+    
+    todos = query.distinct(AdminTodo.id).order_by(
+        AdminTodo.is_done.asc(),
+        priority_order.desc(),
+        AdminTodo.created_at.desc(),
+    ).all()
+    
     todos_dicts = [todo.to_dict() for todo in todos]
     done_count = sum(1 for todo in todos_dicts if todo.get('is_done'))
 

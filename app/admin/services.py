@@ -43,7 +43,7 @@ EXPIRY_WARNING_DAYS = 3
 
 
 def _local_day_bounds_to_utc(target_date):
-    """Convert local-day boundaries (UTC+7) to naive UTC datetimes for DB filters."""
+    """Chuyển một ngày theo giờ Việt Nam (UTC+7) sang khoảng UTC để lọc dữ liệu."""
     local_start = datetime(target_date.year, target_date.month, target_date.day, tzinfo=LOCAL_TIMEZONE)
     local_end = local_start + timedelta(days=1)
     utc_start = local_start.astimezone(timezone.utc).replace(tzinfo=None)
@@ -52,7 +52,7 @@ def _local_day_bounds_to_utc(target_date):
 
 
 def _local_week_bounds_to_utc(target_date):
-    """Week starts on Monday in local time."""
+    """Chuyển một tuần theo giờ Việt Nam sang khoảng UTC, tuần bắt đầu từ Thứ 2."""
     week_start_date = target_date - timedelta(days=target_date.weekday())
     local_start = datetime(week_start_date.year, week_start_date.month, week_start_date.day, tzinfo=LOCAL_TIMEZONE)
     local_end = local_start + timedelta(days=7)
@@ -62,6 +62,7 @@ def _local_week_bounds_to_utc(target_date):
 
 
 def _local_month_bounds_to_utc(target_date):
+    """Chuyển một tháng theo giờ Việt Nam sang khoảng UTC từ ngày 1 đến ngày kế tiếp."""
     local_start = datetime(target_date.year, target_date.month, 1, tzinfo=LOCAL_TIMEZONE)
     if target_date.month == 12:
         next_month_start = datetime(target_date.year + 1, 1, 1, tzinfo=LOCAL_TIMEZONE)
@@ -74,6 +75,7 @@ def _local_month_bounds_to_utc(target_date):
 
 
 def _write_admin_settings(settings_data):
+    """Ghi cấu hình quản trị viên ra tệp JSON trên đĩa."""
     ADMIN_SETTINGS_PATH.parent.mkdir(parents=True, exist_ok=True)
     ADMIN_SETTINGS_PATH.write_text(
         json.dumps(settings_data, ensure_ascii=False, indent=2),
@@ -82,6 +84,7 @@ def _write_admin_settings(settings_data):
 
 
 def get_admin_settings():
+    """Đọc cấu hình quản trị viên từ tệp JSON và tự điền giá trị mặc định nếu thiếu."""
     if not ADMIN_SETTINGS_PATH.exists():
         _write_admin_settings(DEFAULT_ADMIN_SETTINGS)
         return dict(DEFAULT_ADMIN_SETTINGS)
@@ -95,12 +98,13 @@ def get_admin_settings():
     if isinstance(data, dict):
         merged.update(data)
 
-    # Ensure persisted data always has complete key set.
+    # Đảm bảo dữ liệu đã lưu luôn có đủ bộ khóa.
     _write_admin_settings(merged)
     return merged
 
 
 def update_admin_settings(form_data):
+    """Kiểm tra dữ liệu biểu mẫu và cập nhật cấu hình quản trị viên."""
     current = get_admin_settings()
 
     store_name = (form_data.get('store_name') or '').strip()
@@ -143,6 +147,7 @@ def update_admin_settings(form_data):
 
 
 def _save_image_to_static(image_file):
+    """Lưu ảnh tải lên vào thư mục static cục bộ và trả về URL tương đối."""
     if not image_file or not image_file.filename:
         return None, None
 
@@ -162,6 +167,7 @@ def _save_image_to_static(image_file):
 
 
 def _delete_local_image(image_url):
+    """Xóa ảnh cục bộ nếu URL trỏ vào thư mục /static/images/."""
     if not image_url or not image_url.startswith('/static/images/'):
         return
 
@@ -174,13 +180,7 @@ def _delete_local_image(image_url):
 
 
 def _upload_image_to_cloudinary(image_file):
-    """Validate extension then upload to Cloudinary.
-
-    Returns:
-        (image_url, image_id, error_message)
-        On success: (str, str, None)
-        On failure: (None, None, str)
-    """
+    """Kiểm tra định dạng rồi tải ảnh lên Cloudinary."""
     if not image_file or not image_file.filename:
         return None, None, None
 
@@ -204,6 +204,7 @@ def _upload_image_to_cloudinary(image_file):
 
 
 def get_dashboard_stats():
+    """Tổng hợp số liệu cho dashboard quản trị: doanh thu, đơn hàng và top sản phẩm."""
     weekly_series = get_revenue_by_week(limit_weeks=8)
     monthly_series = get_revenue_by_month(limit_months=12)
     weekly_periods = [item['period'] for item in weekly_series]
@@ -235,6 +236,7 @@ def get_dashboard_stats():
 
 
 def _aggregate_revenue_by_period(period_expr):
+    """Tổng hợp doanh thu theo một biểu thức thời gian dùng chung cho tuần hoặc tháng."""
     rows = (
         db.session.query(
             period_expr.label('period'),
@@ -259,18 +261,21 @@ def _aggregate_revenue_by_period(period_expr):
 
 
 def get_revenue_by_week(limit_weeks=8):
+    """Lấy chuỗi doanh thu theo tuần, mặc định 8 tuần gần nhất."""
     period_expr = func.strftime('%Y-W%W', Order.paid_at)
     series = _aggregate_revenue_by_period(period_expr)
     return series[-limit_weeks:] if limit_weeks else series
 
 
 def get_revenue_by_month(limit_months=12):
+    """Lấy chuỗi doanh thu theo tháng, mặc định 12 tháng gần nhất."""
     period_expr = func.strftime('%Y-%m', Order.paid_at)
     series = _aggregate_revenue_by_period(period_expr)
     return series[-limit_months:] if limit_months else series
 
 
 def get_top_products_by_period(period_pattern, target_periods, top_n=5):
+    """Lấy danh sách sản phẩm bán chạy nhất theo từng khoảng thời gian."""
     if not target_periods:
         return []
 
@@ -325,10 +330,12 @@ def get_top_products_by_period(period_pattern, target_periods, top_n=5):
 
 
 def get_all_orders():
+    """Lấy toàn bộ đơn hàng, sắp xếp từ mới đến cũ."""
     return Order.query.order_by(Order.created_at.desc()).all()
 
 
 def get_orders_management_data(filter_mode='latest', date_value=None):
+    """Lấy dữ liệu đơn hàng cho màn hình quản lý theo nhiều bộ lọc thời gian."""
     mode = (filter_mode or 'latest').strip().lower()
     query = Order.query
     local_today = datetime.now(LOCAL_TIMEZONE).date()
@@ -401,6 +408,7 @@ def get_orders_management_data(filter_mode='latest', date_value=None):
 
 
 def _resolve_overview_period(period):
+    """Chuyển tham số khoảng thời gian của trang tổng quan thành mốc lọc truy vấn."""
     now = datetime.utcnow()
     today_start = datetime(now.year, now.month, now.day)
 
@@ -426,6 +434,7 @@ def _resolve_overview_period(period):
 
 
 def get_overview_orders(period='today', limit=100):
+    """Lấy danh sách đơn hàng và thống kê nhanh cho trang tổng quan quản trị."""
     period, period_label, start, end = _resolve_overview_period(period)
     query = Order.query.order_by(Order.created_at.desc())
 
@@ -450,6 +459,7 @@ def get_overview_orders(period='today', limit=100):
 
 
 def get_all_products_admin():
+    """Lấy toàn bộ sản phẩm và tính thêm cảnh báo tồn kho, hạn dùng."""
     products = (
         Product.query
         .options(joinedload(Product.batches))
@@ -468,7 +478,7 @@ def get_all_products_admin():
             if int(batch.quantity or 0) > 0
         )
 
-        # Keep product.in_stock synchronized with batch quantities to avoid drift.
+        # Giữ product.in_stock đồng bộ với số lượng các lô để tránh lệch dữ liệu.
         if int(product.in_stock or 0) != available_batch_qty:
             product.in_stock = available_batch_qty
             needs_stock_sync = True
@@ -513,11 +523,13 @@ def get_all_products_admin():
 
 
 def _todo_priority_weight(priority):
+    """Đổi mức ưu tiên thành trọng số số để phục vụ sắp xếp."""
     mapping = {'high': 3, 'medium': 2, 'low': 1}
     return mapping.get(priority, 0)
 
 
 def get_admin_todos(status='all', priority='all'):
+    """Lấy danh sách việc cần làm của admin theo trạng thái và mức ưu tiên."""
     query = AdminTodo.query.options(joinedload(AdminTodo.assigned_user))
 
     normalized_status = (status or 'all').strip().lower()
@@ -535,7 +547,7 @@ def get_admin_todos(status='all', priority='all'):
     else:
         normalized_priority = 'all'
 
-    # Database-level sorting: incomplete first, then by priority, then by creation date
+    # Sắp xếp ở tầng cơ sở dữ liệu: chưa hoàn thành trước, sau đó theo ưu tiên, rồi theo ngày tạo
     priority_order = case(
         (AdminTodo.priority == 'high', 3),
         (AdminTodo.priority == 'medium', 2),
@@ -562,6 +574,7 @@ def get_admin_todos(status='all', priority='all'):
 
 
 def get_assignable_staff_users():
+    """Lấy danh sách tài khoản nhân viên để gán việc."""
     return (
         User.query
         .filter(User.role == 'staff')
@@ -571,6 +584,7 @@ def get_assignable_staff_users():
 
 
 def get_staff_candidate_users():
+    """Lấy danh sách tài khoản có thể nâng lên vai trò nhân viên."""
     return (
         User.query
         .filter(User.role != 'admin')
@@ -580,6 +594,7 @@ def get_staff_candidate_users():
 
 
 def add_users_to_staff(user_ids):
+    """Nâng hàng loạt người dùng hợp lệ lên vai trò nhân viên."""
     raw_ids = user_ids or []
     normalized_ids = []
 
@@ -610,6 +625,7 @@ def add_users_to_staff(user_ids):
 
 
 def get_staff_todos(user_id, status='all', priority='all'):
+    """Lấy các việc cần làm được gán cho một nhân viên cụ thể."""
     query = AdminTodo.query.options(joinedload(AdminTodo.assigned_user)).filter(AdminTodo.assigned_user_id == user_id)
 
     normalized_status = (status or 'all').strip().lower()
@@ -627,7 +643,7 @@ def get_staff_todos(user_id, status='all', priority='all'):
     else:
         normalized_priority = 'all'
 
-    # Database-level sorting: incomplete first, then by priority, then by creation date
+    # Sắp xếp ở tầng cơ sở dữ liệu: chưa hoàn thành trước, sau đó theo ưu tiên, rồi theo ngày tạo
     priority_order = case(
         (AdminTodo.priority == 'high', 3),
         (AdminTodo.priority == 'medium', 2),
@@ -654,6 +670,7 @@ def get_staff_todos(user_id, status='all', priority='all'):
 
 
 def create_admin_todo(title, priority='medium', assigned_user_id=None):
+    """Tạo một việc cần làm mới cho admin, có thể gán sẵn cho nhân viên."""
     title = (title or '').strip()
     if not title:
         return False, 'Nội dung công việc không được để trống.'
@@ -675,7 +692,7 @@ def create_admin_todo(title, priority='medium', assigned_user_id=None):
 
     todo = AdminTodo(title=title, priority=priority, assigned_user_id=assigned_user.id if assigned_user else None, is_done=False)
     
-    # Also add to many-to-many relationship for new assignment system
+    # Đồng thời thêm vào quan hệ nhiều-nhiều cho hệ thống phân công mới
     if assigned_user:
         todo.assigned_staff.append(assigned_user)
     
@@ -685,6 +702,7 @@ def create_admin_todo(title, priority='medium', assigned_user_id=None):
 
 
 def toggle_admin_todo(todo_id):
+    """Đổi trạng thái hoàn thành của một việc cần làm."""
     todo = AdminTodo.query.get(todo_id)
 
     if not todo:
@@ -697,6 +715,7 @@ def toggle_admin_todo(todo_id):
 
 
 def delete_admin_todo(todo_id):
+    """Xóa vĩnh viễn một việc cần làm khỏi cơ sở dữ liệu."""
     todo = AdminTodo.query.get(todo_id)
 
     if not todo:
@@ -708,16 +727,7 @@ def delete_admin_todo(todo_id):
 
 
 def assign_staff_to_todo(todo_id, staff_user_ids):
-    """
-    Assign multiple staff members to a todo.
-    
-    Args:
-        todo_id: AdminTodo.id
-        staff_user_ids: List of User.id to assign (replaces existing assignments)
-    
-    Returns:
-        (success, count, error_message)
-    """
+    """Gán lại danh sách nhân viên cho một việc cần làm."""
     todo = AdminTodo.query.get(todo_id)
     if not todo:
         return False, 0, 'Không tìm thấy công việc.'
@@ -733,7 +743,7 @@ def assign_staff_to_todo(todo_id, staff_user_ids):
     
     normalized_ids = sorted(set(normalized_ids))
     
-    # Get all staff users with these IDs
+    # Lấy tất cả nhân viên có các ID này
     staff_users = User.query.filter(
         User.id.in_(normalized_ids),
         User.role == 'staff'
@@ -742,7 +752,7 @@ def assign_staff_to_todo(todo_id, staff_user_ids):
     if not staff_users and normalized_ids:
         return False, 0, 'Không tìm thấy nhân viên hợp lệ để giao cho công việc.'
     
-    # Clear existing assignments and set new ones
+    # Xóa phân công cũ và gán danh sách mới
     todo.assigned_staff = staff_users
     db.session.commit()
     
@@ -750,16 +760,7 @@ def assign_staff_to_todo(todo_id, staff_user_ids):
 
 
 def add_staff_to_todo(todo_id, staff_user_ids):
-    """
-    Add additional staff members to a todo (keeps existing assignments).
-    
-    Args:
-        todo_id: AdminTodo.id
-        staff_user_ids: List of User.id to add
-    
-    Returns:
-        (success, count_added, error_message)
-    """
+    """Thêm thêm nhân viên vào một việc cần làm mà không xóa phân công cũ."""
     todo = AdminTodo.query.get(todo_id)
     if not todo:
         return False, 0, 'Không tìm thấy công việc.'
@@ -775,20 +776,20 @@ def add_staff_to_todo(todo_id, staff_user_ids):
     
     normalized_ids = sorted(set(normalized_ids))
     
-    # Get existing staff IDs
+    # Lấy các ID nhân viên hiện đang được gán
     existing_ids = {user.id for user in (todo.assigned_staff or [])}
     
-    # Get new staff to add
+    # Lấy các nhân viên mới cần thêm
     staff_to_add = User.query.filter(
         User.id.in_(normalized_ids),
         User.role == 'staff',
-        ~User.id.in_(existing_ids),  # Not already assigned
+        ~User.id.in_(existing_ids),  # Chưa được gán trước đó
     ).all()
     
     if not staff_to_add:
-        return True, 0, None  # No new staff to add is not an error
+        return True, 0, None  # Không có nhân viên mới để thêm không phải lỗi
     
-    # Add to existing assignments
+    # Thêm vào danh sách phân công hiện có
     for user in staff_to_add:
         todo.assigned_staff.append(user)
     
@@ -797,16 +798,7 @@ def add_staff_to_todo(todo_id, staff_user_ids):
 
 
 def remove_staff_from_todo(todo_id, staff_user_id):
-    """
-    Remove a staff member from a todo.
-    
-    Args:
-        todo_id: AdminTodo.id
-        staff_user_id: User.id to remove
-    
-    Returns:
-        (success, error_message)
-    """
+    """Xóa một nhân viên ra khỏi danh sách được gán cho việc cần làm."""
     todo = AdminTodo.query.get(todo_id)
     if not todo:
         return False, 'Không tìm thấy công việc.'
@@ -829,7 +821,7 @@ def remove_staff_from_todo(todo_id, staff_user_id):
 
 
 def get_todo_assigned_staff(todo_id):
-    """Get list of staff assigned to a todo."""
+    """Lấy danh sách nhân viên đang được gán cho một việc cần làm."""
     todo = AdminTodo.query.get(todo_id)
     if not todo:
         return None
@@ -845,6 +837,7 @@ def get_todo_assigned_staff(todo_id):
 
 
 def get_feedback_reviews(search='', rating='all', reply_status='all'):
+    """Lấy và lọc các đánh giá của khách hàng từ file lưu trữ JSON."""
     reviews = list_reviews(search=search, rating_filter=rating)
     normalized_reply_status = (reply_status or 'all').strip().lower()
 
@@ -870,6 +863,7 @@ def get_feedback_reviews(search='', rating='all', reply_status='all'):
 
 
 def get_accounts_management_data(search='', role='all', status='all'):
+    """Lấy danh sách tài khoản kèm thống kê đơn hàng và điểm tích lũy."""
     keyword = (search or '').strip()
     normalized_role = (role or 'all').strip().lower()
     normalized_status = (status or 'all').strip().lower()
@@ -963,6 +957,7 @@ def get_accounts_management_data(search='', role='all', status='all'):
 
 
 def update_user_role(user_id, new_role, actor_user_id):
+    """Cập nhật vai trò người dùng và chặn các thay đổi không hợp lệ."""
     normalized_role = (new_role or '').strip().lower()
     if normalized_role not in {'customer', 'staff', 'admin'}:
         return False, 'Vai trò không hợp lệ.'
@@ -983,6 +978,7 @@ def update_user_role(user_id, new_role, actor_user_id):
 
 
 def toggle_user_active(user_id, actor_user_id):
+    """Khóa hoặc mở khóa tài khoản người dùng."""
     user = User.query.get(user_id)
     if not user:
         return False, 'Không tìm thấy tài khoản.'
@@ -999,6 +995,7 @@ def toggle_user_active(user_id, actor_user_id):
 
 
 def create_product(data, image_file=None):
+    """Tạo sản phẩm mới, có thể kèm ảnh và lô tồn kho ban đầu."""
     try:
         name = (data.get('name') or '').strip()
         if not name:
@@ -1077,6 +1074,7 @@ def create_product(data, image_file=None):
 
 
 def update_product(product_id, data, image_file=None):
+    """Cập nhật thông tin sản phẩm và ảnh đại diện nếu có."""
     product = Product.query.get(product_id)
     if not product:
         return None, 'Sản phẩm không tồn tại.'
@@ -1141,6 +1139,7 @@ def update_product(product_id, data, image_file=None):
 
 
 def delete_product(product_id):
+    """Xóa sản phẩm và ảnh liên quan khỏi hệ thống."""
     product = Product.query.get(product_id)
     if not product:
         return False, 'Sản phẩm không tồn tại hoặc đã bị xóa.'
@@ -1159,6 +1158,7 @@ def delete_product(product_id):
 
 
 def update_order_status(order_id, status):
+    """Cập nhật trạng thái đơn hàng và đồng bộ thanh toán, điểm tích lũy."""
     if status not in VALID_ORDER_STATUSES:
         return False, 'Trạng thái đơn hàng không hợp lệ.'
 
@@ -1190,7 +1190,7 @@ def update_order_status(order_id, status):
         elif status == 'cancelled' and payment and payment.status != 'success':
             payment.status = 'failed'
 
-        # Recalculate loyalty whenever order status changes
+        # Tính lại điểm tích lũy mỗi khi trạng thái đơn hàng thay đổi
         from app.orders.services import recalculate_user_loyalty
         recalculate_user_loyalty(order.user_id)
 
