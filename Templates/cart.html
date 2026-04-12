@@ -7,6 +7,13 @@
 {% block content %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/cart.css') }}">
 <script src="{{ url_for('static', filename='js/cart.js') }}"></script>
+
+<div class="back-button-container">
+    <button class="back-button" onclick="window.history.back()">
+        <i class="fa-solid fa-arrow-left"></i> Quay Lại
+    </button>
+</div>
+
 <h1 style="font-size: 2.5rem; color: #fb923c; margin-bottom: 2rem;">🛒 Giỏ Hàng</h1>
 
 {% if cart_items %}

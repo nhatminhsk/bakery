@@ -4,14 +4,26 @@ function myNav() {
   bar.onclick = () => {
     if (nav.style.left == "0%") {
       nav.style.left = "-100%";
-      bar.src = "assets/images/others/menu.png";
+      bar.src = "static/images/others/menu.png";
       document.body.style.overflow = "";
     } else {
       nav.style.left = "0%";
-      bar.src = "assets/images/others/x.png";
+      bar.src = "static/images/others/x.png";
       document.body.style.overflow = "hidden";
     }
   };
+  
+  // Đóng menu khi bấm vào bất kỳ link nào
+  document.querySelectorAll('.navigation a').forEach(link => {
+    link.addEventListener('click', () => {
+      if (nav.style.left == "0%") {
+        nav.style.left = "-100%";
+        bar.src = "static/images/others/menu.png";
+        document.body.style.overflow = "";
+      }
+    });
+  });
+  
   document.onclick = (event) => {
     if (
       !nav.contains(event.target) &&
@@ -19,7 +31,7 @@ function myNav() {
       nav.style.left == "0%"
     ) {
       nav.style.left = "-100%";
-      bar.src = "assets/images/others/menu.png";
+      bar.src = "static/images/others/menu.png";
       document.body.style.overflow = "";
     }
   };
@@ -154,6 +166,15 @@ function getGreeting() {
       }
 */
 function handleNavClick(event, sectionId, navId) {
+  // Đóng menu drawer trên mobile
+  let nav = document.querySelector(".navigation");
+  let bar = document.querySelector(".bar");
+  if (nav && bar && nav.style.left == "0%") {
+    nav.style.left = "-100%";
+    if (bar) bar.src = "static/images/others/menu.png";
+    document.body.style.overflow = "";
+  }
+
   // Kiểm tra nếu đang ở trang chủ (pathname là '/' hoặc trống)
   if (window.location.pathname === '/' || window.location.pathname === '/index') {
     if (typeof scrollToSection === 'function') {

@@ -116,6 +116,12 @@
 {% endblock %}
 
 {% block content %}
+<div class="back-button-container">
+    <button class="back-button" onclick="window.history.back()">
+        <i class="fa-solid fa-arrow-left"></i> Quay Lại
+    </button>
+</div>
+
 <div class="detail-wrapper">
     <div class="panel">
         <h2>Đơn Hàng #{{ order.id }}</h2>
