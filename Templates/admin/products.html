@@ -147,9 +147,29 @@
     }
 </style>
 
-<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
-    <h1 class="page-title"> Quản Lý Sản Phẩm</h1>
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
     <button id="open-add-product-modal" type="button" class="admin-btn">Thêm Sản Phẩm</button>
+    
+    <!-- Batch Management Buttons -->
+    <div style="display: flex; gap: 0.8rem; flex-wrap: wrap;">
+        <form method="POST" action="{{ url_for('admin.clear_old_batches', store_id=selected_store_id) }}" style="display: inline;">
+            <button type="submit" class="admin-btn" style="background-color: #dc2626; padding: 10px 14px; font-size: 0.85rem; white-space: nowrap;" onclick="return confirm('Bạn chắc chắn muốn xóa sạch tất cả lô hàng cũ?');">
+                🗑️ Bỏ lô cũ
+            </button>
+        </form>
+
+        <form method="POST" action="{{ url_for('admin.import_all_batches', store_id=selected_store_id) }}" style="display: inline;">
+            <button type="submit" class="admin-btn" style="background-color: #16a34a; padding: 10px 14px; font-size: 0.85rem; white-space: nowrap;">
+                📦 Nhập 50 cái
+            </button>
+        </form>
+
+        <form method="POST" action="{{ url_for('admin.test_expiry_batches', store_id=selected_store_id) }}" style="display: inline;">
+            <button type="submit" class="admin-btn" style="background-color: #7c3aed; padding: 10px 14px; font-size: 0.85rem; white-space: nowrap;">
+                🧪 TEST
+            </button>
+        </form>
+    </div>
 </div>
 
 <div style="margin-bottom: 1.5rem; display: flex; gap: 1rem;">
@@ -196,7 +216,18 @@
                         {% if product.nearest_expiry_date %}
                             <span class="expiry-date">{{ product.nearest_expiry_date.strftime('%d/%m/%Y') }}</span>
                             {% if product.expiry_alert == 'soon' %}
-                                <span class="warn-badge expiry-soon">Sắp hết hạn</span>
+                                <span class="warn-badge expiry-soon">
+                                    {% if product.expiry_detail %}
+                                        {{ product.expiry_detail }} Sắp hết hạn
+                                    {% else %}
+                                        Sắp hết hạn
+                                    {% endif %}
+                                </span>
+                                {% if product.expiry_hours_left is not none %}
+                                    <span style="color: #b45309; font-size: 0.85rem; margin-left: 4px;">
+                                        ({{ product.expiry_hours_left }}h nữa)
+                                    </span>
+                                {% endif %}
                             {% elif product.expiry_alert == 'expired' %}
                                 <span class="warn-badge expiry-expired">Đã hết hạn</span>
                             {% endif %}
@@ -208,6 +239,14 @@
                 <td>⭐ {{ product.rating }}</td>
                 <td>
                     <div class="action-group">
+                        <button
+                            type="button"
+                            class="action-btn import-btn open-import-modal"
+                            data-product-id="{{ product.id }}"
+                            data-product-name="{{ product.name }}"
+                            style="background-color: #7c8f7e; color: #fff;"
+                        >📦 Nhập</button>
+
                         <button
                             type="button"
                             class="action-btn edit-btn edit-product-btn"
@@ -226,6 +265,28 @@
             {% endfor %}
         </tbody>
     </table>
+</div>
+
+<!-- Import Stock Modal -->
+<div id="import-stock-modal" class="modal-backdrop" aria-hidden="true">
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="import-stock-title">
+        <h3 id="import-stock-title" class="modal-title">Nhập hàng</h3>
+        <p style="color: #d1d5db; margin-bottom: 1rem; font-size: 0.9rem;" id="import-product-name"></p>
+
+        <form id="import-stock-form" method="POST" action="{{ url_for('admin.import_product_stock') }}">
+            <input type="hidden" id="import-product-id" name="product_id" value="">
+
+            <div class="modal-field">
+                <label for="import-quantity">Số lượng</label>
+                <input id="import-quantity" name="quantity" type="number" min="1" max="10000" value="20" required>
+            </div>
+
+            <div class="modal-actions">
+                <button type="button" class="admin-btn" style="background-color: #6b7280;" onclick="document.getElementById('import-stock-modal').classList.remove('show')">Hủy</button>
+                <button type="submit" class="admin-btn" style="background-color: #7c8f7e;">Nhập Hàng</button>
+            </div>
+        </form>
+    </div>
 </div>
 
 <div id="edit-product-modal" class="modal-backdrop" aria-hidden="true">
@@ -463,6 +524,34 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
     });
+
+    // Import stock modal handling
+    const importModal = document.getElementById('import-stock-modal');
+    const importForm = document.getElementById('import-stock-form');
+    const importButtons = document.querySelectorAll('.open-import-modal');
+    const importProductId = document.getElementById('import-product-id');
+    const importProductName = document.getElementById('import-product-name');
+    const importQuantity = document.getElementById('import-quantity');
+
+    if (importModal && importForm && importProductId) {
+        importButtons.forEach(function (button) {
+            button.addEventListener('click', function () {
+                importProductId.value = button.dataset.productId;
+                importProductName.textContent = 'Sản phẩm: ' + button.dataset.productName;
+                importQuantity.value = '20';
+                importModal.classList.add('show');
+                importModal.setAttribute('aria-hidden', 'false');
+                importQuantity.focus();
+            });
+        });
+
+        importModal.addEventListener('click', function (event) {
+            if (event.target === importModal) {
+                importModal.classList.remove('show');
+                importModal.setAttribute('aria-hidden', 'true');
+            }
+        });
+    }
 
     function applyFilters() {
         const keyword = normalizeText(searchInput.value);

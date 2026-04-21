@@ -113,11 +113,76 @@
             justify-content: space-between;
             sticky-top: 0;
             z-index: 40;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .admin-header-left {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            flex: 1;
+            min-width: 0;
         }
 
         .admin-header-title {
             font-size: 1.5rem;
             color: #A8D59D;
+            margin: 0;
+            white-space: nowrap;
+        }
+
+        .store-selector-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            background-color: rgba(168, 213, 157, 0.08);
+            padding: 0.6rem 1rem;
+            border-radius: 6px;
+            border: 1px solid rgba(168, 213, 157, 0.2);
+        }
+
+        .store-selector-label {
+            color: #9ca3af;
+            font-size: 0.8rem;
+            white-space: nowrap;
+            font-weight: 500;
+            letter-spacing: 0.3px;
+            text-transform: uppercase;
+        }
+
+        .store-selector-dropdown {
+            background-color: transparent;
+            border: none;
+            color: #A8D59D;
+            padding: 0.4rem 0.6rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: all 0.2s;
+            min-width: 150px;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23A8D59D' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 0.5rem center;
+            padding-right: 1.5rem;
+        }
+
+        .store-selector-dropdown:hover {
+            background-color: rgba(168, 213, 157, 0.1);
+        }
+
+        .store-selector-dropdown:focus {
+            outline: none;
+            background-color: rgba(168, 213, 157, 0.15);
+            box-shadow: 0 0 0 2px rgba(168, 213, 157, 0.2);
+        }
+
+        .store-selector-dropdown option {
+            background-color: #1f2937;
+            color: #A8D59D;
+            padding: 0.5rem;
         }
 
         .admin-header-actions {
@@ -356,7 +421,24 @@
         <!-- Main Content -->
         <div class="main-content">
             <header class="admin-header">
-                <h1 class="admin-header-title">{% block page_title %}Admin Panel{% endblock %}</h1>
+                <div class="admin-header-left">
+                    <h1 class="admin-header-title">{% block page_title %}Admin Panel{% endblock %}</h1>
+                    <!-- DEBUG: stores = {{ stores|length }} -->
+                    {% if stores %}
+                    <div class="store-selector-wrapper">
+                        <span class="store-selector-label">Cơ sở:</span>
+                        <select class="store-selector-dropdown" onchange="handleStoreChange(this.value)">
+                            {% for store in stores %}
+                            <option value="{{ store.id }}" {% if selected_store_id == store.id %}selected{% endif %}>
+                                {{ store.name }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    {% else %}
+                    <!-- DEBUG: stores list is empty or not passed -->
+                    {% endif %}
+                </div>
                 <div class="admin-header-actions">
                     <a class="admin-btn" href="{{ url_for('auth.account') }}" style="text-decoration: none;">👤 Tài Khoản Của Tôi</a>
                     <a class="admin-btn" href="{{ url_for('auth.logout') }}" style="text-decoration: none;">🚪 Đăng Xuất</a>
@@ -382,5 +464,22 @@
     </div>
 
     {% block extra_js %}{% endblock %}
+    <script>
+        function handleStoreChange(storeId) {
+            // Get current URL
+            const url = new URL(window.location);
+            
+            if (storeId === '' || storeId === '0') {
+                // Remove store_id parameter to show all stores
+                url.searchParams.delete('store_id');
+            } else {
+                // Set store_id parameter
+                url.searchParams.set('store_id', storeId);
+            }
+            
+            // Navigate to new URL
+            window.location.href = url.toString();
+        }
+    </script>
 </body>
 </html>

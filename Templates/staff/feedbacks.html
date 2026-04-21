@@ -3,8 +3,6 @@
 {% block page_title %}Phản Hồi Khách Hàng{% endblock %}
 
 {% block content %}
-<h1 class="page-title">Phản Hồi Khách Hàng</h1>
-
 <form method="GET" action="{{ url_for('staff.feedbacks') }}" style="margin-bottom: 1.5rem; display: flex; gap: 1rem; flex-wrap: wrap;">
     <input type="text" name="q" value="{{ feedback.search }}" placeholder="Tìm kiếm phản hồi..." style="flex: 1; min-width: 260px; padding: 10px; background-color: #fff; border: 1px solid #dbe8d5; border-radius: 6px; color: #1f2937;">
     <select name="rating" style="padding: 10px; background-color: #fff; border: 1px solid #dbe8d5; border-radius: 6px; color: #1f2937;">

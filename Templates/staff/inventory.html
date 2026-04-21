@@ -3,12 +3,16 @@
 {% block page_title %}Tồn Kho{% endblock %}
 
 {% block content %}
-<h1 class="page-title">Tồn Kho</h1>
-
+<!-- DEBUG: Total products: {{ products|length }} -->
 <div style="margin-bottom:1.25rem; display:flex; gap:1rem; flex-wrap:wrap;">
     <input id="inventory-search" type="text" placeholder="Tìm kiếm sản phẩm..." style="flex:1; min-width:260px; padding:10px; background-color:#fff; border:1px solid #dbe8d5; border-radius:6px; color:#1f2937;">
 </div>
 
+{% if not products %}
+<div style="background-color:#fff; padding:2rem; border-radius:8px; border:1px solid #dbe8d5; text-align:center; color:#7a8b78;">
+    <p style="font-size:1rem; margin:0;">Không có sản phẩm nào để hiển thị</p>
+</div>
+{% else %}
 <div class="admin-table">
     <table id="inventory-table">
         <thead>
@@ -52,13 +56,16 @@
         </tbody>
     </table>
 </div>
+{% endif %}
 
 <script>
+{% if products %}
 document.getElementById('inventory-search').addEventListener('input', function(e) {
     const value = e.target.value.toLowerCase();
     document.querySelectorAll('#inventory-table tbody tr').forEach(row => {
         row.style.display = row.textContent.toLowerCase().includes(value) ? '' : 'none';
     });
 });
+{% endif %}
 </script>
 {% endblock %}

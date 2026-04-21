@@ -3,8 +3,6 @@
 {% block page_title %}Quản Lý Đơn Hàng{% endblock %}
 
 {% block content %}
-<h1 class="page-title">Quản Lý Đơn Hàng</h1>
-
 <form method="GET" action="{{ url_for('admin.orders') }}" style="display: flex; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 1.25rem; align-items: center;">
     <label for="filter-mode" style="color: #6e8f6b; font-weight: 600;">Bộ lọc:</label>
     <select id="filter-mode" name="filter" style="padding: 10px; min-width: 220px; background-color: #fff; border: 1px solid #dbe8d5; border-radius: 6px; color: #2f3a2f;">

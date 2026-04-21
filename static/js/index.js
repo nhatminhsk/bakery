@@ -128,18 +128,20 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function applyProductFilters() {
-        const selectedCategoryClass = getSelectedCategoryClass();
         const keyword = normalizeText(searchInput ? searchInput.value.trim() : '');
         const sortValue = sortSelect ? sortSelect.value : 'newest';
+        const selectedCategoryClass = getSelectedCategoryClass();
 
+        // Filter only by search keyword - category filtering via backend URL params
         filteredProducts = allProducts.filter(product => {
             const nameElement = product.querySelector('.product-name');
             const productName = normalizeText(nameElement ? nameElement.textContent : '');
-
-            const matchesCategory = !selectedCategoryClass || product.classList.contains(selectedCategoryClass);
+            
+            // Only filter by keyword if search is active
             const matchesKeyword = !keyword || productName.includes(keyword);
-
-            return matchesCategory && matchesKeyword;
+            
+            // Skip category filtering - backend handles it via URL params
+            return matchesKeyword;
         });
 
         filteredProducts.sort((a, b) => {
@@ -270,13 +272,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
     categoryLinks.forEach(link => {
         link.addEventListener('click', function (e) {
-            e.preventDefault();
-
-            categoryLinks.forEach(l => l.classList.remove('active'));
-            this.classList.add('active');
-
-            currentPage = 1;
-            applyProductFilters();
+            // Allow links to navigate to backend for filtering
+            // (category, discount filters are handled by backend, not client-side)
         });
     });
 

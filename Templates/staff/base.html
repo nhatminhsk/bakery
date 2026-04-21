@@ -79,9 +79,34 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
+            gap: 1.5rem;
             z-index: 40;
         }
-        .panel-header-title { font-size: 1.5rem; color: #3f7d4a; }
+
+        .panel-header-left {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            flex: 1;
+            min-width: 0;
+            flex-wrap: wrap;
+        }
+
+        .panel-header-title { font-size: 1.5rem; color: #3f7d4a; margin: 0; white-space: nowrap; }
+        
+        .store-context-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.7rem 1.2rem;
+            background: linear-gradient(135deg, #7ab97a 0%, #5e9a5e 100%);
+            border: none;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 0.85rem;
+            font-weight: 500;
+            white-space: nowrap;
+            box-shadow: 0 2px 8px rgba(122, 185, 122, 0.15);
+        }
         .panel-header-actions { display: flex; gap: 1rem; }
         .panel-btn {
             padding: 10px 20px;
@@ -193,7 +218,14 @@
 
         <div class="main-content">
             <header class="panel-header">
-                <h1 class="panel-header-title">{% block page_title %}Staff Panel{% endblock %}</h1>
+                <div class="panel-header-left">
+                    <h1 class="panel-header-title">{% block page_title %}Staff Panel{% endblock %}</h1>
+                    {% if user_store %}
+                    <div class="store-context-badge">
+                        <span>Cơ sở: <strong>{{ user_store.name }}</strong></span>
+                    </div>
+                    {% endif %}
+                </div>
                 <div class="panel-header-actions">
                     <a class="panel-btn" href="{{ url_for('auth.account') }}">👤 Tài Khoản</a>
                     <a class="panel-btn" href="{{ url_for('auth.logout') }}">🚪 Đăng Xuất</a>

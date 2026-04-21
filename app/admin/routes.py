@@ -21,6 +21,7 @@ from app.admin.services import (
 )
 from app.utils.review_store import add_admin_reply, get_review_by_id
 from app.utils.permissions import roles_required
+from app.models.store import Store
 
 admin_bp = Blueprint('admin', __name__)
 
@@ -28,33 +29,57 @@ admin_bp = Blueprint('admin', __name__)
 admin_required = roles_required('admin')
 
 
+def get_all_stores():
+    """Get all active stores for dropdown."""
+    return Store.query.filter_by(is_active=True).order_by(Store.id).all()
+
+
 @admin_bp.route('/')
 @admin_required
 def dashboard():
-    stats = get_dashboard_stats()
-    return render_template('admin/dashboard.html', stats=stats)
+    store_id = request.args.get('store_id', type=int)
+    stats = get_dashboard_stats(store_id=store_id)
+    stores = get_all_stores()
+    selected_store = None
+    if store_id:
+        selected_store = Store.query.filter_by(id=store_id, is_active=True).first()
+    return render_template('admin/dashboard.html', stats=stats, selected_store_id=store_id, 
+                         stores=stores, selected_store=selected_store)
 
 
 @admin_bp.route('/dashboard')
 @admin_required
 def dashboard_alias():
-    return redirect(url_for('admin.dashboard'))
+    store_id = request.args.get('store_id', type=int)
+    return redirect(url_for('admin.dashboard', store_id=store_id) if store_id else url_for('admin.dashboard'))
 
 
 @admin_bp.route('/overview')
 @admin_required
 def overview():
-    stats = get_dashboard_stats()
+    store_id = request.args.get('store_id', type=int)
+    stats = get_dashboard_stats(store_id=store_id)
     period = request.args.get('period', 'today')
-    overview_data = get_overview_orders(period=period, limit=200)
-    return render_template('admin/overview.html', stats=stats, overview=overview_data)
+    overview_data = get_overview_orders(period=period, limit=200, store_id=store_id)
+    stores = get_all_stores()
+    selected_store = None
+    if store_id:
+        selected_store = Store.query.filter_by(id=store_id, is_active=True).first()
+    return render_template('admin/overview.html', stats=stats, overview=overview_data, selected_store_id=store_id,
+                         stores=stores, selected_store=selected_store)
 
 
 @admin_bp.route('/products')
 @admin_required
 def products():
-    items = get_all_products_admin()
-    return render_template('admin/products.html', products=items)
+    store_id = request.args.get('store_id', type=int)
+    items = get_all_products_admin(store_id=store_id)
+    stores = get_all_stores()
+    selected_store = None
+    if store_id:
+        selected_store = Store.query.filter_by(id=store_id, is_active=True).first()
+    return render_template('admin/products.html', products=items, selected_store_id=store_id,
+                         stores=stores, selected_store=selected_store)
 
 
 @admin_bp.route('/products/create', methods=['POST'])
@@ -99,8 +124,14 @@ def product_delete(product_id):
 def orders():
     filter_mode = request.args.get('filter', 'latest')
     selected_date = request.args.get('date', '')
-    orders_data = get_orders_management_data(filter_mode=filter_mode, date_value=selected_date)
-    return render_template('admin/new_orders.html', orders_data=orders_data)
+    store_id = request.args.get('store_id', type=int)
+    orders_data = get_orders_management_data(filter_mode=filter_mode, date_value=selected_date, store_id=store_id)
+    stores = get_all_stores()
+    selected_store = None
+    if store_id:
+        selected_store = Store.query.filter_by(id=store_id, is_active=True).first()
+    return render_template('admin/new_orders.html', orders_data=orders_data, selected_store_id=store_id,
+                         stores=stores, selected_store=selected_store)
 
 
 @admin_bp.route('/new-orders')
@@ -248,8 +279,14 @@ def feedbacks():
     search = request.args.get('q', '')
     rating = request.args.get('rating', 'all')
     reply_status = request.args.get('reply_status', 'all')
-    feedback_data = get_feedback_reviews(search=search, rating=rating, reply_status=reply_status)
-    return render_template('admin/feedbacks.html', feedback=feedback_data)
+    store_id = request.args.get('store_id', type=int)
+    feedback_data = get_feedback_reviews(search=search, rating=rating, reply_status=reply_status, store_id=store_id)
+    stores = get_all_stores()
+    selected_store = None
+    if store_id:
+        selected_store = Store.query.filter_by(id=store_id, is_active=True).first()
+    return render_template('admin/feedbacks.html', feedback=feedback_data, selected_store_id=store_id,
+                         stores=stores, selected_store=selected_store)
 
 
 @admin_bp.route('/reviews/<int:review_id>/reply', methods=['GET'])
@@ -332,6 +369,101 @@ def account_toggle_active(user_id):
     return redirect(url_for('admin.accounts'))
 
 
+@admin_bp.route('/import-stock', methods=['POST'])
+@admin_required
+def import_product_stock():
+    """Import stock for a single product with 24-hour expiry."""
+    product_id = request.form.get('product_id', type=int)
+    quantity = request.form.get('quantity', type=int, default=0)
+    
+    if not product_id or quantity <= 0:
+        flash('❌ Sản phẩm hoặc số lượng không hợp lệ.', 'error')
+        return redirect(request.referrer or url_for('admin.products'))
+    
+    from app.admin.services import import_product_batch
+    
+    try:
+        result = import_product_batch(product_id, quantity)
+        if result['success']:
+            flash(
+                f"✓ Nhập thành công! Tạo lô hàng {quantity} cái cho '{result['product_name']}'. "
+                f"Hạn sử dụng: {result['expiry_at']}",
+                'success'
+            )
+        else:
+            flash(f"❌ Lỗi: {result['message']}", 'error')
+    except Exception as e:
+        flash(f'❌ Lỗi khi nhập hàng: {str(e)}', 'error')
+    
+    return redirect(request.referrer or url_for('admin.products'))
+
+
+@admin_bp.route('/clear-old-batches', methods=['POST'])
+@admin_required
+def clear_old_batches():
+    """Clear all old batches (set quantity to 0)."""
+    from app.admin.services import clear_all_batches
+    
+    store_id = request.args.get('store_id', type=int)
+    
+    try:
+        result = clear_all_batches(store_id=store_id)
+        flash(f"✓ {result['message']}", 'success')
+    except Exception as e:
+        flash(f'❌ Lỗi: {str(e)}', 'error')
+    
+    return redirect(url_for('admin.products', store_id=store_id) if store_id else url_for('admin.products'))
+
+
+@admin_bp.route('/import-all-batches', methods=['POST'])
+@admin_required
+def import_all_batches():
+    """Import 50 units for all products in selected store with 24-hour expiry."""
+    from app.admin.services import import_all_product_batches
+    
+    store_id = request.args.get('store_id', type=int)
+    
+    if not store_id:
+        flash('❌ Vui lòng chọn cơ sở trước khi nhập hàng.', 'error')
+        return redirect(url_for('admin.products'))
+    
+    try:
+        result = import_all_product_batches(store_id=store_id)
+        flash(
+            f"✓ Nhập hàng thành công! Tạo {result['total_batches']} lô hàng cho {result['total_products']} sản phẩm. "
+            f"Hạn sử dụng: {result['expiry_at']}",
+            'success'
+        )
+    except Exception as e:
+        flash(f'❌ Lỗi: {str(e)}', 'error')
+    
+    return redirect(url_for('admin.products', store_id=store_id))
+
+
+@admin_bp.route('/test-expiry-batches', methods=['POST'])
+@admin_required
+def test_expiry_batches():
+    """Test: Import 1 batch of 5 random products from April 18 at 20:30."""
+    from app.admin.services import import_april18_batch
+    
+    store_id = request.args.get('store_id', type=int)
+    
+    try:
+        result = import_april18_batch(store_id=store_id)
+        if result['status'] == 'success':
+            flash(
+                f"🧪 TEST: Nhập lô hàng từ 18/4 20:30 cho 5 sản phẩm ({result['total_units']} units). "
+                f"Hạn hết: {result['expiry_at']}",
+                'success'
+            )
+        else:
+            flash(f'❌ {result["message"]}', 'error')
+    except Exception as e:
+        flash(f'❌ Lỗi: {str(e)}', 'error')
+    
+    return redirect(url_for('admin.products', store_id=store_id) if store_id else url_for('admin.products'))
+
+
 @admin_bp.route('/orders/<int:order_id>/status', methods=['POST'])
 @admin_required
 def order_status(order_id):
@@ -342,3 +474,26 @@ def order_status(order_id):
     else:
         flash(error or 'Không thể cập nhật trạng thái đơn hàng.', 'error')
     return redirect(url_for('admin.orders'))
+
+
+@admin_bp.route('/import-stock', methods=['POST'])
+@admin_required
+def import_stock():
+    """Import stock batches with 24-hour expiry for selected store."""
+    store_id = request.form.get('store_id', type=int)
+    
+    # Import the function from services
+    from app.admin.services import import_stock_batches
+    
+    try:
+        result = import_stock_batches(store_id=store_id)
+        flash(
+            f'✓ Nhập hàng thành công! Tạo {result["total_batches"]} lô hàng cho {result["total_products"]} sản phẩm. '
+            f'Hạn sử dụng: {result["expiry_at"]}',
+            'success'
+        )
+    except Exception as e:
+        flash(f'❌ Lỗi khi nhập hàng: {str(e)}', 'error')
+    
+    # Redirect to products page with same store filter
+    return redirect(url_for('admin.products', store_id=store_id) if store_id else url_for('admin.products'))

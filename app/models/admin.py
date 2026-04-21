@@ -15,6 +15,7 @@ class AdminTodo(db.Model):
     __tablename__ = 'admin_todos'
 
     id = db.Column(db.Integer, primary_key=True)
+    store_id = db.Column(db.Integer, db.ForeignKey('stores.id'), nullable=True)
     title = db.Column(db.String(255), nullable=False)
     priority = db.Column(db.String(20), nullable=False, default='medium')  # 'high', 'medium', 'low'
     assigned_user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)

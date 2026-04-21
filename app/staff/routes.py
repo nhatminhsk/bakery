@@ -11,6 +11,7 @@ from app.staff.services import (
 )
 from app.utils.permissions import roles_required
 from app.utils.review_store import add_admin_reply, get_review_by_id
+from app.utils.store_helper import get_user_store
 
 staff_bp = Blueprint('staff', __name__)
 staff_required = roles_required('staff', 'admin')
@@ -19,8 +20,9 @@ staff_required = roles_required('staff', 'admin')
 @staff_bp.route('/')
 @staff_required
 def dashboard():
-    data = get_staff_dashboard_data()
-    return render_template('staff/dashboard.html', data=data)
+    data = get_staff_dashboard_data(user_id=current_user.id)
+    user_store = get_user_store(current_user.id)
+    return render_template('staff/dashboard.html', data=data, user_store=user_store)
 
 
 @staff_bp.route('/dashboard')
@@ -34,15 +36,16 @@ def dashboard_alias():
 def orders():
     filter_mode = request.args.get('filter', 'latest')
     selected_date = request.args.get('date', '')
-    orders_data = get_staff_orders_data(filter_mode=filter_mode, date_value=selected_date)
-    return render_template('staff/orders.html', orders_data=orders_data)
+    orders_data = get_staff_orders_data(filter_mode=filter_mode, date_value=selected_date, user_id=current_user.id)
+    user_store = get_user_store(current_user.id)
+    return render_template('staff/orders.html', orders_data=orders_data, user_store=user_store)
 
 
 @staff_bp.route('/orders/<int:order_id>/status', methods=['POST'])
 @staff_required
 def order_status(order_id):
     status = request.form.get('status')
-    success, error = update_staff_order_status(order_id, status)
+    success, error = update_staff_order_status(order_id, status, user_id=current_user.id)
     if success:
         flash('Đã cập nhật trạng thái đơn hàng.', 'success')
     else:
@@ -53,8 +56,9 @@ def order_status(order_id):
 @staff_bp.route('/inventory')
 @staff_required
 def inventory():
-    products = get_staff_inventory_products()
-    return render_template('staff/inventory.html', products=products)
+    products = get_staff_inventory_products(user_id=current_user.id)
+    user_store = get_user_store(current_user.id)
+    return render_template('staff/inventory.html', products=products, user_store=user_store)
 
 
 @staff_bp.route('/feedbacks')
@@ -63,8 +67,9 @@ def feedbacks():
     search = request.args.get('q', '')
     rating = request.args.get('rating', 'all')
     reply_status = request.args.get('reply_status', 'all')
-    feedback_data = get_staff_feedback_data(search=search, rating=rating, reply_status=reply_status)
-    return render_template('staff/feedbacks.html', feedback=feedback_data)
+    feedback_data = get_staff_feedback_data(search=search, rating=rating, reply_status=reply_status, user_id=current_user.id)
+    user_store = get_user_store(current_user.id)
+    return render_template('staff/feedbacks.html', feedback=feedback_data, user_store=user_store)
 
 
 @staff_bp.route('/todos')
@@ -73,7 +78,8 @@ def todos():
     status = request.args.get('status', 'all')
     priority = request.args.get('priority', 'all')
     todo_data = get_staff_todos(current_user.id, status=status, priority=priority)
-    return render_template('staff/todos.html', todo=todo_data)
+    user_store = get_user_store(current_user.id)
+    return render_template('staff/todos.html', todo=todo_data, user_store=user_store)
 
 
 @staff_bp.route('/reviews/<int:review_id>/reply', methods=['GET'])

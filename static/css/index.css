@@ -329,8 +329,9 @@
   min-width: 100%;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 30px;
-  align-items: stretch;
+  column-gap: 20px;
+  row-gap: 10px;
+  align-items: start;
 }
 
 .products-page .shop1 {
@@ -338,7 +339,7 @@
   color: #edf2f7;
   display: flex;
   flex-direction: column;
-  height: 100%;
+  height: auto;
 }
 
 .products-pagination {
@@ -1107,6 +1108,88 @@
 .footer span a {
   text-decoration: none;
   color: #edf2f7;
+}
+
+/* ===== Discount Button Styling ===== */
+.discount-btn {
+  display: inline-block;
+  padding: 14px 28px;
+  background: linear-gradient(135deg, #f87171 0%, #dc2626 100%);
+  color: white;
+  font-weight: 700;
+  font-size: 1rem;
+  border-radius: 12px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 6px 20px rgba(220, 38, 38, 0.35);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  position: relative;
+  overflow: hidden;
+}
+
+.discount-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.2);
+  transition: left 0.4s ease;
+  z-index: 0;
+}
+
+.discount-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(220, 38, 38, 0.45);
+  background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
+}
+
+.discount-btn:hover::before {
+  left: 100%;
+}
+
+.discount-btn span {
+  position: relative;
+  z-index: 1;
+}
+
+/* ===== Discount Badge on Product Card ===== */
+.discount-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 50%, #b91c1c 100%);
+  color: white;
+  padding: 10px 16px;
+  border-radius: 10px;
+  font-weight: 800;
+  font-size: 1.1rem;
+  box-shadow: 0 8px 24px rgba(220, 38, 38, 0.4), inset 0 2px 8px rgba(255, 255, 255, 0.1);
+  animation: badgePulse 2s ease-in-out infinite;
+  z-index: 10;
+  letter-spacing: 0.5px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+@keyframes badgePulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 8px 24px rgba(220, 38, 38, 0.4), inset 0 2px 8px rgba(255, 255, 255, 0.1);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 10px 32px rgba(220, 38, 38, 0.5), inset 0 2px 8px rgba(255, 255, 255, 0.15);
+  }
+}
+
+/* Product card with discount highlight */
+.product-card:has(.discount-badge) {
+  border: 2px solid rgba(220, 38, 38, 0.2);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(248, 113, 113, 0.05));
+}
   transition: 0.4s ease-in-out;
 }
 

@@ -11,6 +11,7 @@ from app.models.user import User
 from app.models.admin import AdminTodo
 from app.utils.cloudinary_helper import delete_image, upload_image
 from app.utils.review_store import list_reviews
+from app.utils.store_helper import get_current_user_store, filter_query_by_user_store
 from sqlalchemy import func, case
 from sqlalchemy.orm import joinedload
 from werkzeug.utils import secure_filename
@@ -39,7 +40,7 @@ DEFAULT_ADMIN_SETTINGS = {
 
 LOCAL_TIMEZONE = timezone(timedelta(hours=7))
 LOW_STOCK_THRESHOLD = 10
-EXPIRY_WARNING_DAYS = 3
+EXPIRY_WARNING_HOURS = 8  # Show warning when items have ≤ 8 hours until expiry
 
 
 def _local_day_bounds_to_utc(target_date):
@@ -203,15 +204,19 @@ def _upload_image_to_cloudinary(image_file):
     return image_url, image_id, None
 
 
-def get_dashboard_stats():
-    """Tổng hợp số liệu cho dashboard quản trị: doanh thu, đơn hàng và top sản phẩm."""
-    weekly_series = get_revenue_by_week(limit_weeks=8)
-    monthly_series = get_revenue_by_month(limit_months=12)
+def get_dashboard_stats(store_id=None):
+    """Tổng hợp số liệu cho dashboard quản trị: doanh thu, đơn hàng và top sản phẩm.
+    
+    Args:
+        store_id: Filter by store (defaults to current user's store or all for admin)
+    """
+    weekly_series = get_revenue_by_week(limit_weeks=8, store_id=store_id)
+    monthly_series = get_revenue_by_month(limit_months=12, store_id=store_id)
     weekly_periods = [item['period'] for item in weekly_series]
     monthly_periods = [item['period'] for item in monthly_series]
 
-    weekly_top_products = get_top_products_by_period('%Y-W%W', weekly_periods, top_n=5)
-    monthly_top_products = get_top_products_by_period('%Y-%m', monthly_periods, top_n=5)
+    weekly_top_products = get_top_products_by_period('%Y-W%W', weekly_periods, top_n=5, store_id=store_id)
+    monthly_top_products = get_top_products_by_period('%Y-%m', monthly_periods, top_n=5, store_id=store_id)
 
     current_week_key = datetime.utcnow().strftime('%Y-W%W')
     current_month_key = datetime.utcnow().strftime('%Y-%m')
@@ -219,13 +224,30 @@ def get_dashboard_stats():
     this_week_revenue = next((item['revenue'] for item in weekly_series if item['period'] == current_week_key), 0)
     this_month_revenue = next((item['revenue'] for item in monthly_series if item['period'] == current_month_key), 0)
 
+    # Build queries with store filtering
+    product_query = Product.query
+    order_query = Order.query
+    user_query = User.query
+    
+    if store_id:
+        product_query = product_query.filter_by(store_id=store_id)
+        order_query = order_query.filter_by(store_id=store_id)
+    
+    pending_orders = order_query.filter_by(status='pending').count()
+    revenue = db.session.query(func.sum(Order.total + Order.shipping_fee))\
+                .filter(Order.status == 'delivered', Order.paid_at.isnot(None))
+    
+    if store_id:
+        revenue = revenue.filter(Order.store_id == store_id)
+    
+    revenue = revenue.scalar() or 0
+
     return {
-        'total_products': Product.query.count(),
-        'total_orders':   Order.query.count(),
-        'total_users':    User.query.count(),
-        'pending_orders': Order.query.filter_by(status='pending').count(),
-        'revenue':        db.session.query(func.sum(Order.total + Order.shipping_fee))\
-                            .filter(Order.status == 'delivered', Order.paid_at.isnot(None)).scalar() or 0,
+        'total_products': product_query.count(),
+        'total_orders':   order_query.count(),
+        'total_users':    user_query.count(),
+        'pending_orders': pending_orders,
+        'revenue':        revenue,
         'weekly_revenue': this_week_revenue,
         'monthly_revenue': this_month_revenue,
         'weekly_revenue_series': weekly_series,
@@ -235,19 +257,23 @@ def get_dashboard_stats():
     }
 
 
-def _aggregate_revenue_by_period(period_expr):
-    """Tổng hợp doanh thu theo một biểu thức thời gian dùng chung cho tuần hoặc tháng."""
-    rows = (
-        db.session.query(
-            period_expr.label('period'),
-            func.sum(Order.total + Order.shipping_fee).label('revenue'),
-            func.count(Order.id).label('order_count'),
-        )
-        .filter(Order.status == 'delivered', Order.paid_at.isnot(None))
-        .group_by(period_expr)
-        .order_by(period_expr)
-        .all()
-    )
+def _aggregate_revenue_by_period(period_expr, store_id=None):
+    """Tổng hợp doanh thu theo một biểu thức thời gian dùng chung cho tuần hoặc tháng.
+    
+    Args:
+        period_expr: SQLAlchemy expression for time period grouping
+        store_id: Filter by store (optional)
+    """
+    query = db.session.query(
+        period_expr.label('period'),
+        func.sum(Order.total + Order.shipping_fee).label('revenue'),
+        func.count(Order.id).label('order_count'),
+    ).filter(Order.status == 'delivered', Order.paid_at.isnot(None))
+    
+    if store_id:
+        query = query.filter(Order.store_id == store_id)
+    
+    rows = query.group_by(period_expr).order_by(period_expr).all()
 
     return [
         {
@@ -260,27 +286,44 @@ def _aggregate_revenue_by_period(period_expr):
     ]
 
 
-def get_revenue_by_week(limit_weeks=8):
-    """Lấy chuỗi doanh thu theo tuần, mặc định 8 tuần gần nhất."""
+def get_revenue_by_week(limit_weeks=8, store_id=None):
+    """Lấy chuỗi doanh thu theo tuần, mặc định 8 tuần gần nhất.
+    
+    Args:
+        limit_weeks: Number of weeks to return
+        store_id: Filter by store (optional)
+    """
     period_expr = func.strftime('%Y-W%W', Order.paid_at)
-    series = _aggregate_revenue_by_period(period_expr)
+    series = _aggregate_revenue_by_period(period_expr, store_id=store_id)
     return series[-limit_weeks:] if limit_weeks else series
 
 
-def get_revenue_by_month(limit_months=12):
-    """Lấy chuỗi doanh thu theo tháng, mặc định 12 tháng gần nhất."""
+def get_revenue_by_month(limit_months=12, store_id=None):
+    """Lấy chuỗi doanh thu theo tháng, mặc định 12 tháng gần nhất.
+    
+    Args:
+        limit_months: Number of months to return
+        store_id: Filter by store (optional)
+    """
     period_expr = func.strftime('%Y-%m', Order.paid_at)
-    series = _aggregate_revenue_by_period(period_expr)
+    series = _aggregate_revenue_by_period(period_expr, store_id=store_id)
     return series[-limit_months:] if limit_months else series
 
 
-def get_top_products_by_period(period_pattern, target_periods, top_n=5):
-    """Lấy danh sách sản phẩm bán chạy nhất theo từng khoảng thời gian."""
+def get_top_products_by_period(period_pattern, target_periods, top_n=5, store_id=None):
+    """Lấy danh sách sản phẩm bán chạy nhất theo từng khoảng thời gian.
+    
+    Args:
+        period_pattern: strftime pattern for grouping
+        target_periods: List of periods to filter by
+        top_n: Number of top products to return
+        store_id: Filter by store (optional)
+    """
     if not target_periods:
         return []
 
     period_expr = func.strftime(period_pattern, Order.paid_at)
-    rows = (
+    query = (
         db.session.query(
             period_expr.label('period'),
             OrderItem.product_id.label('product_id'),
@@ -296,9 +339,12 @@ def get_top_products_by_period(period_pattern, target_periods, top_n=5):
             OrderItem.quantity > 0,
             period_expr.in_(target_periods),
         )
-        .group_by(period_expr, OrderItem.product_id, OrderItem.name)
-        .all()
     )
+    
+    if store_id:
+        query = query.filter(Order.store_id == store_id)
+    
+    rows = query.group_by(period_expr, OrderItem.product_id, OrderItem.name).all()
 
     period_map = {period: [] for period in target_periods}
     for row in rows:
@@ -334,8 +380,14 @@ def get_all_orders():
     return Order.query.order_by(Order.created_at.desc()).all()
 
 
-def get_orders_management_data(filter_mode='latest', date_value=None):
-    """Lấy dữ liệu đơn hàng cho màn hình quản lý theo nhiều bộ lọc thời gian."""
+def get_orders_management_data(filter_mode='latest', date_value=None, store_id=None):
+    """Lấy dữ liệu đơn hàng cho màn hình quản lý theo nhiều bộ lọc thời gian.
+    
+    Args:
+        filter_mode: Filter mode (all, latest, yesterday, week, month, date)
+        date_value: Date value for date filter mode
+        store_id: Filter by store (optional)
+    """
     mode = (filter_mode or 'latest').strip().lower()
     query = Order.query
     local_today = datetime.now(LOCAL_TIMEZONE).date()
@@ -392,10 +444,17 @@ def get_orders_management_data(filter_mode='latest', date_value=None):
         label = 'Đơn hàng trong ngày'
         period_note = f'Phạm vi: ngày {local_today.strftime("%d/%m/%Y")}'
 
+    # Filter by store if specified
+    if store_id:
+        query = query.filter(Order.store_id == store_id)
+
     query = query.order_by(Order.created_at.desc())
 
     orders = query.all()
-    total_all_time = Order.query.count()
+    total_query = Order.query
+    if store_id:
+        total_query = total_query.filter(Order.store_id == store_id)
+    total_all_time = total_query.count()
     return {
         'items': orders,
         'filter_mode': mode,
@@ -433,13 +492,22 @@ def _resolve_overview_period(period):
     return period, label, start, end
 
 
-def get_overview_orders(period='today', limit=100):
-    """Lấy danh sách đơn hàng và thống kê nhanh cho trang tổng quan quản trị."""
+def get_overview_orders(period='today', limit=100, store_id=None):
+    """Lấy danh sách đơn hàng và thống kê nhanh cho trang tổng quan quản trị.
+    
+    Args:
+        period: Period filter (today, week, month, all)
+        limit: Max number of orders to return
+        store_id: Filter by store (optional)
+    """
     period, period_label, start, end = _resolve_overview_period(period)
     query = Order.query.order_by(Order.created_at.desc())
 
     if start and end:
         query = query.filter(Order.created_at >= start, Order.created_at <= end)
+    
+    if store_id:
+        query = query.filter(Order.store_id == store_id)
 
     if limit:
         query = query.limit(limit)
@@ -458,16 +526,24 @@ def get_overview_orders(period='today', limit=100):
     }
 
 
-def get_all_products_admin():
-    """Lấy toàn bộ sản phẩm và tính thêm cảnh báo tồn kho, hạn dùng."""
-    products = (
-        Product.query
-        .options(joinedload(Product.batches))
-        .order_by(Product.created_at.desc())
-        .all()
-    )
+def get_all_products_admin(store_id=None):
+    """Lấy toàn bộ sản phẩm và tính thêm cảnh báo tồn kho, hạn dùng.
+    
+    Args:
+        store_id: Filter by store (optional, defaults to current user's store)
+    """
+    query = Product.query.options(joinedload(Product.batches))
+    
+    if store_id:
+        query = query.filter_by(store_id=store_id)
+    else:
+        # For non-admin users, filter by their store
+        query = filter_query_by_user_store(query, Product.store_id)
+    
+    products = query.order_by(Product.created_at.desc()).all()
 
-    today_local = datetime.now(LOCAL_TIMEZONE).date()
+    now_local = datetime.now(LOCAL_TIMEZONE)
+    today_local = now_local.date()
 
     needs_stock_sync = False
 
@@ -499,22 +575,50 @@ def get_all_products_admin():
 
         if not active_batches:
             product.nearest_expiry_date = None
-            product.expiry_days_left = None
+            product.expiry_hours_left = None
             product.expiry_alert = 'missing'
+            product.expiry_detail = None
             continue
 
         nearest_batch = min(active_batches, key=lambda item: item.expiry_date)
         nearest_expiry = nearest_batch.expiry_date
-        days_left = (nearest_expiry - today_local).days
+        
+        # Calculate hours until expiry based on imported_at + 24h
+        # Convert now_local to naive datetime for comparison with imported_at
+        now_vn_naive = now_local.replace(tzinfo=None)
+        
+        if nearest_batch.imported_at:
+            # Convert imported_at to naive if it has tzinfo (from DB)
+            imported_at_naive = nearest_batch.imported_at.replace(tzinfo=None) if nearest_batch.imported_at.tzinfo else nearest_batch.imported_at
+            batch_expiry_datetime = imported_at_naive + timedelta(hours=24)
+            hours_left = (batch_expiry_datetime - now_vn_naive).total_seconds() / 3600
+        else:
+            # Fallback: calculate from expiry_date + end of day (as naive datetime)
+            expiry_datetime = datetime.combine(nearest_expiry, datetime.max.time())
+            hours_left = (expiry_datetime - now_vn_naive).total_seconds() / 3600
+        
+        # Count items expiring in warning window
+        expiring_qty = sum(
+            int(batch.quantity or 0)
+            for batch in active_batches
+            if batch.expiry_date == nearest_expiry
+        )
+        total_qty = sum(int(batch.quantity or 0) for batch in active_batches)
 
         product.nearest_expiry_date = nearest_expiry
-        product.expiry_days_left = days_left
-        if days_left < 0:
+        product.expiry_hours_left = int(hours_left)
+        product.expiry_detail = f"{expiring_qty}/{total_qty}"
+        
+        # Only mark as 'expired' if this is the ONLY batch and it's expired
+        # Otherwise show the expiry detail even if hours_left is negative
+        if hours_left < 0 and len(active_batches) == 1:
             product.expiry_alert = 'expired'
-        elif days_left <= EXPIRY_WARNING_DAYS:
+            product.expiry_detail = None
+        elif hours_left <= EXPIRY_WARNING_HOURS:
             product.expiry_alert = 'soon'
         else:
             product.expiry_alert = 'ok'
+            product.expiry_detail = None
 
     if needs_stock_sync:
         db.session.commit()
@@ -836,8 +940,15 @@ def get_todo_assigned_staff(todo_id):
     ]
 
 
-def get_feedback_reviews(search='', rating='all', reply_status='all'):
-    """Lấy và lọc các đánh giá của khách hàng từ file lưu trữ JSON."""
+def get_feedback_reviews(search='', rating='all', reply_status='all', store_id=None):
+    """Lấy và lọc các đánh giá của khách hàng từ file lưu trữ JSON.
+    
+    Args:
+        search: Search query
+        rating: Filter by rating
+        reply_status: Filter by reply status (all, unreplied, replied)
+        store_id: Filter by store (optional - currently unused as reviews are stored in JSON)
+    """
     reviews = list_reviews(search=search, rating_filter=rating)
     normalized_reply_status = (reply_status or 'all').strip().lower()
 
@@ -1199,3 +1310,344 @@ def update_order_status(order_id, status):
     except Exception as e:
         db.session.rollback()
         return False, str(e)
+
+
+def import_product_batch(product_id, quantity):
+    """
+    Import a batch for a single product with 24-hour expiry.
+    
+    Args:
+        product_id: ID of product to import
+        quantity: Quantity to import
+    
+    Returns:
+        dict with success flag and result info
+    """
+    product = Product.query.get(product_id)
+    if not product:
+        return {'success': False, 'message': 'Không tìm thấy sản phẩm.'}
+    
+    if quantity <= 0:
+        return {'success': False, 'message': 'Số lượng phải lớn hơn 0.'}
+    
+    # Current time in Vietnam timezone (UTC+7)
+    now_vn = datetime.now(LOCAL_TIMEZONE)
+    batch_expiry = now_vn + timedelta(hours=24)
+    
+    # Calculate cost price (50% of selling price)
+    cost_price = int(product.price * 0.5)
+    
+    try:
+        batch = ProductBatch(
+            product_id=product.id,
+            store_id=product.store_id,
+            quantity=quantity,
+            cost_price=cost_price,
+            expiry_date=batch_expiry.date(),
+            imported_at=now_vn,
+        )
+        db.session.add(batch)
+        db.session.flush()
+        
+        # Query total quantity directly from DB (not from cached relationship)
+        total_qty = ProductBatch.query.filter_by(product_id=product.id).with_entities(
+            func.sum(ProductBatch.quantity)
+        ).scalar() or 0
+        product.in_stock = int(total_qty)
+        
+        db.session.commit()
+        
+        return {
+            'success': True,
+            'product_name': product.name,
+            'quantity': quantity,
+            'created_at': now_vn.isoformat(),
+            'expiry_at': batch_expiry.isoformat(),
+        }
+    except Exception as e:
+        db.session.rollback()
+        return {'success': False, 'message': str(e)}
+    """
+    Import stock batches with 24-hour expiry for all products in a store.
+    Creates 1-3 batches per product with quantities 10-30.
+    
+    Args:
+        store_id: Filter by store (if None, create for all stores)
+    
+    Returns:
+        dict with status info or raises exception
+    """
+    import random
+    
+    # Current time in Vietnam timezone (UTC+7)
+    now_vn = datetime.now(LOCAL_TIMEZONE)
+    
+    # Batch creation time
+    batch_created = now_vn
+    
+    # Expiry time: +24 hours
+    batch_expiry = now_vn + timedelta(hours=24)
+    
+    # Get products
+    query = Product.query
+    if store_id:
+        query = query.filter_by(store_id=store_id)
+    
+    products = query.all()
+    
+    total_batches = 0
+    
+    for product in products:
+        # Create 1-3 batches per product
+        num_batches = random.randint(1, 3)
+        
+        for b in range(num_batches):
+            quantity = random.randint(10, 30)
+            cost_price = int(product.price * 0.5)  # 50% margin
+            
+            batch = ProductBatch(
+                product_id=product.id,
+                store_id=product.store_id,
+                quantity=quantity,
+                cost_price=cost_price,
+                expiry_date=batch_expiry.date(),
+                imported_at=batch_created,
+            )
+            db.session.add(batch)
+            total_batches += 1
+        
+        # Update product in_stock
+        total_qty = sum(int(b.quantity or 0) for b in product.batches)
+        product.in_stock = total_qty
+    
+    db.session.commit()
+    
+    return {
+        'status': 'success',
+        'total_products': len(products),
+        'total_batches': total_batches,
+        'created_at': batch_created.isoformat(),
+        'expiry_at': batch_expiry.isoformat(),
+        'store_id': store_id,
+    }
+
+
+def clear_all_batches(store_id=None):
+    """Clear all expired batches in specified store based on imported_at + 24h or expiry_date.
+    
+    Args:
+        store_id: Store to clear batches from. If None, clears from all stores.
+    """
+    now_local = datetime.now(LOCAL_TIMEZONE)
+    now_vn_naive = now_local.replace(tzinfo=None)
+    today_local = now_local.date()
+    
+    # Find batches that have expired: either imported_at + 24h < now OR expiry_date < today
+    query = ProductBatch.query.filter(ProductBatch.quantity > 0)
+    if store_id:
+        query = query.filter_by(store_id=store_id)
+    all_batches = query.all()
+    
+    expired_batches = []
+    for batch in all_batches:
+        is_expired = False
+        
+        # Check if batch has imported_at
+        if batch.imported_at:
+            imported_at_naive = batch.imported_at.replace(tzinfo=None) if batch.imported_at.tzinfo else batch.imported_at
+            actual_expiry_time = imported_at_naive + timedelta(hours=24)
+            if actual_expiry_time <= now_vn_naive:
+                is_expired = True
+        
+        # Also check expiry_date (for old batches without imported_at)
+        if batch.expiry_date and batch.expiry_date <= today_local:
+            is_expired = True
+        
+        if is_expired:
+            expired_batches.append(batch)
+    
+    # Clear expired batches
+    cleared_count = 0
+    for batch in expired_batches:
+        batch.quantity = 0
+        cleared_count += 1
+    
+    # Update products in_stock for affected products
+    affected_product_ids = {b.product_id for b in expired_batches}
+    for product_id in affected_product_ids:
+        product = Product.query.get(product_id)
+        if product:
+            total_qty = ProductBatch.query.filter_by(product_id=product_id).with_entities(
+                func.sum(ProductBatch.quantity)
+            ).scalar() or 0
+            product.in_stock = int(total_qty)
+    
+    db.session.commit()
+    
+    return {
+        'status': 'success',
+        'message': f'Đã xóa sạch {cleared_count} lô hàng đã hết hạn. Giữ lại tất cả lô còn hạn hợp lệ.',
+    }
+
+
+def import_all_product_batches(store_id=None):
+    """Import 50 units for all products in specified store with 24-hour expiry."""
+    now_vn = datetime.now(LOCAL_TIMEZONE)
+    batch_expiry = now_vn + timedelta(hours=24)
+    
+    # If no store_id, use admin's selected store or default to store 1
+    if not store_id:
+        store_id = 1
+    
+    # Get all products from specified store
+    products = Product.query.filter_by(store_id=store_id).all()
+    total_batches = 0
+    
+    for product in products:
+        quantity = 50
+        cost_price = int(product.price * 0.5)
+        
+        batch = ProductBatch(
+            product_id=product.id,
+            store_id=store_id,
+            quantity=quantity,
+            cost_price=cost_price,
+            expiry_date=batch_expiry.date(),
+            imported_at=now_vn,
+        )
+        db.session.add(batch)
+        db.session.flush()
+        total_batches += 1
+    
+    # Calculate in_stock after all batches added and flushed
+    for product in products:
+        total_qty = ProductBatch.query.filter_by(product_id=product.id).with_entities(
+            func.sum(ProductBatch.quantity)
+        ).scalar() or 0
+        product.in_stock = int(total_qty)
+    
+    db.session.commit()
+    
+    return {
+        'status': 'success',
+        'total_products': len(products),
+        'total_batches': total_batches,
+        'created_at': now_vn.isoformat(),
+        'expiry_at': batch_expiry.isoformat(),
+    }
+
+
+def import_test_expiry_batches():
+    """Import 5 units to random products with ~6 hours expiry (for testing alerts)."""
+    import random
+    
+    now_vn = datetime.now(LOCAL_TIMEZONE)
+    # For TEST: set imported_at to 18h ago so imported_at + 24h = now + 6h (triggers 8h warning)
+    test_imported_at = now_vn - timedelta(hours=18)
+    test_expiry = test_imported_at + timedelta(hours=24)  # This will be now + 6h
+    
+    products = Product.query.all()
+    if not products:
+        return {'status': 'error', 'message': 'Không có sản phẩm'}
+    
+    # Select 3-5 random products
+    num_products = min(random.randint(3, 5), len(products))
+    selected_products = random.sample(products, num_products)
+    
+    total_batches = 0
+    
+    for product in selected_products:
+        quantity = 5
+        cost_price = int(product.price * 0.5)
+        
+        batch = ProductBatch(
+            product_id=product.id,
+            store_id=product.store_id,
+            quantity=quantity,
+            cost_price=cost_price,
+            expiry_date=test_expiry.date(),
+            imported_at=test_imported_at,  # Set 18h ago for testing
+        )
+        db.session.add(batch)
+        db.session.flush()
+        total_batches += 1
+        
+        # Query total quantity directly from DB (not from cached relationship)
+        total_qty = ProductBatch.query.filter_by(product_id=product.id).with_entities(
+            func.sum(ProductBatch.quantity)
+        ).scalar() or 0
+        product.in_stock = int(total_qty)
+    
+    db.session.commit()
+    
+    hours_until_expiry = 6
+    
+    return {
+        'status': 'success',
+        'total_products': num_products,
+        'total_batches': total_batches,
+        'hours_until_expiry': hours_until_expiry,
+        'created_at': test_imported_at.isoformat(),
+        'expiry_at': test_expiry.isoformat(),
+    }
+
+
+def import_april18_batch(store_id=None):
+    """Import 1 batch of 5 random products to specified store at 18/4 20:30"""
+    import random
+    
+    # If no store_id, use default store 1
+    if not store_id:
+        store_id = 1
+    
+    # Get 5 random products from specified store
+    products = Product.query.filter_by(store_id=store_id).all()
+    
+    if len(products) < 5:
+        return {
+            'status': 'error',
+            'message': f'Cơ sở này chỉ có {len(products)} sản phẩm (cần ít nhất 5)'
+        }
+    
+    selected_products = random.sample(products, 5)
+    
+    # Set batch time: 18/4 20:30 UTC+7
+    batch_imported_at = datetime(2026, 4, 18, 20, 30, 0, tzinfo=LOCAL_TIMEZONE)
+    batch_expiry_date = (batch_imported_at + timedelta(hours=24)).date()
+    
+    total_created = 0
+    product_names = []
+    
+    for product in selected_products:
+        quantity = 50
+        cost_price = int(product.price * 0.5)
+        
+        batch = ProductBatch(
+            product_id=product.id,
+            store_id=store_id,
+            quantity=quantity,
+            cost_price=cost_price,
+            expiry_date=batch_expiry_date,
+            imported_at=batch_imported_at,
+        )
+        db.session.add(batch)
+        db.session.flush()
+        total_created += 1
+        product_names.append(product.name)
+        
+        # Update product in_stock
+        total_qty = ProductBatch.query.filter_by(product_id=product.id).with_entities(
+            func.sum(ProductBatch.quantity)
+        ).scalar() or 0
+        product.in_stock = int(total_qty)
+    
+    db.session.commit()
+    
+    return {
+        'status': 'success',
+        'total_batches': total_created,
+        'total_units': total_created * 50,
+        'imported_at': batch_imported_at.isoformat(),
+        'expiry_at': batch_expiry_date.isoformat(),
+        'products': ', '.join(product_names),
+    }

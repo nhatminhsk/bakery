@@ -30,6 +30,7 @@ class Product(db.Model):
     unit        = db.Column(db.String(30), default='cai')
     image_url   = db.Column(db.String(500))                    # Cloudinary URL
     image_id    = db.Column(db.String(200))                    # Cloudinary public_id
+    store_id    = db.Column(db.Integer, db.ForeignKey('stores.id'), nullable=False, default=1)
     created_at  = db.Column(db.DateTime, default=datetime.utcnow)
 
     batches = db.relationship(
@@ -65,6 +66,7 @@ class ProductBatch(db.Model):
 
     id         = db.Column(db.Integer, primary_key=True)
     product_id = db.Column(db.Integer, db.ForeignKey('products.id'), nullable=False)
+    store_id   = db.Column(db.Integer, db.ForeignKey('stores.id'), nullable=False, default=1)
     quantity   = db.Column(db.Integer, nullable=False, default=0)
     cost_price = db.Column(db.Integer, nullable=False, default=0)
     expiry_date = db.Column(db.Date, nullable=False)

@@ -26,13 +26,16 @@
       <div class="shop-links">
         <div><h2>Danh sách sản phẩm</h2></div>
         <div class="categories-list">
-    <a href="{{ url_for('products.index') }}" class="category-badge {% if not selected_category %}active{% endif %}">Tất Cả</a>
+    <a href="{{ url_for('products.index') }}" class="category-badge {% if not selected_category and not discount_filter %}active{% endif %}">Tất Cả</a>
     {% for category in categories %}
     <a href="{{ url_for('products.index', category=category.name) }}" 
        class="category-badge {% if selected_category == category.name %}active{% endif %}">
         {{ category.name }}
     </a>
     {% endfor %}
+    <a href="{{ url_for('products.index', discount='true') }}" class="category-badge {% if discount_filter %}active{% endif %}" style="background: linear-gradient(135deg, #f87171 0%, #dc2626 100%); color: white; font-weight: 700; box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);" onclick="scrollToTop()">
+        🏷️ GIẢM GIÁ -30%
+    </a>
 </div>
       </div>
       <form class="search-header" method="GET" action="{{ url_for('products.search') }}">
@@ -44,6 +47,7 @@
                 >
                 <button type="submit" class="search-btn">Search</button>
     </form>
+
       <div class="filters-section">
        <div class="filter-group">
         <label for="sort">Sắp Xếp Theo</label>
@@ -63,6 +67,7 @@
      data-price="{{ product.price }}"
      data-rating="{{ product.rating }}"
      data-date="{{ product.created_at.isoformat() if product.created_at else '' }}"
+     {% if product.is_discounted %}data-is-discount="true"{% endif %}
      tabindex="0"
      role="link"
      aria-label="Xem chi tiết {{ product.name }}">
@@ -70,6 +75,11 @@
     <div class="shop-image">
         <img src="{{ product.image_url }}" alt="{{ product.name }}" onerror="this.onerror=null;this.src='{{ url_for('static', filename='images/logo/logo.svg') }}';" />
 
+        {% if product.is_discounted %}
+        <div class="discount-badge">
+            🏷️ -{{ product.discount_percent }}%
+        </div>
+        {% else %}
         <div class="stock-badge {% if product.in_stock == 0 %}out{% endif %}">
             {% if product.in_stock > 0 %}
                 Còn hàng
@@ -77,13 +87,25 @@
                 Hết hàng
             {% endif %}
         </div>
+        {% endif %}
     </div>
 
     <h2 class="product-name">{{ product.name }}</h2>
 
     <div class="product-info-row d-flex justify-content-between align-items-center">
         <div class="price-box">
+            {% if product.is_discounted %}
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <article class="product-price" style="text-decoration: line-through; color: #9ca3af; font-size: 0.85em; font-weight: 400;">
+                    {{ "{:,.0f}".format(product.original_price) }}₫
+                </article>
+                <article class="product-price" style="color: #dc2626; font-weight: 800; font-size: 1.15em;">
+                    {{ "{:,.0f}".format(product.discount_price) }}₫
+                </article>
+            </div>
+            {% else %}
             <article class="product-price">{{ "{:,.0f}".format(product.price) }}₫</article>
+            {% endif %}
         </div>
         <div class="stars">
             <i class="fas fa-star gold"></i>
@@ -503,6 +525,27 @@
 
 
 
-
+<script>
+  function scrollToTop() {
+    // Smooth scroll to the products section
+    const productsSection = document.getElementById('products');
+    if (productsSection) {
+      productsSection.scrollIntoView({ behavior: 'smooth' });
+    } else {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }
+  
+  // Smooth scroll to products section when page loads with discount filter
+  document.addEventListener('DOMContentLoaded', function() {
+    const url = new URL(window.location);
+    if (url.searchParams.get('discount') === 'true') {
+      const productsSection = document.getElementById('products');
+      if (productsSection) {
+        productsSection.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+  });
+</script>
 
 {% endblock %}

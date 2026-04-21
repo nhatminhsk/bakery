@@ -3,8 +3,6 @@
 {% block page_title %}Công Việc Của Tôi{% endblock %}
 
 {% block content %}
-<h1 class="page-title">Công Việc Của Tôi</h1>
-
 <form method="GET" action="{{ url_for('staff.todos') }}" style="display:flex; gap:0.75rem; flex-wrap:wrap; margin-bottom:1.25rem; align-items:center;">
     <label for="todo-status" style="color:#3f7d4a; font-weight:600;">Trạng thái:</label>
     <select id="todo-status" name="status" style="padding:10px; min-width:180px; background-color:#fff; border:1px solid #dbe8d5; border-radius:6px; color:#1f2937;">
